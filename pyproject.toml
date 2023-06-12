@@ -1,0 +1,62 @@
+[project]
+name = "graphinate"
+version = "0.0.1-alpha"
+authors = [
+    { name = "Eran Rivlis", email = "eran@rivlis.info" },
+]
+description = "Graphinate. Data to Graphs."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "Private :: Do Not Upload",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering",
+    "Typing :: Typed"
+]
+keywords = ['graph', 'declarative']
+dependencies = [
+    "click~=8.1.3",
+    "matplotlib",
+    "networkx>=3"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/erivlis/graphinate"
+"Bug Tracker" = "https://github.com/erivlis/graphinate/issues"
+
+
+[project.optional-dependencies]
+dev = [
+    #    "pip-tools",
+    #    "pipdeptree"
+]
+testing = [
+    "pytest >= 7.3.2",
+    "pytest-cov >= 4.1.0",
+    "pytest-asyncio"
+    #  "pytest-rerunfailures",
+    #  "pytest-xdist",
+    # build deps for tests
+    #  "flit_core >=2,<4",
+    #  "poetry_core>=1.0.0",
+]
+
+
+[build-system]
+#requires = ["setuptools>=61.0"]
+#build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tools.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
