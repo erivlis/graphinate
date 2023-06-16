@@ -1,7 +1,7 @@
 import inspect
 from collections import namedtuple, defaultdict
 from dataclasses import dataclass
-from typing import Callable, Any, Iterable, Mapping, Hashable, Set
+from typing import Callable, Any, Iterable, Mapping, Set
 
 from .typing import Node, Edge, Element, Items, Nodes, Edges, NodeTypeAbsoluteId
 
@@ -71,6 +71,7 @@ class GraphModel:
 
         self._networkx_graph = None
 
+    @property
     def node_models(self):
         return self._node_models
 
@@ -121,4 +122,4 @@ class GraphModel:
         return register
 
 
-__all__ = ('GraphModel',)
+__all__ = ('GraphModel', 'UNIVERSE_NODE')

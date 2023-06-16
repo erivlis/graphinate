@@ -3,26 +3,26 @@ from typing import Hashable
 
 import networkx as nx
 
-from graphinate.modeling import UNIVERSE_NODE, GraphModel
-from graphinate.typing import NodeTypeAbsoluteId
+from ..modeling import UNIVERSE_NODE, GraphModel
+from ..typing import NodeTypeAbsoluteId
 
 
 class NetworkxBuilder:
 
-    def __init__(self, graph_model: GraphModel):
-        self.graph_model = graph_model
+    def __init__(self, model: GraphModel):
+        self.model = model
 
     def _init_graph(self):
-        self._graph = nx.Graph(name=self.graph_model.name, types=Counter())
+        self._graph = nx.Graph(name=self.model.name, types=Counter())
 
     def _populate_node_type(self, node_type: Hashable | UNIVERSE_NODE = UNIVERSE_NODE, **kwargs):
-        for parent_node_type, child_node_types in self.graph_model.node_children(node_type).items():
+        for parent_node_type, child_node_types in self.model.node_children(node_type).items():
             for child_node_type in child_node_types:
                 node_type_absolute_id = (parent_node_type, child_node_type)
                 self._populate_nodes(node_type_absolute_id, **kwargs)
 
     def _populate_nodes(self, node_type_absolute_id: NodeTypeAbsoluteId, **kwargs):
-        node_type = self.graph_model._node_models[node_type_absolute_id]
+        node_type = self.model.node_models[node_type_absolute_id]
 
         unique = node_type.uniqueness
         for node in node_type.generator(**kwargs):
@@ -63,15 +63,15 @@ class NetworkxBuilder:
         return self._graph
 
 
-class NetworkxFactory:
+class NetworkxGraph:
 
-    def __init__(self, graph_model: GraphModel):
-        self.graph_model = graph_model
-        self._builder: NetworkxBuilder = NetworkxBuilder(self.graph_model)
+    def __init__(self, model: GraphModel):
+        self.model = model
+        self._builder: NetworkxBuilder = NetworkxBuilder(self.model)
 
     def build(self, **kwargs) -> nx.Graph:
         graph = self._builder.build(**kwargs)
         return graph
 
 
-__all__ = ('NetworkxFactory',)
+__all__ = ('NetworkxGraph',)
