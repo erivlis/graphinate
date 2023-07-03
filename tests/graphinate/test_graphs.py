@@ -6,8 +6,8 @@ def test_networkx_graph(map_graph_model):
     country_count, city_count, graph_model = map_graph_model
 
     # act
-    networkx_factory = graphinate.graphs.NetworkxGraph(graph_model)
-    graph = networkx_factory.build()
+    networkx_graph = graphinate.graphs.NetworkxGraph(graph_model)
+    graph = networkx_graph.build()
 
     # assert
     assert graph.order() == country_count + city_count

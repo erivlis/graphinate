@@ -59,7 +59,6 @@ class NetworkxBuilder:
     def build(self, **kwargs):
         self._init_graph()
         self._populate_node_type(UNIVERSE_NODE, **kwargs)
-
         return self._graph
 
 

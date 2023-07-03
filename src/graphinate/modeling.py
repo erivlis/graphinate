@@ -61,14 +61,9 @@ class GraphModel:
 
     def __init__(self, name: str):
         self.name = name
-
         self._node_models: dict[NodeTypeAbsoluteId, NodeModel] = {}
         self._nodes_children: dict[str, list[str]] = defaultdict(list)
-
-        # self._nodes_parents: dict[Hashable, list[Hashable]] = defaultdict(list)
-
         self._edges_generators: dict[str, list[Edges]] = defaultdict(list)
-
         self._networkx_graph = None
 
     @property
