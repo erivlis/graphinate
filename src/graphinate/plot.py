@@ -19,9 +19,14 @@ def color_map(graph: nx.Graph, cmap: str | mpl.colors.Colormap = "coolwarm"):
     return node_color
 
 
+def labels(graph: nx.Graph):
+    return {node: data['label'] or node for node, data in graph.nodes.data()}
+
+
 def draw(graph: nx.Graph):
     node_color_map = color_map(graph)
-    nx.draw(graph, with_labels=True, node_color=node_color_map)
+    node_labels = labels(graph)
+    nx.draw(graph, with_labels=True, node_color=node_color_map, labels=node_labels)
 
 
 def show(graph: nx.Graph):
