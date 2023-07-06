@@ -1,15 +1,15 @@
 """
 pip install PyGithub
 """
+import functools
 import operator
 import os
-from typing import Generator, Any, Mapping
+from typing import Mapping
 
 from github import Auth
 from github import Github
 from github.Commit import Commit
 from github.File import File
-from github.Repository import Repository
 
 import graphinate
 from graphinate.plot import show
@@ -24,18 +24,26 @@ g = Github(auth=auth)
 
 
 # or Github Enterprise with custom hostname
-# g = Github(auth=auth, base_url="https://{hostname}/api/v3")
+# g = Github(auth=auth, base_url='https://{hostname}/api/v3')
 
 
 def clean(data: Mapping):
     return {k: v for k, v in data.items()}
 
 
-def _repositories(repo_id: str | None = None) -> Generator[Repository, Any, None]:
-    if repo_id and (repo := g.get_user().get_repo(name=repo_id)):
-        yield repo
+@functools.lru_cache
+def _user(user_id=None):
+    user = g.get_user(user_id) if user_id else g.get_user()
+    return user
+
+
+@functools.lru_cache
+def _repositories(user_id: str = None, repo_id: str | None = None):
+    user = _user(user_id)
+    if repo_id and (repo := user.get_repo(name=repo_id)):
+        return [repo]
     else:
-        yield from g.get_user().get_repos()
+        return user.get_repos()
 
 
 def _commits(repo, commit_id: str | None = None):
@@ -48,47 +56,67 @@ def _commits(repo, commit_id: str | None = None):
 def _files(commit: Commit, file_id: str | None = None):
     files: list[File] = commit.files
     if file_id:
-        yield from (file for file in files if file.filename == file_id)
+        yield from [file for file in files if file.filename == file_id]
     else:
         yield from files
 
 
-graph_model = graphinate.GraphModel(name="Github")
+graph_model = graphinate.GraphModel(name='Github')
 
-repository_node = graph_model.node(type="repository",
-                                   key=operator.attrgetter("name"),
-                                   value=operator.attrgetter("raw_data"),
-                                   label=operator.itemgetter("name"))
+user_node = graph_model.node(type='user',
+                             key=operator.attrgetter('login'),
+                             value=operator.attrgetter('raw_data'),
+                             label=operator.itemgetter('name'))
 
-commit_node = graph_model.node(type="commit",
-                               parent_type="repository",
-                               key=operator.attrgetter("sha"),
-                               value=operator.attrgetter("raw_data"),
-                               label=operator.itemgetter("sha"))
+repository_node = graph_model.node(type='repository',
+                                   parent_type='user',
+                                   key=operator.attrgetter('name'),
+                                   value=operator.attrgetter('raw_data'),
+                                   label=operator.itemgetter('name'))
 
-file_node = graph_model.node(type="file",
-                             parent_type="commit",
-                             key=operator.attrgetter("filename"),
-                             value=operator.attrgetter("raw_data"),
-                             label=operator.itemgetter("filename"))
+commit_node = graph_model.node(type='commit',
+                               parent_type='repository',
+                               key=operator.attrgetter('sha'),
+                               value=operator.attrgetter('raw_data'),
+                               label=operator.itemgetter('sha'))
+
+file_node = graph_model.node(type='file',
+                             parent_type='commit',
+                             key=operator.attrgetter('filename'),
+                             value=operator.attrgetter('raw_data'),
+                             label=operator.itemgetter('filename'))
+
+
+@user_node
+def users(user_id: str = 'andybrewer', **kwargs):
+    yield _user(user_id)
 
 
 @repository_node
-def repositories(repo_id: str | None = None, **kwargs):
-    repos = _repositories(repo_id)
+def repositories(user_id: str | None = None,
+                 repository_id: str | None = None,
+                 **kwargs):
+    repos = _repositories(user_id, repository_id)
     for repo in repos:
         yield repo
 
 
 @commit_node
-def commits(repo_id: str | None = None, commit_id: str | None = None, **kwargs):
-    for repo in _repositories(repo_id):
+def commits(user_id: str | None = None,
+            repository_id: str | None = None,
+            commit_id: str | None = None,
+            **kwargs):
+    for repo in _repositories(user_id, repository_id):
         yield from _commits(repo, commit_id)
 
 
 @file_node
-def files(repo_id: str | None = None, commit_id: str | None = None, file_id: str | None = None, **kwargs):
-    for repo in _repositories(repo_id):
+def files(user_id: str | None = None,
+          repository_id: str | None = None,
+          commit_id: str | None = None,
+          file_id: str | None = None,
+          **kwargs):
+    for repo in _repositories(user_id, repository_id):
         for commit in _commits(repo, commit_id):
             yield from _files(commit, file_id)
 
