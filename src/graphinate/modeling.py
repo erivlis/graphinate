@@ -77,42 +77,50 @@ class GraphModel:
     def node_children(self, type: str = UNIVERSE_NODE) -> dict[str, list[str]]:
         return {k: v for k, v in self._nodes_children.items() if k == type}
 
+    def _verify_parameters(self, parameters):
+        assert True
+
     def node(self,
-             type: str | None = None,
+             _type: str | None = None,
              parent_type: str | None = UNIVERSE_NODE,
              uniqueness: bool = False,
              key: str | Callable[[Any], str] | None = None,
              value: str | Callable[[Any], str] | None = None,
              label: str | Callable[[Any], str] | None = None) -> Callable[[Items], None]:
         def register(f: Items):
+            node_type = _type or f.__name__
+
             def node_generator(**kwargs) -> Iterable[Node]:
-                yield from elements(f(**kwargs), type, key=key, value=value)
+                yield from elements(f(**kwargs), node_type, key=key, value=value)
 
-            full_arg_spec = inspect.getfullargspec(f)
-            parameters = full_arg_spec.args
+            parameters = inspect.getfullargspec(f).args
+            self._verify_parameters(parameters)
 
-            node_model = NodeModel(type=type,
+            node_model = NodeModel(type=node_type,
                                    parent_type=parent_type,
                                    uniqueness=uniqueness,
                                    parameters=set(parameters),
                                    label=label,
                                    generator=node_generator)
             self._node_models[node_model.absolute_id] = node_model
-            self._nodes_children[parent_type].append(type)
+            self._nodes_children[parent_type].append(node_type)
             # self._nodes_parents[node_type].append(parent_node_type)
 
         return register
 
     def edge(self,
-             type: str | None = None,
+             _type: str | None = None,
              source: str | Callable[[Any], str] | None = None,
              target: str | Callable[[Any], str] | None = None,
-             value: str | Callable[[Any], str] | None = None) -> Callable[[Items], None]:
+             value: str | Callable[[Any], str] | None = None,
+             label: str | Callable[[Any], str] | None = None) -> Callable[[Items], None]:
         def register(f: Items):
-            def edge_generator(**kwargs) -> Iterable[Edge]:
-                yield from elements(f(**kwargs), type, source=source, target=target, value=value)
+            edge_type = _type or f.__name__
 
-            self._edges_generators[type].append(edge_generator)
+            def edge_generator(**kwargs) -> Iterable[Edge]:
+                yield from elements(f(**kwargs), edge_type, source=source, target=target, value=value, label=label)
+
+            self._edges_generators[edge_type].append(edge_generator)
 
         return register
 

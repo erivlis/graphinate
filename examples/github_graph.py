@@ -65,58 +65,54 @@ def _files(commit: Commit, file_id: str | None = None):
 
 graph_model = graphinate.GraphModel(name='Github')
 
-user_node = graph_model.node(type='user',
-                             key=operator.attrgetter('login'),
+user_node = graph_model.node(key=operator.attrgetter('login'),
                              value=operator.attrgetter('raw_data'),
                              label=operator.itemgetter('name'))
 
-repository_node = graph_model.node(type='repository',
-                                   parent_type='user',
+repository_node = graph_model.node(parent_type='user',
                                    key=operator.attrgetter('name'),
                                    value=operator.attrgetter('raw_data'),
                                    label=operator.itemgetter('name'))
 
-commit_node = graph_model.node(type='commit',
-                               parent_type='repository',
+commit_node = graph_model.node(parent_type='repository',
                                key=operator.attrgetter('sha'),
                                value=operator.attrgetter('raw_data'),
                                label=operator.itemgetter('sha'))
 
-file_node = graph_model.node(type='file',
-                             parent_type='commit',
+file_node = graph_model.node(parent_type='commit',
                              key=operator.attrgetter('filename'),
                              value=operator.attrgetter('raw_data'),
                              label=operator.itemgetter('filename'))
 
 
 @user_node
-def users(user_id: str | None = None, **kwargs):
+def user(user_id: str | None = None, **kwargs):
     yield _user(user_id)
 
 
 @repository_node
-def repositories(user_id: str | None = None,
-                 repository_id: str | None = None,
-                 **kwargs):
+def repository(user_id: str | None = None,
+               repository_id: str | None = None,
+               **kwargs):
     repos = _repositories(user_id, repository_id)
     for repo in repos:
         yield repo
 
 
 @commit_node
-def commits(user_id: str | None = None,
-            repository_id: str | None = None,
-            commit_id: str | None = None,
-            **kwargs):
+def commit(user_id: str | None = None,
+           repository_id: str | None = None,
+           commit_id: str | None = None,
+           **kwargs):
     for repo in _repositories(user_id, repository_id):
         yield from _commits(repo, commit_id)
 
 
-def file_types(user_id: str | None = None,
-               repository_id: str | None = None,
-               commit_id: str | None = None,
-               file_type_id: str | None = None,
-               **kwargs):
+def file_type(user_id: str | None = None,
+              repository_id: str | None = None,
+              commit_id: str | None = None,
+              file_type_id: str | None = None,
+              **kwargs):
     def group_key(file):
         return pathlib.PurePath(file).suffix
 
@@ -126,11 +122,11 @@ def file_types(user_id: str | None = None,
 
 
 @file_node
-def files(user_id: str | None = None,
-          repository_id: str | None = None,
-          commit_id: str | None = None,
-          file_id: str | None = None,
-          **kwargs):
+def file(user_id: str | None = None,
+         repository_id: str | None = None,
+         commit_id: str | None = None,
+         file_id: str | None = None,
+         **kwargs):
     for repo in _repositories(user_id, repository_id):
         for commit in _commits(repo, commit_id):
             yield from _files(commit, file_id)
@@ -140,12 +136,12 @@ if __name__ == '__main__':
     networkx_graph = graphinate.graphs.NetworkxGraph(graph_model)
 
     params = {
-        # 'user_id': 'erivlis',
-        # 'repository_id' : 'graphinate',
-        'user_id': 'andybrewer',
-        'repository_id': 'operation-go',
-        'commit_id': None,
-        'file_id': 'README.md',
+        'user_id': 'erivlis',
+        'repository_id' : 'graphinate',
+        # 'user_id': 'andybrewer',
+        # 'repository_id': 'operation-go',
+        # 'commit_id': None,
+        # 'file_id': 'README.md',
         # 'user_id' "strawberry-graphql"
     }
     graph = networkx_graph.build(**params)
