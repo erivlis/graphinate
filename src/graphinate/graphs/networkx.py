@@ -21,36 +21,49 @@ class NetworkxBuilder:
                 node_type_absolute_id = (parent_node_type, child_node_type)
                 self._populate_nodes(node_type_absolute_id, **kwargs)
 
-    def _populate_nodes(self, node_type_absolute_id: NodeTypeAbsoluteId, **kwargs):
-        node_type = self.model.node_models[node_type_absolute_id]
+    @staticmethod
+    def _parent_node_id(node_type_absolute_id: NodeTypeAbsoluteId, **kwargs):
+        if node_type_absolute_id[0] is UNIVERSE_NODE:
+            return UNIVERSE_NODE
+        else:
+            ids = []
+            for k, v in kwargs.items():
+                if k[:-3] == node_type_absolute_id[1]:
+                    break
+                ids.append(v)
+            return tuple(ids)
 
-        unique = node_type.uniqueness
-        for node in node_type.generator(**kwargs):
-            parent_node_id = (*(kwargs.values()),) if kwargs else UNIVERSE_NODE
+        # return (*(kwargs.values()),) if kwargs else UNIVERSE_NODE
+
+    def _populate_nodes(self, node_type_absolute_id: NodeTypeAbsoluteId, **kwargs):
+        node_model = self.model.node_models[node_type_absolute_id]
+        unique = node_model.uniqueness
+        for node in node_model.generator(**kwargs):
+            parent_node_id = self._parent_node_id(node_type_absolute_id, **kwargs)
             node_lineage = (*parent_node_id, node.key) if parent_node_id is not UNIVERSE_NODE else (node.key,)
             node_id = (node.key,) if unique else node_lineage
 
             label = node.key
-            if node_type.label is not None:
-                label = node_type.label(node.value) if callable(node_type.label) else node_type.label
+            if node_model.label is not None:
+                label = node_model.label(node.value) if callable(node_model.label) else node_model.label
 
-            _type = node_type.type.lower()
+            model_type = node_model.type.lower()
 
             self._graph.add_node(node_id,
                                  label=label,
                                  color='type',
-                                 type=_type,
+                                 type=model_type,
                                  value=node.value,
                                  lineage=list(node_lineage))
 
-            self._graph.graph['types'].update({_type: 1})
+            self._graph.graph['types'].update({model_type: 1})
 
-            if node_type.parent_type is not UNIVERSE_NODE:
+            if node_model.parent_type is not UNIVERSE_NODE:
                 self._graph.add_edge(node_id, parent_node_id)
 
             new_kwargs = kwargs.copy()
-            new_kwargs[f"{_type}_id"] = node.key
-            self._populate_node_type(node_type.type, **new_kwargs)
+            new_kwargs[f"{model_type}_id"] = node.key
+            self._populate_node_type(node_model.type, **new_kwargs)
 
     def _finalize(self):
         types_counter = self._graph.graph['types']
@@ -58,7 +71,7 @@ class NetworkxBuilder:
 
     def build(self, **kwargs):
         self._init_graph()
-        self._populate_node_type(UNIVERSE_NODE, **kwargs)
+        self._populate_node_type(**kwargs)
         return self._graph
 
 

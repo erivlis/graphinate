@@ -2,8 +2,10 @@
 pip install PyGithub
 """
 import functools
+import itertools
 import operator
 import os
+import pathlib
 from typing import Mapping
 
 from github import Auth
@@ -88,7 +90,7 @@ file_node = graph_model.node(type='file',
 
 
 @user_node
-def users(user_id: str = 'andybrewer', **kwargs):
+def users(user_id: str | None = None, **kwargs):
     yield _user(user_id)
 
 
@@ -110,6 +112,19 @@ def commits(user_id: str | None = None,
         yield from _commits(repo, commit_id)
 
 
+def file_types(user_id: str | None = None,
+               repository_id: str | None = None,
+               commit_id: str | None = None,
+               file_type_id: str | None = None,
+               **kwargs):
+    def group_key(file):
+        return pathlib.PurePath(file).suffix
+
+    for repo in _repositories(user_id, repository_id):
+        for commit in _commits(repo, commit_id):
+            yield from ((k, list(g)) for k, g in itertools.groupby(sorted(_files(commit), key=group_key), group_key))
+
+
 @file_node
 def files(user_id: str | None = None,
           repository_id: str | None = None,
@@ -123,5 +138,15 @@ def files(user_id: str | None = None,
 
 if __name__ == '__main__':
     networkx_graph = graphinate.graphs.NetworkxGraph(graph_model)
-    graph = networkx_graph.build()
+
+    params = {
+        # 'user_id': 'erivlis',
+        # 'repository_id' : 'graphinate',
+        'user_id': 'andybrewer',
+        'repository_id': 'operation-go',
+        'commit_id': None,
+        'file_id': 'README.md',
+        # 'user_id' "strawberry-graphql"
+    }
+    graph = networkx_graph.build(**params)
     show(graph)
