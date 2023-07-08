@@ -71,6 +71,10 @@ class GraphModel:
         return self._node_models
 
     @property
+    def edges_generators(self):
+        return self._edges_generators
+
+    @property
     def types(self) -> Set:
         return {v.type for v in self._node_models.values()}
 
@@ -110,15 +114,25 @@ class GraphModel:
 
     def edge(self,
              _type: str | None = None,
-             source: str | Callable[[Any], str] | None = None,
-             target: str | Callable[[Any], str] | None = None,
+             source: str | Callable[[Any], str] = 'source',
+             target: str | Callable[[Any], str] = 'target',
+             label: str | Callable[[Any], str] | None = None,
              value: str | Callable[[Any], str] | None = None,
-             label: str | Callable[[Any], str] | None = None) -> Callable[[Items], None]:
+             weight: float | Callable[[Any], float] = 1.0,
+             ) -> Callable[[Items], None]:
         def register(f: Items):
             edge_type = _type or f.__name__
 
+            getters = {
+                'source': source,
+                'target': target,
+                'label': label,
+                'value': value,
+                'weight': weight
+            }
+
             def edge_generator(**kwargs) -> Iterable[Edge]:
-                yield from elements(f(**kwargs), edge_type, source=source, target=target, value=value, label=label)
+                yield from elements(f(**kwargs), edge_type, **getters)
 
             self._edges_generators[edge_type].append(edge_generator)
 

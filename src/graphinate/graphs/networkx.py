@@ -65,6 +65,19 @@ class NetworkxBuilder:
             new_kwargs[f"{model_type}_id"] = node.key
             self._populate_node_type(node_model.type, **new_kwargs)
 
+    def _populate_edges(self, **kwargs):
+
+        for edge_type, edge_generators in self.model.edges_generators.items():
+            for edge_generator in edge_generators:
+                for edge in edge_generator(**kwargs):
+                    edge_attributes = {
+                        'type':  edge_type,
+                        'label': edge.label,
+                        'value': edge.value,
+                        'weight': edge.weight
+                    }
+                    self._graph.add_edge(edge.source, edge.target, **edge_attributes)
+
     def _finalize(self):
         types_counter = self._graph.graph['types']
         self._graph.graph['types'] = dict(types_counter)
@@ -72,6 +85,7 @@ class NetworkxBuilder:
     def build(self, **kwargs):
         self._init_graph()
         self._populate_node_type(**kwargs)
+        self._populate_edges(**kwargs)
         return self._graph
 
 
