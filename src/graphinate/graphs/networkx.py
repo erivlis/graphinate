@@ -1,4 +1,5 @@
 from collections import Counter
+from enum import Enum
 from typing import Hashable
 
 import networkx as nx
@@ -7,13 +8,21 @@ from ..modeling import UNIVERSE_NODE, GraphModel
 from ..typing import NodeTypeAbsoluteId
 
 
-class NetworkxBuilder:
+class NetworkxGraphType(Enum):
+    Graph = nx.Graph
+    DiGraph = nx.DiGraph
+    MultiDiGraph = nx.MultiDiGraph
+    MultiGraph = nx.MultiGraph
 
-    def __init__(self, model: GraphModel):
+
+class NetworkxGraph:
+
+    def __init__(self, model: GraphModel, graph_type: NetworkxGraphType = NetworkxGraphType.Graph):
         self.model = model
+        self.graph_type = graph_type
 
     def _init_graph(self):
-        self._graph = nx.Graph(name=self.model.name, types=Counter())
+        self._graph = self.graph_type.value(name=self.model.name, types=Counter())
 
     def _populate_node_type(self, node_type: Hashable | UNIVERSE_NODE = UNIVERSE_NODE, **kwargs):
         for parent_node_type, child_node_types in self.model.node_children(node_type).items():
@@ -59,7 +68,7 @@ class NetworkxBuilder:
             self._graph.graph['types'].update({model_type: 1})
 
             if node_model.parent_type is not UNIVERSE_NODE:
-                self._graph.add_edge(node_id, parent_node_id)
+                self._graph.add_edge(parent_node_id, node_id)
 
             new_kwargs = kwargs.copy()
             new_kwargs[f"{model_type}_id"] = node.key
@@ -71,7 +80,7 @@ class NetworkxBuilder:
             for edge_generator in edge_generators:
                 for edge in edge_generator(**kwargs):
                     edge_attributes = {
-                        'type':  edge_type,
+                        'type': edge_type,
                         'label': edge.label,
                         'value': edge.value,
                         'weight': edge.weight
@@ -89,15 +98,4 @@ class NetworkxBuilder:
         return self._graph
 
 
-class NetworkxGraph:
-
-    def __init__(self, model: GraphModel):
-        self.model = model
-        self._builder: NetworkxBuilder = NetworkxBuilder(self.model)
-
-    def build(self, **kwargs) -> nx.Graph:
-        graph = self._builder.build(**kwargs)
-        return graph
-
-
-__all__ = ('NetworkxGraph',)
+__all__ = ('NetworkxGraph', 'NetworkxGraphType')
