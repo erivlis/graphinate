@@ -7,6 +7,8 @@ import networkx as nx
 from ..modeling import UNIVERSE_NODE, GraphModel
 from ..typing import NodeTypeAbsoluteId
 
+from loguru import logger
+
 
 class NetworkxGraphType(Enum):
     Graph = nx.Graph
@@ -58,6 +60,7 @@ class NetworkxGraph:
 
             model_type = node_model.type.lower()
 
+            logger.debug("Adding node: '{}'", node_id)
             self._graph.add_node(node_id,
                                  label=label,
                                  color='type',
@@ -68,6 +71,7 @@ class NetworkxGraph:
             self._graph.graph['types'].update({model_type: 1})
 
             if node_model.parent_type is not UNIVERSE_NODE:
+                logger.debug("Adding edge from: '{}' to '{}'", parent_node_id, node_id)
                 self._graph.add_edge(parent_node_id, node_id)
 
             new_kwargs = kwargs.copy()
@@ -85,6 +89,7 @@ class NetworkxGraph:
                         'value': edge.value,
                         'weight': edge.weight
                     }
+                    logger.debug("Adding edge from: '{}' to '{}'", edge.source, edge.target)
                     self._graph.add_edge(edge.source, edge.target, **edge_attributes)
 
     def _finalize(self):
