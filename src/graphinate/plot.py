@@ -12,7 +12,10 @@ def color_map(graph: nx.Graph, cmap: str | mpl.colors.Colormap = "coolwarm"):
     """
     type_lookup = {t: i for i, t in enumerate(graph.graph['types'].keys())}
     color_lookup = [type_lookup.get(data.get('type'), 0) for node, data in graph.nodes.data()]
-    low, *_, high = sorted(color_lookup)
+    if len(color_lookup) > 1:
+        low, *_, high = sorted(color_lookup)
+    else:
+        low = high = 0
     norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
     mapper = mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
     node_color = [mapper.to_rgba(i) for i in color_lookup]
