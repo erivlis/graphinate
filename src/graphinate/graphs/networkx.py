@@ -3,11 +3,10 @@ from enum import Enum
 from typing import Hashable
 
 import networkx as nx
+from loguru import logger
 
 from ..modeling import UNIVERSE_NODE, GraphModel
 from ..typing import NodeTypeAbsoluteId
-
-from loguru import logger
 
 
 class NetworkxGraphType(Enum):
@@ -79,7 +78,6 @@ class NetworkxGraph:
             self._populate_node_type(node_model.type, **new_kwargs)
 
     def _populate_edges(self, **kwargs):
-
         for edge_type, edge_generators in self.model.edges_generators.items():
             for edge_generator in edge_generators:
                 for edge in edge_generator(**kwargs):

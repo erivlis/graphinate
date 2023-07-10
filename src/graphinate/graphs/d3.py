@@ -12,5 +12,9 @@ class D3Graph(NetworkxGraph):
 
     def build(self, **kwargs) -> dict:
         nx_graph: nx.Graph = super().build(**kwargs)
-        graph = nx.node_link_data(nx_graph)
-        return mutate.dictify(graph)
+        return self.from_networkx(nx_graph)
+
+    @staticmethod
+    def from_networkx(nx_graph: nx.Graph):
+        d3_graph = nx.node_link_data(nx_graph)
+        return mutate.dictify_tuple(d3_graph)

@@ -5,9 +5,11 @@ import itertools
 import operator
 import pathlib
 
+import networkx as nx
+
 import graphinate
-from helpers import _user, _repositories, _commits, _files
 from graphinate.plot import show
+from helpers import _user, _repositories, _commits, _files
 
 graph_model = graphinate.GraphModel(name='github-repository')
 
@@ -107,5 +109,8 @@ if __name__ == '__main__':
         # 'file_id': 'README.md',
         # 'user_id' "strawberry-graphql"
     }
-    graph = networkx_graph.build(**params)
-    show(graph)
+    nx_graph: nx.Graph = networkx_graph.build(**params)
+    show(nx_graph)
+
+    d3_graph = graphinate.graphs.D3Graph.from_networkx(nx_graph)
+    print(d3_graph)
