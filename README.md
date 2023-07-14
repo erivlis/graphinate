@@ -2,18 +2,15 @@
 
 > Under Development!
 
-
 ## Install
 
-```shell
-python -m pip install graphinate
-```
+[//]: # (```shell)
+[//]: # (python -m pip install graphinate )
+[//]: # (```)
 
 ## Usage
 
-
 ## Build
-
 
 ## Test
 
