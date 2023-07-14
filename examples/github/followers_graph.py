@@ -3,7 +3,7 @@ from graphinate.graphs.networkx import NetworkxGraphType
 from graphinate.plot import show
 from helpers import _user
 
-DEPTH = 0
+DEPTH = 1
 
 graph_model = graphinate.GraphModel(name='github-followers')
 
@@ -25,8 +25,9 @@ if __name__ == '__main__':
     networkx_graph = graphinate.graphs.NetworkxGraph(graph_model, graph_type=NetworkxGraphType.Graph)
 
     params = {
-        # 'user_id': 'erivlis',
-        # 'user_id': 'andybrewer',
+        # 'user_id': 'erivlis'
+        'user_id': 'jhwang1992 '
+        # 'user_id': 'andybrewer'
         # 'user_id' "strawberry-graphql"
     }
     graph = networkx_graph.build(**params)

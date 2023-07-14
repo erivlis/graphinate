@@ -82,7 +82,7 @@ class GraphModel:
         return {k: v for k, v in self._nodes_children.items() if k == type}
 
     def _verify_parameters(self, parameters):
-        assert True
+        return True
 
     def node(self,
              _type: str | None = None,

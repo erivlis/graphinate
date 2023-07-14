@@ -3,8 +3,11 @@
 > Under Development!
 
 
-## Intall
+## Install
 
+```shell
+python -m pip install graphinate
+```
 
 ## Usage
 

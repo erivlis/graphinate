@@ -87,7 +87,7 @@ class NetworkxGraph:
                         'value': edge.value,
                         'weight': edge.weight
                     }
-                    logger.debug("Adding edge from: '{}' to '{}'", edge.source, edge.target)
+                    logger.debug("Adding edge from: '{}' to: '{}'", edge.source, edge.target)
                     self._graph.add_edge(edge.source, edge.target, **edge_attributes)
 
     def _finalize(self):
