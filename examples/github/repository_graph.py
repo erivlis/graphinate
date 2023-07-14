@@ -39,10 +39,15 @@ repository_node = graph_model.node(parent_type='user',
                                    value=operator.attrgetter('raw_data'),
                                    label=operator.itemgetter('name'))
 
+
+def commit_label(commit):
+    return commit['sha'][-7:]
+
+
 commit_node = graph_model.node(parent_type='repository',
                                key=operator.attrgetter('sha'),
                                value=operator.attrgetter('raw_data'),
-                               label=operator.itemgetter('sha'))
+                               label=commit_label)
 
 file_node = graph_model.node(parent_type='commit',
                              key=operator.attrgetter('filename'),

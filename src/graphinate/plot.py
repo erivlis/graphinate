@@ -1,7 +1,7 @@
 import networkx as nx
 
 import matplotlib as mpl
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt, patheffects
 
 
 def color_map(graph: nx.Graph, cmap: str | mpl.colors.Colormap = "coolwarm"):
@@ -29,7 +29,19 @@ def labels(graph: nx.Graph):
 def draw(graph: nx.Graph):
     node_color_map = color_map(graph)
     node_labels = labels(graph)
-    nx.draw(graph, with_labels=True, node_color=node_color_map, labels=node_labels)
+    pos = nx.planar_layout(graph)
+    pos = nx.spring_layout(graph, pos=pos)
+    nx.draw(graph,
+            with_labels=True,
+            pos=pos,
+            node_color=node_color_map,
+            labels=node_labels,
+            font_size=8,
+            font_color='white',
+            # horizontalalignment='left',
+            # verticalalignment='bottom',
+            bbox={'boxstyle': 'round', 'fc': (0.02, 0.02, 0.02), 'lw': 0, 'alpha': 0.35,
+                  'path_effects': [patheffects.withStroke(linewidth=1, foreground="red")]})
 
 
 def show(graph: nx.Graph):
