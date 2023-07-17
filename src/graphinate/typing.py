@@ -1,4 +1,4 @@
-from typing import Union, NamedTuple, Tuple, Any, Protocol, Iterable, TypeVar, Hashable, FrozenSet, Mapping
+from typing import Union, NamedTuple, Tuple, Any, Protocol, Iterable, TypeVar, FrozenSet, Mapping
 
 Node = Union[type(NamedTuple), Tuple[str, Any]]
 Edge = Union[type(NamedTuple), Tuple[str, str, Any]]
