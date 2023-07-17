@@ -1,6 +1,5 @@
-import networkx as nx
-
 import matplotlib as mpl
+import networkx as nx
 from matplotlib import pyplot as plt, patheffects
 
 
@@ -26,22 +25,27 @@ def labels(graph: nx.Graph):
     return {node: data.get('label', node) or node for node, data in graph.nodes.data()}
 
 
-def draw(graph: nx.Graph):
+def draw(graph: nx.Graph, with_labels=True):
     node_color_map = color_map(graph)
-    node_labels = labels(graph)
-    pos = nx.planar_layout(graph)
+    pos = nx.planar_layout(graph) if nx.is_planar(graph) else None
     pos = nx.spring_layout(graph, pos=pos)
-    nx.draw(graph,
-            with_labels=True,
-            pos=pos,
-            node_color=node_color_map,
-            labels=node_labels,
-            font_size=8,
-            font_color='white',
-            # horizontalalignment='left',
-            # verticalalignment='bottom',
-            bbox={'boxstyle': 'round', 'fc': (0.02, 0.02, 0.02), 'lw': 0, 'alpha': 0.35,
-                  'path_effects': [patheffects.withStroke(linewidth=1, foreground="red")]})
+
+    draw_params = {}
+    if with_labels:
+        draw_params.update(
+            {
+                'with_labels': True,
+                'labels': labels(graph),
+                'font_size': 6,
+                'font_color': 'white',
+                # 'horizontalalignment':'left',
+                # 'verticalalignment':'bottom',
+                'bbox': {'boxstyle': 'round', 'fc': (0.02, 0.02, 0.02), 'lw': 0, 'alpha': 0.35,
+                         'path_effects': [patheffects.withStroke(linewidth=1, foreground="red")]}
+            }
+        )
+
+    nx.draw(graph, pos, node_color=node_color_map, **draw_params)
 
 
 def show(graph: nx.Graph):
