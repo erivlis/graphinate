@@ -26,16 +26,16 @@ def map_graph_model(country_count, city_count):
 
     graph_model = graphinate.GraphModel(name='Map')
 
-    @graph_model.node(type='Country')
-    def countries(country_id=None, **kwargs):
+    @graph_model.node()
+    def country(country_id=None, **kwargs):
 
         if country_id and country_id in country_ids:
             yield country_id
         else:
             yield from country_ids
 
-    @graph_model.node(type='City', parent_type='Country')
-    def cities(country_id=None, city_id=None, **kwargs):
+    @graph_model.node(parent_type='country')
+    def city(country_id=None, city_id=None, **kwargs):
 
         if country_id is None and city_id is None:
             yield from city_ids.keys()

@@ -14,8 +14,8 @@ def test_networkx_graph(map_graph_model):
     assert graph.graph['types']['country'] == country_count
     assert graph.graph['types']['city'] == city_count
 
-    from graphinate.plot import show
-    show(graph)
+    # from graphinate.plot import show
+    # show(graph)
 
 
 def test_d3_graph(map_graph_model):
