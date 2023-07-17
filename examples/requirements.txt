@@ -1,0 +1,4 @@
+PyGithub
+beautifulsoup4
+lxml
+requests
