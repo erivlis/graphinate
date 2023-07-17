@@ -88,7 +88,7 @@ class NetworkxGraph:
                         'weight': edge.weight
                     }
                     logger.debug("Adding edge from: '{}' to: '{}'", edge.source, edge.target)
-                    self._graph.add_edge(edge.source, edge.target, **edge_attributes)
+                    self._graph.add_edge((edge.source,), (edge.target,), **edge_attributes)
 
     def _finalize(self):
         types_counter = self._graph.graph['types']
