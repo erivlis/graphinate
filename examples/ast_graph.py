@@ -1,5 +1,6 @@
 import ast
 import inspect
+import operator
 from _ast import AST
 from typing import Iterable
 
@@ -11,14 +12,16 @@ from graphinate.plot import show
 
 def _ast_nodes(parsed_asts: Iterable[AST]):
     for item in parsed_asts:
-        yield item
-        yield from _ast_nodes(ast.iter_child_nodes(item))
+        if not isinstance(item, ast.Load):
+            yield item
+            yield from _ast_nodes(ast.iter_child_nodes(item))
 
 
 def _ast_edge(parsed_ast: AST):
     for child_ast in ast.iter_child_nodes(parsed_ast):
-        yield {'source': parsed_ast, 'target': child_ast}
-        yield from _ast_edge(child_ast)
+        if not isinstance(child_ast, ast.Load):
+            yield {'source': parsed_ast, 'target': child_ast}
+            yield from _ast_edge(child_ast)
 
 
 graph_model = graphinate.GraphModel(name='AST')
@@ -27,16 +30,22 @@ root_ast_node = ast.parse(inspect.getsource(graphinate.graphs.D3Graph))
 
 
 def node_label(ast_node) -> str:
-    return f"{ast_node.__class__.__name__}: {tuple(ast.iter_fields(ast_node))}"
+    label = ast_node.__class__.__name__
+
+    for field_name in ('name', 'id'):
+        if field_name in ast_node._fields:
+            label = f"{label}\n{field_name}: {operator.attrgetter(field_name)(ast_node)}"
+
+    return label
 
 
-# @graph_model.node()
-def ast_node():
+@graph_model.node(label=node_label, uniqueness=True)
+def ast_node(**kwargs):
     yield from _ast_nodes([root_ast_node])
 
 
 @graph_model.edge()
-def ast_edge():
+def ast_edge(**kwargs):
     yield from _ast_edge(root_ast_node)
 
 
