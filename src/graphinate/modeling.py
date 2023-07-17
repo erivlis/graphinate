@@ -1,18 +1,18 @@
 import inspect
 from collections import namedtuple, defaultdict
 from dataclasses import dataclass
-from typing import Callable, Any, Iterable, Mapping, Set
+from typing import Callable, Any, Iterable, Mapping, Set, Optional, Union
 
-from .typing import Node, Edge, Element, Items, Nodes, Edges, NodeTypeAbsoluteId
+from .typing import Node, Edge, Element, Items, Nodes, Edges, NodeTypeAbsoluteId, Extractor
 
 UNIVERSE_NODE = None
 
 
-def element(element_type: str | None, field_names: Iterable[str] | None) -> Callable[[...], Element]:
+def element(element_type: Optional[str], field_names: Optional[Iterable[str]] = None) -> Callable[[...], Element]:
     return namedtuple(element_type, field_names) if element_type and field_names else tuple
 
 
-def extractor(obj: Any, key: str | Callable[[Any], str] | None = None) -> str | None:
+def extractor(obj: Any, key: Optional[Extractor] = None) -> Optional[str]:
     if key is None:
         return obj
     elif callable(key):
@@ -26,8 +26,8 @@ def extractor(obj: Any, key: str | Callable[[Any], str] | None = None) -> str | 
 
 
 def elements(iterable: Iterable[Any],
-             element_type: str | None = None,
-             **getters: str | Callable[[Any], str]) -> Iterable[Element]:
+             element_type: Optional[str] = None,
+             **getters: Extractor) -> Iterable[Element]:
     create_element = element(element_type, getters.keys())
     for item in iterable:
         kwargs = {k: extractor(item, v) for k, v in getters.items()}
@@ -46,11 +46,11 @@ class NodeModel:
         generator
     """
     type: str
-    parent_type: str | None = UNIVERSE_NODE
+    parent_type: Optional[str] = UNIVERSE_NODE
     uniqueness: bool = False
-    parameters: Set[str] | None = None
-    generator: Nodes | None = None
-    label: Callable[[Any], str | None] = None
+    parameters: Optional[Set[str]] = None
+    generator: Optional[Nodes] = None
+    label: Callable[[Any], Optional[str]] = None
 
     @property
     def absolute_id(self) -> NodeTypeAbsoluteId:
@@ -85,12 +85,12 @@ class GraphModel:
         return True
 
     def node(self,
-             _type: str | None = None,
-             parent_type: str | None = UNIVERSE_NODE,
+             _type: Optional[str] = None,
+             parent_type: Optional[str] = UNIVERSE_NODE,
              uniqueness: bool = False,
-             key: str | Callable[[Any], str] | None = None,
-             value: str | Callable[[Any], str] | None = None,
-             label: str | Callable[[Any], str] | None = None) -> Callable[[Items], None]:
+             key: Optional[Extractor] = None,
+             value: Optional[Extractor] = None,
+             label: Optional[Extractor] = None) -> Callable[[Items], None]:
         def register(f: Items):
             node_type = _type or f.__name__
 
@@ -113,12 +113,12 @@ class GraphModel:
         return register
 
     def edge(self,
-             _type: str | None = None,
-             source: str | Callable[[Any], str] = 'source',
-             target: str | Callable[[Any], str] = 'target',
-             label: str | Callable[[Any], str] | None = None,
-             value: str | Callable[[Any], str] | None = None,
-             weight: float | Callable[[Any], float] = 1.0,
+             _type: Optional[str] = None,
+             source: Extractor = 'source',
+             target: Extractor = 'target',
+             label: Optional[Extractor] = None,
+             value: Optional[Extractor] = None,
+             weight: Union[float, Callable[[Any], float]] = 1.0,
              ) -> Callable[[Items], None]:
         def register(f: Items):
             edge_type = _type or f.__name__

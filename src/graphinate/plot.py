@@ -1,9 +1,11 @@
+from typing import Union
+
 import matplotlib as mpl
 import networkx as nx
 from matplotlib import pyplot as plt, patheffects
 
 
-def color_map(graph: nx.Graph, cmap: str | mpl.colors.Colormap = "coolwarm"):
+def color_map(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = "coolwarm"):
     """
     graph: graph_id
     cmap : str or `~matplotlib.colors.Colormap` - The colormap used to map values to RGBA colors.

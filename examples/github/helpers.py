@@ -1,5 +1,6 @@
 import functools
 import os
+from typing import Optional
 
 from github import Auth, Github
 from github.Commit import Commit
@@ -25,7 +26,7 @@ def _user(user_id=None):
 
 
 @functools.lru_cache
-def _repositories(user_id: str = None, repo_id: str | None = None):
+def _repositories(user_id: str = None, repo_id: Optional[str] = None):
     user = _user(user_id)
     if repo_id and (repo := user.get_repo(name=repo_id)):
         return [repo]
@@ -33,14 +34,14 @@ def _repositories(user_id: str = None, repo_id: str | None = None):
         return user.get_repos()
 
 
-def _commits(repo, commit_id: str | None = None):
+def _commits(repo, commit_id: Optional[str] = None):
     if commit_id and (commit := repo.get_commit(sha=commit_id)):
         yield commit
     else:
         yield from repo.get_commits()
 
 
-def _files(commit: Commit, file_id: str | None = None):
+def _files(commit: Commit, file_id: Optional[str] = None):
     files: list[File] = commit.files
     if file_id:
         yield from [file for file in files if file.filename == file_id]

@@ -1,8 +1,9 @@
-from typing import Union, NamedTuple, Tuple, Any, Protocol, Iterable, TypeVar, FrozenSet, Mapping
+from typing import Union, NamedTuple, Tuple, Any, Protocol, Iterable, TypeVar, FrozenSet, Mapping, Callable
 
 Node = Union[type(NamedTuple), Tuple[str, Any]]
 Edge = Union[type(NamedTuple), Tuple[str, str, Any]]
 Element = Union[Node, Edge]
+Extractor = Union[str, Callable[[Any], str]]
 
 NodeTypeAbsoluteId = TypeVar("NodeTypeAbsoluteId", bound=Tuple[str, str])
 

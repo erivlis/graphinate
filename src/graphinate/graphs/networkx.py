@@ -1,6 +1,6 @@
 from collections import Counter
 from enum import Enum
-from typing import Hashable
+from typing import Hashable, Union
 
 import networkx as nx
 from loguru import logger
@@ -25,7 +25,7 @@ class NetworkxGraph:
     def _init_graph(self):
         self._graph = self.graph_type.value(name=self.model.name, types=Counter())
 
-    def _populate_node_type(self, node_type: Hashable | UNIVERSE_NODE = UNIVERSE_NODE, **kwargs):
+    def _populate_node_type(self, node_type: Union[Hashable, UNIVERSE_NODE] = UNIVERSE_NODE, **kwargs):
         for parent_node_type, child_node_types in self.model.node_children(node_type).items():
             for child_node_type in child_node_types:
                 node_type_absolute_id = (parent_node_type, child_node_type)

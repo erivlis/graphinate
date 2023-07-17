@@ -4,6 +4,7 @@ pip install PyGithub
 import itertools
 import operator
 import pathlib
+from typing import Optional
 
 import networkx as nx
 
@@ -15,10 +16,10 @@ graph_model = graphinate.GraphModel(name='github-repository')
 
 
 @graph_model.edge
-def github(user_id: str | None = None,
-           repository_id: str | None = None,
-           commit_id: str | None = None,
-           file_id: str | None = None,
+def github(user_id: Optional[str] = None,
+           repository_id: Optional[str] = None,
+           commit_id: Optional[str] = None,
+           file_id: Optional[str] = None,
            **kwargs):
     user = _user(user_id)
     for repo in _repositories(user_id, repository_id):
@@ -56,13 +57,13 @@ file_node = graph_model.node(parent_type='commit',
 
 
 @user_node
-def user(user_id: str | None = None, **kwargs):
+def user(user_id: Optional[str] = None, **kwargs):
     yield _user(user_id)
 
 
 @repository_node
-def repository(user_id: str | None = None,
-               repository_id: str | None = None,
+def repository(user_id: Optional[str] = None,
+               repository_id: Optional[str] = None,
                **kwargs):
     repos = _repositories(user_id, repository_id)
     for repo in repos:
@@ -70,18 +71,18 @@ def repository(user_id: str | None = None,
 
 
 @commit_node
-def commit(user_id: str | None = None,
-           repository_id: str | None = None,
-           commit_id: str | None = None,
+def commit(user_id: Optional[str] = None,
+           repository_id: Optional[str] = None,
+           commit_id: Optional[str] = None,
            **kwargs):
     for repo in _repositories(user_id, repository_id):
         yield from _commits(repo, commit_id)
 
 
-def file_type(user_id: str | None = None,
-              repository_id: str | None = None,
-              commit_id: str | None = None,
-              file_type_id: str | None = None,
+def file_type(user_id: Optional[str] = None,
+              repository_id: Optional[str] = None,
+              commit_id: Optional[str] = None,
+              file_type_id: Optional[str] = None,
               **kwargs):
     def group_key(file):
         return pathlib.PurePath(file).suffix
@@ -92,10 +93,10 @@ def file_type(user_id: str | None = None,
 
 
 @file_node
-def file(user_id: str | None = None,
-         repository_id: str | None = None,
-         commit_id: str | None = None,
-         file_id: str | None = None,
+def file(user_id: Optional[str] = None,
+         repository_id: Optional[str] = None,
+         commit_id: Optional[str] = None,
+         file_id: Optional[str] = None,
          **kwargs):
     for repo in _repositories(user_id, repository_id):
         for commit in _commits(repo, commit_id):

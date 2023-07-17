@@ -1,3 +1,5 @@
+from typing import Optional
+
 import graphinate
 from graphinate.graphs.networkx import NetworkxGraphType
 from graphinate.plot import show
@@ -8,7 +10,7 @@ DEPTH = 1
 graph_model = graphinate.GraphModel(name='github-followers')
 
 
-def _followers(user_id: str | None = None, depth: int = 0, **kwargs):
+def _followers(user_id: Optional[str] = None, depth: int = 0, **kwargs):
     user = _user(user_id)
     for follower in user.get_followers():
         yield {'source': user.login, 'target': follower.login}
@@ -17,7 +19,7 @@ def _followers(user_id: str | None = None, depth: int = 0, **kwargs):
 
 
 @graph_model.edge()
-def followed_by(user_id: str | None = None, **kwargs):
+def followed_by(user_id: Optional[str] = None, **kwargs):
     yield from _followers(user_id, **kwargs)
 
 
