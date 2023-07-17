@@ -1,4 +1,4 @@
-# Graphinate - Data to Graphs
+# Graphinate. Data to Graphs.
 
 ![repo_graph](https://github.com/erivlis/graphinate/assets/9897520/9c044bbe-1f21-41b8-b879-95b8362ad48d)
 
