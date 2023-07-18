@@ -44,29 +44,20 @@ def ast_node(**kwargs):
     yield from _ast_nodes([root_ast_node])
 
 
-@graph_model.edge()
+@graph_model.edge(label=str)
 def ast_edge(**kwargs):
     yield from _ast_edge(root_ast_node)
 
 
 if __name__ == '__main__':
-    # parsed_asts = [ast.parse(inspect.getsource(graphinate.modeling))]
-    # for node in _ast_nodes(parsed_asts):
-    #     node_type = node.__class__.__name__
-    #     node_value = tuple(ast.iter_fields(node))
-    #     print(node_type, node_value, sep=": ")
+    # Strawberry GraphQL Graph object
+    gql_graph = graphinate.graphs.GraphqlGraph(graph_model)
 
+    graphql_graph = gql_graph.build()
+
+    # NetworkX Graph
     networkx_graph = graphinate.graphs.NetworkxGraph(graph_model)
 
-    # params = {
-    #     'user_id': 'erivlis',
-    #     'repository_id': 'graphinate',
-    #     # 'user_id': 'andybrewer',
-    #     # 'repository_id': 'operation-go',
-    #     # 'commit_id': None,
-    #     'file_id': 'README.md',
-    #     # 'user_id' "strawberry-graphql"
-    # }
     nx_graph: nx.Graph = networkx_graph.build()
 
     show(nx_graph)
