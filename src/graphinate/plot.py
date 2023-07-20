@@ -23,8 +23,13 @@ def color_map(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = "coolwarm
     return node_color
 
 
-def labels(graph: nx.Graph):
-    return {node: data.get('label', node) or node for node, data in graph.nodes.data()}
+def nodes_labels(graph: nx.Graph):
+    # return {node: data.get('label', node) or node for node, data in graph.nodes.data()}
+    return nx.get_node_attributes(graph, 'label')
+
+
+def edges_labels(graph: nx.Graph):
+    return nx.get_edge_attributes(graph, 'label')
 
 
 def draw(graph: nx.Graph, with_labels=True):
@@ -37,17 +42,17 @@ def draw(graph: nx.Graph, with_labels=True):
         draw_params.update(
             {
                 'with_labels': True,
-                'labels': labels(graph),
+                'labels': nodes_labels(graph),
                 'font_size': 6,
-                'font_color': 'white',
+                'font_color': 'blue',
                 # 'horizontalalignment':'left',
                 # 'verticalalignment':'bottom',
-                'bbox': {'boxstyle': 'round', 'fc': (0.02, 0.02, 0.02), 'lw': 0, 'alpha': 0.35,
-                         'path_effects': [patheffects.withStroke(linewidth=1, foreground="red")]}
+                # 'bbox': {'boxstyle': 'round', 'fc': (0.02, 0.02, 0.02), 'lw': 0, 'alpha': 0.15, 'path_effects': [patheffects.withStroke(linewidth=1, foreground="red")]}
             }
         )
 
     nx.draw(graph, pos, node_color=node_color_map, **draw_params)
+    nx.draw_networkx_edge_labels(graph, pos, edge_labels=edges_labels(graph), font_color='red', font_size=6)
 
 
 def show(graph: nx.Graph):
