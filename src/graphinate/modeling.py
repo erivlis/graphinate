@@ -26,12 +26,18 @@ def extractor(obj: Any, key: Optional[Extractor] = None) -> Optional[str]:
 
 
 def elements(iterable: Iterable[Any],
-             element_type: Optional[str] = None,
+             element_type: Optional[Extractor] = None,
              **getters: Extractor) -> Iterable[Element]:
-    create_element = element(element_type, getters.keys())
-    for item in iterable:
-        kwargs = {k: extractor(item, v) for k, v in getters.items()}
-        yield create_element(**kwargs)
+    if callable(element_type):
+        for item in iterable:
+            create_element = element(element_type(item), getters.keys())
+            kwargs = {k: extractor(item, v) for k, v in getters.items()}
+            yield create_element(**kwargs)
+    else:
+        create_element = element(element_type, getters.keys())
+        for item in iterable:
+            kwargs = {k: extractor(item, v) for k, v in getters.items()}
+            yield create_element(**kwargs)
 
 
 @dataclass
@@ -85,7 +91,7 @@ class GraphModel:
         return True
 
     def node(self,
-             _type: Optional[str] = None,
+             _type: Optional[Extractor] = None,
              parent_type: Optional[str] = UNIVERSE_NODE,
              uniqueness: bool = False,
              key: Optional[Extractor] = None,
@@ -93,6 +99,7 @@ class GraphModel:
              label: Optional[Extractor] = None) -> Callable[[Items], None]:
         def register(f: Items):
             node_type = _type or f.__name__
+            model_type = f.__name__ if callable(node_type) else node_type
 
             def node_generator(**kwargs) -> Iterable[Node]:
                 yield from elements(f(**kwargs), node_type, key=key, value=value)
@@ -100,14 +107,14 @@ class GraphModel:
             parameters = inspect.getfullargspec(f).args
             self._verify_parameters(parameters)
 
-            node_model = NodeModel(type=node_type,
+            node_model = NodeModel(type=model_type,
                                    parent_type=parent_type,
                                    uniqueness=uniqueness,
                                    parameters=set(parameters),
                                    label=label,
                                    generator=node_generator)
             self._node_models[node_model.absolute_id] = node_model
-            self._nodes_children[parent_type].append(node_type)
+            self._nodes_children[parent_type].append(model_type)
             # self._nodes_parents[node_type].append(parent_node_type)
 
         return register

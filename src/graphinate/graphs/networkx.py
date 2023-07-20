@@ -1,3 +1,4 @@
+import inspect
 from collections import Counter
 from enum import Enum
 from typing import Hashable, Union
@@ -57,24 +58,26 @@ class NetworkxGraph:
             if node_model.label is not None:
                 label = node_model.label(node.value) if callable(node_model.label) else node_model.label
 
-            model_type = node_model.type.lower()
+            node_type = node.__class__.__name__.lower()
+            if node_type == 'tuple':
+                node_type = node_model.type.lower()
 
             logger.debug("Adding node: '{}'", node_id)
             self._graph.add_node(node_id,
                                  label=label,
                                  color='type',
-                                 type=model_type,
+                                 type=node_type,
                                  value=node.value,
                                  lineage=list(node_lineage))
 
-            self._graph.graph['types'].update({model_type: 1})
+            self._graph.graph['types'].update({node_type: 1})
 
             if node_model.parent_type is not UNIVERSE_NODE:
                 logger.debug("Adding edge from: '{}' to '{}'", parent_node_id, node_id)
                 self._graph.add_edge(parent_node_id, node_id)
 
             new_kwargs = kwargs.copy()
-            new_kwargs[f"{model_type}_id"] = node.key
+            new_kwargs[f"{node_type}_id"] = node.key
             self._populate_node_type(node_model.type, **new_kwargs)
 
     def _populate_edges(self, **kwargs):
