@@ -22,12 +22,17 @@ def extractor(obj: Any, key: Optional[Extractor] = None) -> Optional[str]:
     else:
         return key
 
-    # return item if getter is None else (getter(item) if callable(getter) else getter)
-
 
 def elements(iterable: Iterable[Any],
              element_type: Optional[Extractor] = None,
              **getters: Extractor) -> Iterable[Element]:
+    """
+    Abstract Generator of Graph elements (nodes or edges)
+    :param iterable: source of payload
+    :param element_type: Optional[Extractor] source of type of the element. Defaults to Element Type name.
+    :param getters: Extractor node field sources
+    :return: elements
+    """
     if callable(element_type):
         for item in iterable:
             create_element = element(element_type(item), getters.keys())
@@ -43,7 +48,7 @@ def elements(iterable: Iterable[Any],
 @dataclass
 class NodeModel:
     """
-    Represents a node model
+    Represents a Node Model
     Attributes:
         type
         parent_type
@@ -64,28 +69,45 @@ class NodeModel:
 
 
 class GraphModel:
-
     def __init__(self, name: str):
+        """
+        Defines a model for graph.
+        :param name: the archetype name for Graphs generated based on the GraphModel.
+        """
         self.name = name
         self._node_models: dict[NodeTypeAbsoluteId, NodeModel] = {}
-        self._nodes_children: dict[str, list[str]] = defaultdict(list)
-        self._edges_generators: dict[str, list[Edges]] = defaultdict(list)
+        self._node_children: dict[str, list[str]] = defaultdict(list)
+        self._edge_generators: dict[str, list[Edges]] = defaultdict(list)
         self._networkx_graph = None
 
     @property
-    def node_models(self):
+    def node_models(self) -> dict[NodeTypeAbsoluteId, NodeModel]:
+        """
+        :return: Dict containing NodeModel for Node Types. Key values are NodeTypeAbsoluteId.
+        """
         return self._node_models
 
     @property
-    def edges_generators(self):
-        return self._edges_generators
+    def edge_generators(self):
+        """
+        :return: Dict containing edge generator functions for Edge Types
+        """
+        return self._edge_generators
 
     @property
-    def types(self) -> Set:
+    def node_types(self) -> Set[str]:
+        """
+        :return: Set of Node Types
+        """
         return {v.type for v in self._node_models.values()}
 
-    def node_children(self, type: str = UNIVERSE_NODE) -> dict[str, list[str]]:
-        return {k: v for k, v in self._nodes_children.items() if k == type}
+    def node_children(self, _type: str = UNIVERSE_NODE) -> dict[str, list[str]]:
+        """
+        Gets children Node Types for given input Node Type
+        :param _type:  Node Type. Default value is UNIVERSE_NODE
+        :return: List of children Node Types
+        """
+        return {k: v for k, v in self._node_children.items() if k == _type}
 
     def _verify_parameters(self, parameters):
         return True
@@ -97,6 +119,19 @@ class GraphModel:
              key: Optional[Extractor] = None,
              value: Optional[Extractor] = None,
              label: Optional[Extractor] = None) -> Callable[[Items], None]:
+        """
+        Decorator to Register a Generator of node payloads as a source to materialize Graph Nodes. It creates a
+        NodeModel object.
+        :param _type: Optional source for the Node Type. Defaults to use Generator function name as the Node Type.
+        :param parent_type: Optional parent Node Type. Defaults to UNIVERSE_NODE
+        :param uniqueness: Is the generated Node ID universally unique. Defaults to False.
+        :param key: Optional source for Node IDs. Defaults to use the complete Node payload as Node ID.
+        :param value: Optional source for Node value field. Defaults to use the complete Node payload as Node ID.
+        :param label: Optional source for Node label field. Defaults to use a 'str' representation of the complete Node
+                      payload.
+        :return: None
+        """
+
         def register(f: Items):
             node_type = _type or f.__name__
             model_type = f.__name__ if callable(node_type) else node_type
@@ -114,7 +149,7 @@ class GraphModel:
                                    label=label,
                                    generator=node_generator)
             self._node_models[node_model.absolute_id] = node_model
-            self._nodes_children[parent_type].append(model_type)
+            self._node_children[parent_type].append(model_type)
             # self._nodes_parents[node_type].append(parent_node_type)
 
         return register
@@ -127,6 +162,18 @@ class GraphModel:
              value: Optional[Extractor] = None,
              weight: Union[float, Callable[[Any], float]] = 1.0,
              ) -> Callable[[Items], None]:
+        """
+        Decorator to Register a Generator of edge payloads as a source to materialize Graph Edges. It creates an Edge
+        Generator function.
+        :param _type:
+        :param source:
+        :param target:
+        :param label:
+        :param value:
+        :param weight:
+        :return:
+        """
+
         def register(f: Items):
             edge_type = _type or f.__name__
 
@@ -141,7 +188,7 @@ class GraphModel:
             def edge_generator(**kwargs) -> Iterable[Edge]:
                 yield from elements(f(**kwargs), edge_type, **getters)
 
-            self._edges_generators[edge_type].append(edge_generator)
+            self._edge_generators[edge_type].append(edge_generator)
 
         return register
 

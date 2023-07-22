@@ -1,4 +1,3 @@
-import inspect
 from collections import Counter
 from enum import Enum
 from typing import Hashable, Union
@@ -81,7 +80,7 @@ class NetworkxGraph:
             self._populate_node_type(node_model.type, **new_kwargs)
 
     def _populate_edges(self, **kwargs):
-        for edge_type, edge_generators in self.model.edges_generators.items():
+        for edge_type, edge_generators in self.model.edge_generators.items():
             for edge_generator in edge_generators:
                 for edge in edge_generator(**kwargs):
                     edge_attributes = {
