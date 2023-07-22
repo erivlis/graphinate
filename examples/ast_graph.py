@@ -5,6 +5,7 @@ from _ast import AST
 from typing import Iterable
 
 import networkx as nx
+import uvicorn
 
 import graphinate
 from graphinate.plot import show
@@ -63,11 +64,21 @@ if __name__ == '__main__':
     # Strawberry GraphQL Graph object
     gql_graph = graphinate.graphs.GraphqlGraph(graph_model)
 
-    graphql_graph = gql_graph.build()
+    graphql_schema = gql_graph.build()
+
+    from starlette.applications import Starlette
+    from strawberry.asgi import GraphQL
+    graphql_app = GraphQL(graphql_schema)
+
+    app = Starlette()
+    app.add_route("/graphql", graphql_app)
+    app.add_websocket_route("/graphql", graphql_app)
+
+    uvicorn.run(app, host='0.0.0.0', port=8000)
 
     # NetworkX Graph
     networkx_graph = graphinate.graphs.NetworkxGraph(graph_model)
 
     nx_graph: nx.Graph = networkx_graph.build()
 
-    show(nx_graph)
+    # show(nx_graph)
