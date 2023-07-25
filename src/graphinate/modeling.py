@@ -1,11 +1,15 @@
 import inspect
 from collections import namedtuple, defaultdict
 from dataclasses import dataclass
-from typing import Callable, Any, Iterable, Mapping, Set, Optional, Union
+from typing import Callable, Any, Iterable, Mapping, Set, Optional, Union, List
 
 from .typing import Node, Edge, Element, Items, Nodes, Edges, NodeTypeAbsoluteId, Extractor
 
 UNIVERSE_NODE = None
+
+
+class GraphModelError(Exception):
+    pass
 
 
 def element(element_type: Optional[str], field_names: Optional[Iterable[str]] = None) -> Callable[[...], Element]:
@@ -109,8 +113,13 @@ class GraphModel:
         """
         return {k: v for k, v in self._node_children.items() if k == _type}
 
-    def _verify_parameters(self, parameters):
-        return True
+    def _validate_node_parameters(self, parameters: List[str]):
+        node_types = self.node_types
+        if not all(p.endswith('_id') and p == p.lower() and p[:-3] in node_types for p in parameters):
+            raise GraphModelError(("Illegal Arguments. Argument should conform to the following rules: "
+                                   "1) lowercase "
+                                   "2) end with '_id' "
+                                   "3) start with value that exists as registered node type"))
 
     def node(self,
              _type: Optional[Extractor] = None,
@@ -140,8 +149,6 @@ class GraphModel:
                 yield from elements(f(**kwargs), node_type, key=key, value=value)
 
             parameters = inspect.getfullargspec(f).args
-            self._verify_parameters(parameters)
-
             node_model = NodeModel(type=model_type,
                                    parent_type=parent_type,
                                    uniqueness=uniqueness,
@@ -150,7 +157,8 @@ class GraphModel:
                                    generator=node_generator)
             self._node_models[node_model.absolute_id] = node_model
             self._node_children[parent_type].append(model_type)
-            # self._nodes_parents[node_type].append(parent_node_type)
+
+            self._validate_node_parameters(parameters)
 
         return register
 
