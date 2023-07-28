@@ -4,55 +4,27 @@ import tkinter.ttk as ttk
 import sv_ttk
 
 import graphinate
+import graphinate.builders
 
 
 def _d3(graph_model, **kwargs):
-    d3_graph = graphinate.graphs.D3Graph(graph_model)
+    d3_graph = graphinate.builders.D3Builder(graph_model)
     d3_dict = d3_graph.build(**kwargs)
 
     from pprint import pprint
     pprint(d3_dict)
 
 
-def _graphql(graph_model, **kwargs):
-    gql_graph = graphinate.graphs.GraphqlGraph(graph_model)
-    graphql_schema = gql_graph.build(**kwargs)
-
+def _graphql_server(graphql_schema):
     import uvicorn
     from starlette.applications import Starlette
     from strawberry.asgi import GraphQL
     import webbrowser
 
-    gql = """
-    query results {
-      graph {
-        data
-        nodes {
-          label
-          color
-          type
-          value
-          id
-          lineage
-        }
-        edges {
-          label
-          color
-          type
-          value
-          source
-          target
-          weight
-        }
-      }
-    }
-    """
-
     port = 8000
 
     def open_url():
         webbrowser.open(f'http://localhost:{port}/graphql')
-        webbrowser.open(f'http://localhost:{port}/graphql?query={gql}')
 
     graphql_app = GraphQL(graphql_schema)
     app = Starlette(on_startup=[open_url])
@@ -62,12 +34,26 @@ def _graphql(graph_model, **kwargs):
     uvicorn.run(app, host='0.0.0.0', port=port)
 
 
+def _graphql(graph_model, **kwargs):
+    gql_graph = graphinate.builders.GraphQLBuilder(graph_model)
+    graphql_schema = gql_graph.build(**kwargs)
+
+    _graphql_server(graphql_schema)
+
+
+def _simple_graphql(graph_model, **kwargs):
+    gql_graph = graphinate.builders.SimpleGraphQLBuilder(graph_model)
+    graphql_schema = gql_graph.build(**kwargs)
+
+    _graphql_server(graphql_schema)
+
+
 def _networkx(graph_model, **kwargs):
     import networkx as nx
     from graphinate.plot import show
 
     # NetworkX Graph
-    networkx_graph = graphinate.graphs.NetworkxGraph(graph_model)
+    networkx_graph = graphinate.builders.NetworkxBuilder(graph_model)
     nx_graph: nx.Graph = networkx_graph.build(**kwargs)
 
     show(nx_graph)
@@ -76,7 +62,8 @@ def _networkx(graph_model, **kwargs):
 output_modes = {
     'NetworkX': _networkx,
     'D3 Graph': _d3,
-    'GraphQL': _graphql
+    'GraphQL': _graphql,
+    'Simple GraphQL': _simple_graphql
 }
 
 
@@ -132,7 +119,7 @@ def choose_mode(title: str):
     exit_button = ttk.Button(win, text="OK", command=win.destroy, state=tk.DISABLED)
     exit_button.pack(pady=4, side=tk.BOTTOM)
 
-    sv_ttk.set_theme("light")
+    sv_ttk.set_theme("dark")
 
     win.mainloop()
 

@@ -1,4 +1,5 @@
 import graphinate
+import graphinate.builders
 
 
 def test_networkx_graph(map_graph_model):
@@ -6,7 +7,7 @@ def test_networkx_graph(map_graph_model):
     country_count, city_count, graph_model = map_graph_model
 
     # act
-    networkx_graph = graphinate.graphs.NetworkxGraph(graph_model)
+    networkx_graph = graphinate.builders.NetworkxBuilder(graph_model)
     graph = networkx_graph.build()
 
     # assert
@@ -23,7 +24,7 @@ def test_d3_graph(map_graph_model):
     country_count, city_count, graph_model = map_graph_model
 
     # act
-    d3_graph = graphinate.graphs.D3Graph(graph_model)
+    d3_graph = graphinate.builders.D3Builder(graph_model)
     actual_graph = d3_graph.build()
 
     # assert

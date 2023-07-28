@@ -7,10 +7,9 @@ from urllib.parse import urlparse, urljoin
 
 import networkx as nx
 import requests
-
 from bs4 import BeautifulSoup
 
-import graphinate
+import graphinate.builders
 from graphinate.plot import show
 
 DEPTH = 0
@@ -40,7 +39,7 @@ def edges(url, **kwargs):
 
 
 if __name__ == '__main__':
-    networkx_graph = graphinate.graphs.NetworkxGraph(graph_model)
+    networkx_graph = graphinate.builders.NetworkxBuilder(graph_model)
 
     # params = {
     #     'user_id': 'erivlis',

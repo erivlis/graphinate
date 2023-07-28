@@ -5,6 +5,7 @@ from _ast import AST
 from typing import Iterable
 
 import graphinate
+import graphinate.builders
 from examples.utilities import output
 
 
@@ -31,7 +32,7 @@ def _ast_edge(parsed_ast: AST):
 def ast_graph_model():
     graph_model = graphinate.GraphModel(name='AST')
 
-    root_ast_node = ast.parse(inspect.getsource(graphinate.graphs.D3Graph))
+    root_ast_node = ast.parse(inspect.getsource(graphinate.builders.D3Builder))
 
     def node_type(ast_node):
         return ast_node.__class__.__name__

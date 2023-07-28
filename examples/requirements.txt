@@ -2,3 +2,4 @@ PyGithub
 beautifulsoup4
 lxml
 requests
+sv-ttk

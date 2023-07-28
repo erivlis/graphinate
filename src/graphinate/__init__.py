@@ -1,2 +1,2 @@
 from .modeling import GraphModel
-from . import graphs
+from . import builders
