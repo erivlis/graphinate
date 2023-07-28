@@ -259,32 +259,32 @@ class GraphQLBuilder(NetworkxBuilder):
             graphql_type: Type[GraphNode] = type(class_name, bases, class_dict)
             graphql_types[node_model.type] = graphql_type
 
-        def resolver(children_types: Iterable[str]) -> Callable[[GraphNode], List[GraphNode]]:
-            def get_children(self) -> Optional[List[GraphNode]]:
+        def children_resolver(children_types: Iterable[str]) -> Callable[[GraphNode], List[GraphNode]]:
+            def children(self) -> Optional[List[GraphNode]]:
                 node = GraphQLBuilder._decode_id(self.id)
                 if children_types:
                     return [GraphQLBuilder._graph_node(graphql_types[d['type']], n, d)
                             for n, d in graph.nodes(data=True)
                             if n in graph.neighbors(node) and d['type'] in children_types]
 
-            return get_children
+            return children
 
         node_types = self.model.node_types
         for node_type in node_types:
             children_types = set(self._children_types(node_type))
-            graphql_types[node_type].children = strawberry.field(resolver=resolver(children_types))
+            graphql_types[node_type].children = strawberry.field(resolver=children_resolver(children_types))
 
         return {k: strawberry.type(v, name=f"{k.capitalize()}Node")
                 for k, v in graphql_types.items()}
 
     def _schema(self, graph: nx.Graph) -> strawberry.Schema:
-        def resolver(graphql_type: Type[GraphNode], node_type: str) -> Callable[[], list[GraphNode]]:
-            def get_nodes() -> Optional[List[GraphNode]]:
+        def graph_nodes_resolver(graphql_type: Type[GraphNode], node_type: str) -> Callable[[], list[GraphNode]]:
+            def graph_nodes() -> Optional[List[GraphNode]]:
                 return [GraphQLBuilder._graph_node(graphql_type, n, d)
                         for n, d in graph.nodes(data=True)
                         if d['type'].lower() == node_type]
 
-            return get_nodes
+            return graph_nodes
 
         graphql_types = self._graphql_types(graph)
 
@@ -292,7 +292,7 @@ class GraphQLBuilder(NetworkxBuilder):
         query_class_dict = {'__annotations__': {}}
         for node_type, graphql_type in graphql_types.items():
             field_name = inflection.plural(node_type)
-            query_class_dict[field_name] = strawberry.field(resolver=resolver(graphql_type, node_type))
+            query_class_dict[field_name] = strawberry.field(resolver=graph_nodes_resolver(graphql_type, node_type))
             query_class_dict['__annotations__'][field_name] = 'Optional[List[GraphNode]]'
 
         query_type = strawberry.type(type('Query', tuple(), query_class_dict), name='Query')

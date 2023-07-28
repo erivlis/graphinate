@@ -141,7 +141,7 @@ class GraphModel:
         :return: None
         """
 
-        def register(f: Items):
+        def register_node(f: Items):
             node_type = _type or f.__name__
             model_type = f.__name__ if callable(node_type) else node_type
 
@@ -160,7 +160,7 @@ class GraphModel:
 
             self._validate_node_parameters(parameters)
 
-        return register
+        return register_node
 
     def edge(self,
              _type: Optional[str] = None,
@@ -182,7 +182,7 @@ class GraphModel:
         :return:
         """
 
-        def register(f: Items):
+        def register_edge(f: Items):
             edge_type = _type or f.__name__
 
             getters = {
@@ -198,7 +198,7 @@ class GraphModel:
 
             self._edge_generators[edge_type].append(edge_generator)
 
-        return register
+        return register_edge
 
 
 __all__ = ('GraphModel', 'UNIVERSE_NODE')

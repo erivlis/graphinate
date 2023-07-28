@@ -7,7 +7,6 @@ import pathlib
 from typing import Optional
 
 import graphinate
-from examples.utilities import output
 from helpers import _user, _repositories, _commits, _files
 
 
@@ -110,4 +109,4 @@ if __name__ == '__main__':
         # 'user_id' "strawberry-graphql"
     }
 
-    output("GitHub Repository Graph", repo_model, **params)
+    graphinate.display("GitHub Repository Graph", repo_model, **params)

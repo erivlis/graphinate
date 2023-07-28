@@ -3,12 +3,12 @@ import tkinter.ttk as ttk
 
 import sv_ttk
 
-import graphinate
-import graphinate.builders
+from .modeling import GraphModel
+from .builders import D3Builder, GraphQLBuilder, SimpleGraphQLBuilder, NetworkxBuilder
 
 
 def _d3(graph_model, **kwargs):
-    d3_graph = graphinate.builders.D3Builder(graph_model)
+    d3_graph = D3Builder(graph_model)
     d3_dict = d3_graph.build(**kwargs)
 
     from pprint import pprint
@@ -35,14 +35,14 @@ def _graphql_server(graphql_schema):
 
 
 def _graphql(graph_model, **kwargs):
-    gql_graph = graphinate.builders.GraphQLBuilder(graph_model)
+    gql_graph = GraphQLBuilder(graph_model)
     graphql_schema = gql_graph.build(**kwargs)
 
     _graphql_server(graphql_schema)
 
 
 def _simple_graphql(graph_model, **kwargs):
-    gql_graph = graphinate.builders.SimpleGraphQLBuilder(graph_model)
+    gql_graph = SimpleGraphQLBuilder(graph_model)
     graphql_schema = gql_graph.build(**kwargs)
 
     _graphql_server(graphql_schema)
@@ -53,7 +53,7 @@ def _networkx(graph_model, **kwargs):
     from graphinate.plot import show
 
     # NetworkX Graph
-    networkx_graph = graphinate.builders.NetworkxBuilder(graph_model)
+    networkx_graph = NetworkxBuilder(graph_model)
     nx_graph: nx.Graph = networkx_graph.build(**kwargs)
 
     show(nx_graph)
@@ -126,7 +126,7 @@ def choose_mode(title: str):
     return v.get()
 
 
-def output(title: str, graph_model: graphinate.GraphModel, **kwargs):
+def display(title: str, graph_model: GraphModel, **kwargs):
     mode = str(choose_mode(title))
     if output_mode := output_modes.get(mode, None):
         output_mode(graph_model, **kwargs)

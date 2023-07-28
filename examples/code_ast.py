@@ -6,7 +6,6 @@ from typing import Iterable
 
 import graphinate
 import graphinate.builders
-from examples.utilities import output
 
 
 def _ast_nodes(parsed_asts: Iterable[AST]):
@@ -59,4 +58,4 @@ def ast_graph_model():
 
 if __name__ == '__main__':
     ast_model = ast_graph_model()
-    output("AST Graph", ast_model)
+    graphinate.display("AST Graph", ast_model)

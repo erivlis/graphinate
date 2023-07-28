@@ -35,7 +35,10 @@ def edges_labels(graph: nx.Graph):
 def draw(graph: nx.Graph, with_labels=True):
     node_color_map = color_map(graph)
     pos = nx.planar_layout(graph) if nx.is_planar(graph) else None
-    pos = nx.spring_layout(graph, pos=pos)
+    if pos:
+        pos = nx.spring_layout(graph, pos=pos)
+    else:
+        pos = nx.spring_layout(graph)
 
     draw_params = {}
     if with_labels:

@@ -1,7 +1,6 @@
 from typing import Optional
 
 import graphinate
-from examples.utilities import output
 from helpers import _user
 
 DEPTH = 0
@@ -34,4 +33,4 @@ if __name__ == '__main__':
         # 'user_id' "strawberry-graphql"
     }
 
-    output("Github Followers Graph", followers_model, **params)
+    graphinate.display("Github Followers Graph", followers_model, **params)

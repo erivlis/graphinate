@@ -1,0 +1,39 @@
+<html>
+<head>
+    <title>3D Directed Force Viewer</title>
+    <meta charset="utf-8">
+    <style> body { margin: 0; } </style>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css"/>
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+
+    <script src="//unpkg.com/3d-force-graph"></script>
+    <!--  <script src="../../dist/3d-force-graph.js"></script>-->
+</head>
+
+<body>
+
+<script type="text/javascript">
+      async function main() {
+        let pyodide = await loadPyodide();
+        await pyodide.loadPackage("networkx");
+      }
+      main();
+</script>
+
+<div id="3d-graph"></div>
+<py-script src="repository_graph.py"></py-script>
+<script>
+    const elem = document.getElementById('3d-graph');
+
+    data = pyscript.interpreter.globals.get('d3_graph')
+
+    const Graph = ForceGraph3D()(elem)
+      .graphData(data)
+      .nodeAutoColorBy('type')
+      .nodeLabel(node => node.label);
+
+
+</script>
+</body>
+</html>
