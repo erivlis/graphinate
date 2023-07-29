@@ -166,7 +166,7 @@ class GraphModel:
              _type: Optional[str] = None,
              source: Extractor = 'source',
              target: Extractor = 'target',
-             label: Optional[Extractor] = None,
+             label: Optional[Extractor] = str,
              value: Optional[Extractor] = None,
              weight: Union[float, Callable[[Any], float]] = 1.0,
              ) -> Callable[[Items], None]:
@@ -189,6 +189,7 @@ class GraphModel:
                 'source': source,
                 'target': target,
                 'label': label,
+                'type': edge_type,
                 'value': value,
                 'weight': weight
             }
@@ -199,6 +200,13 @@ class GraphModel:
             self._edge_generators[edge_type].append(edge_generator)
 
         return register_edge
+
+    def rectify(self):
+        if self._edge_generators and not self._node_models:
+            @self.node(parent_type='node', uniqueness=True, label=str)
+            def node():
+                return
+                yield
 
 
 __all__ = ('GraphModel', 'UNIVERSE_NODE')

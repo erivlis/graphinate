@@ -3,8 +3,8 @@ import tkinter.ttk as ttk
 
 import sv_ttk
 
+from .builders import D3Builder, TypedGraphQLBuilder, GenericGraphQLBuilder, NetworkxBuilder
 from .modeling import GraphModel
-from .builders import D3Builder, GraphQLBuilder, SimpleGraphQLBuilder, NetworkxBuilder
 
 
 def _d3(graph_model, **kwargs):
@@ -34,15 +34,15 @@ def _graphql_server(graphql_schema):
     uvicorn.run(app, host='0.0.0.0', port=port)
 
 
-def _graphql(graph_model, **kwargs):
-    gql_graph = GraphQLBuilder(graph_model)
+def _typed_graphql(graph_model, **kwargs):
+    gql_graph = TypedGraphQLBuilder(graph_model)
     graphql_schema = gql_graph.build(**kwargs)
 
     _graphql_server(graphql_schema)
 
 
-def _simple_graphql(graph_model, **kwargs):
-    gql_graph = SimpleGraphQLBuilder(graph_model)
+def _generic_graphql(graph_model, **kwargs):
+    gql_graph = GenericGraphQLBuilder(graph_model)
     graphql_schema = gql_graph.build(**kwargs)
 
     _graphql_server(graphql_schema)
@@ -62,8 +62,8 @@ def _networkx(graph_model, **kwargs):
 output_modes = {
     'NetworkX': _networkx,
     'D3 Graph': _d3,
-    'GraphQL': _graphql,
-    'Simple GraphQL': _simple_graphql
+    'Generic GraphQL': _generic_graphql,
+    'Typed GraphQL': _typed_graphql
 }
 
 
