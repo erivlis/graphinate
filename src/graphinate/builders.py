@@ -216,19 +216,24 @@ class GenericGraphQLBuilder(D3Builder):
 # endregion Simple GraphQL Builder
 
 
-# @strawberry.interface
-# class GraphNode:
-#     id: ID
-#     label: str
-#     color: str
-#     type: str
-#     value: Optional[strawberry.scalars.JSON]
-#     lineage: str
-#     children: Optional[List['GraphNode']]
-
-
 class TypedGraphQLBuilder(NetworkxBuilder):
     _id_delimiter = '»'
+
+    @strawberry.type
+    class Graph:
+        name: str
+        types: strawberry.scalars.JSON
+        size: int
+        order: int
+        degree_avg: float
+        weisfeiler_lehman_graph_hash: str
+        # is_planar: bool
+        # is_regular: bool
+        #
+        # small_world_sigma: float
+        # small_world_omega: float
+        # s_metric: float
+        # wiener_index: float
 
     @strawberry.interface
     class GraphNode:
@@ -238,6 +243,7 @@ class TypedGraphQLBuilder(NetworkxBuilder):
         type: str
         value: Optional[strawberry.scalars.JSON]
         lineage: str
+        neighbors: Optional[List['TypedGraphQLBuilder.GraphNode']]
         children: Optional[List['TypedGraphQLBuilder.GraphNode']]
 
     def __init__(self, model: GraphModel):
@@ -280,6 +286,8 @@ class TypedGraphQLBuilder(NetworkxBuilder):
     def _graphql_types(self, graph: nx.Graph) -> Dict[str, Type['TypedGraphQLBuilder.GraphNode']]:
 
         graphql_types: Dict[str, Type['TypedGraphQLBuilder.GraphNode']] = {}
+
+        # Create classes for nodes accordong to thier type
         for node_model in self.model.node_models.values():
             class_name = node_model.type.capitalize()
             bases = (TypedGraphQLBuilder.GraphNode,)
@@ -290,21 +298,25 @@ class TypedGraphQLBuilder(NetworkxBuilder):
             graphql_type: Type['TypedGraphQLBuilder.GraphNode'] = type(class_name, bases, class_dict)
             graphql_types[node_model.type] = graphql_type
 
-        def children_resolver(children_types: Iterable[str]) -> Callable[
+        def neighbors_resolver(neighbors_types: Optional[Iterable[str]] = None) -> Callable[
             ['TypedGraphQLBuilder.GraphNode'], List['TypedGraphQLBuilder.GraphNode']]:
-            def children(self) -> Optional[List['TypedGraphQLBuilder.GraphNode']]:
+            def neighbors(self, children: bool = False) -> Optional[List['TypedGraphQLBuilder.GraphNode']]:
                 node = TypedGraphQLBuilder._decode_id(self.id)
-                if children_types:
-                    return [TypedGraphQLBuilder._graph_node(graphql_types[d['type']], n, d)
-                            for n, d in graph.nodes(data=True)
-                            if n in graph.neighbors(node) and d['type'] in children_types]
+                items = (TypedGraphQLBuilder._graph_node(graphql_types[d['type']], n, d)
+                         for n, d in graph.nodes(data=True) if n in graph.neighbors(node))
 
-            return children
+                if children and neighbors_types:
+                    return [item for item in items if item.type in neighbors_types]
+
+                return list(items)
+
+            return neighbors
 
         node_types = self.model.node_types
         for node_type in node_types:
             children_types = set(self._children_types(node_type))
-            graphql_types[node_type].children = strawberry.field(resolver=children_resolver(children_types))
+            graphql_types[node_type].neighbors = strawberry.field(resolver=neighbors_resolver())
+            graphql_types[node_type].children = strawberry.field(resolver=neighbors_resolver(children_types))
 
         return {k: strawberry.type(v, name=k.capitalize() if k.lower().endswith('node') else f"{k.capitalize()}Node")
                 for k, v in graphql_types.items()}
@@ -327,6 +339,25 @@ class TypedGraphQLBuilder(NetworkxBuilder):
             field_name = inflection.plural(node_type)
             query_class_dict[field_name] = strawberry.field(resolver=graph_nodes_resolver(graphql_type, node_type))
             query_class_dict['__annotations__'][field_name] = 'Optional[List[TypedGraphQLBuilder.GraphNode]]'
+
+        query_class_dict['graph'] = strawberry.field(
+            resolver=lambda: TypedGraphQLBuilder.Graph(
+                name=graph.graph['name'],
+                types=json.dumps(graph.graph['types']),
+                size=graph.size(),
+                order=graph.order(),
+                degree_avg=1.0 * sum(d for _, d in graph.degree()) / graph.order(),
+                weisfeiler_lehman_graph_hash=nx.weisfeiler_lehman_graph_hash(graph)
+                # is_planar=nx.is_planar(graph),
+                # is_regular=nx.is_regular(graph),
+                #
+                # small_world_sigma=nx.sigma(graph),
+                # small_world_omega=nx.omega(graph),
+                # s_metric=nx.s_metric(graph),
+                # wiener_index=nx.wiener_index(graph)
+            )
+        )
+        query_class_dict['__annotations__']['graph'] = 'TypedGraphQLBuilder.Graph'
 
         query_type = strawberry.type(type('Query', tuple(), query_class_dict), name='Query')
 
