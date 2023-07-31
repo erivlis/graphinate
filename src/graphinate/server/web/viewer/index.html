@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<head>
+    <title></title>
+    <style> body { margin: 0; } </style>
+    <script src="//unpkg.com/3d-force-graph"></script>
+    <!--<script src="../../dist/3d-force-graph.js"></script>-->
+</head>
+<body>
+<div id="3d-graph"></div>
+<script>
+    const d3GraphQuery = `query GenericGraph {
+  graph {
+    nodes {
+      id
+      name: label
+      type
+    }
+    links: edges {
+      source
+      target
+    }
+  }
+}`
+
+
+    function fetchGraphQL(payload) {
+      return fetch(
+          '/graphql',
+          {
+              method: 'post',
+              headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+              credentials: 'include',
+          }).then((response) => response.json());
+    };
+
+    function fetchForceDirected3D() {
+      return fetchGraphQL({query: d3GraphQuery}).then((responseJson) => responseJson.data.graph);
+    };
+
+    fetchGraphQL({query: d3GraphQuery})
+    .then((responseJson) => responseJson.data.graph)
+    .then((gData) => {
+      const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
+      .graphData(gData)
+      .nodeAutoColorBy('type');
+      });
+
+</script>
+</body>
