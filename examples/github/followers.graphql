@@ -1,0 +1,26 @@
+query GitHubFollowers {
+  info: graph {
+    name
+    types
+  }
+  followers: nodes {
+    ...NodeDetail
+    neighbors {
+      ...NodeDetail
+    }
+    children {
+      ...NodeDetail
+      children {
+        ...NodeDetail
+      }
+    }
+  }
+}
+
+fragment NodeDetail on GraphNode {
+  id
+  label
+  color
+  type
+  lineage
+}

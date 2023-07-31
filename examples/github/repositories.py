@@ -7,7 +7,7 @@ import pathlib
 from typing import Optional
 
 import graphinate
-from helpers import _user, _repositories, _commits, _files
+from _client import github_user, github_repositories, github_commits, _files
 
 
 def repo_graph_model():
@@ -19,10 +19,10 @@ def repo_graph_model():
                commit_id: Optional[str] = None,
                file_id: Optional[str] = None,
                **kwargs):
-        user = _user(user_id)
-        for repo in _repositories(user_id, repository_id):
+        user = github_user(user_id)
+        for repo in github_repositories(user_id, repository_id):
             yield {'source': (user.login,), 'target': (user.login, repo.name)}
-            for commit in _commits(repo, commit_id):
+            for commit in github_commits(repo, commit_id):
                 yield {'source': (user.login, repo.name), 'target': (user.login, repo.name, commit.sha)}
                 for file in _files(commit, file_id):
                     yield {'source': (user.login, repo.name, commit.sha),
@@ -52,13 +52,13 @@ def repo_graph_model():
 
     @user_node
     def user(user_id: Optional[str] = None, **kwargs):
-        yield _user(user_id)
+        yield github_user(user_id)
 
     @repository_node
     def repository(user_id: Optional[str] = None,
                    repository_id: Optional[str] = None,
                    **kwargs):
-        repos = _repositories(user_id, repository_id)
+        repos = github_repositories(user_id, repository_id)
         for repo in repos:
             yield repo
 
@@ -67,8 +67,8 @@ def repo_graph_model():
                repository_id: Optional[str] = None,
                commit_id: Optional[str] = None,
                **kwargs):
-        for repo in _repositories(user_id, repository_id):
-            yield from _commits(repo, commit_id)
+        for repo in github_repositories(user_id, repository_id):
+            yield from github_commits(repo, commit_id)
 
     def file_type(user_id: Optional[str] = None,
                   repository_id: Optional[str] = None,
@@ -78,8 +78,8 @@ def repo_graph_model():
         def group_key(file):
             return pathlib.PurePath(file).suffix
 
-        for repo in _repositories(user_id, repository_id):
-            for commit in _commits(repo, commit_id):
+        for repo in github_repositories(user_id, repository_id):
+            for commit in github_commits(repo, commit_id):
                 yield from ((k, list(g)) for k, g in
                             itertools.groupby(sorted(_files(commit), key=group_key), group_key))
 
@@ -89,8 +89,8 @@ def repo_graph_model():
              commit_id: Optional[str] = None,
              file_id: Optional[str] = None,
              **kwargs):
-        for repo in _repositories(user_id, repository_id):
-            for commit in _commits(repo, commit_id):
+        for repo in github_repositories(user_id, repository_id):
+            for commit in github_commits(repo, commit_id):
                 yield from _files(commit, file_id)
 
     return graph_model
@@ -109,4 +109,4 @@ if __name__ == '__main__':
         # 'user_id' "strawberry-graphql"
     }
 
-    graphinate.display("GitHub Repository Graph", repo_model, **params)
+    graphinate.materialize("GitHub Repository Graph", repo_model, **params)

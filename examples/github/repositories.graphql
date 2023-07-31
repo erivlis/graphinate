@@ -1,0 +1,31 @@
+query GitHubRepos {
+  graph {
+    name
+    types
+    size
+    order
+    averageDegree
+
+    weisfeilerLehmanGraphHash
+  }
+  users {
+    ...NodeDetail
+    children {
+      ...NodeDetail
+      children {
+        ...NodeDetail
+        children {
+          ...NodeDetail
+        }
+      }
+    }
+  }
+}
+
+fragment NodeDetail on GraphNode {
+  id
+  label
+  color
+  type
+  lineage
+}

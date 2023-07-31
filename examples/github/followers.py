@@ -1,7 +1,7 @@
 from typing import Optional
 
 import graphinate
-from helpers import _user
+from _client import github_user
 
 DEPTH = 0
 
@@ -10,7 +10,7 @@ def followers_graph_model(max_depth: int = DEPTH):
     graph_model = graphinate.GraphModel(name='github-followers')
 
     def _followers(user_id: Optional[str] = None, depth: int = 0, **kwargs):
-        user = _user(user_id)
+        user = github_user(user_id)
         for follower in user.get_followers():
             yield {'source': user.login, 'target': follower.login}
             if depth < max_depth:
@@ -33,4 +33,9 @@ if __name__ == '__main__':
         # 'user_id' "strawberry-graphql"
     }
 
-    graphinate.display("Github Followers Graph", followers_model, **params)
+    graphinate.materialize(
+        title="Github Followers Graph",
+        graph_model=followers_model,
+        graph_type=graphinate.GraphType.DiGraph,
+        **params
+    )

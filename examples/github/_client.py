@@ -20,21 +20,21 @@ g = Github(auth=auth)
 
 
 @functools.lru_cache
-def _user(user_id=None):
+def github_user(user_id=None):
     user = g.get_user(user_id) if user_id else g.get_user()
     return user
 
 
 @functools.lru_cache
-def _repositories(user_id: str = None, repo_id: Optional[str] = None):
-    user = _user(user_id)
+def github_repositories(user_id: str = None, repo_id: Optional[str] = None):
+    user = github_user(user_id)
     if repo_id and (repo := user.get_repo(name=repo_id)):
         return [repo]
     else:
         return user.get_repos()
 
 
-def _commits(repo, commit_id: Optional[str] = None):
+def github_commits(repo, commit_id: Optional[str] = None):
     if commit_id and (commit := repo.get_commit(sha=commit_id)):
         yield commit
     else:
