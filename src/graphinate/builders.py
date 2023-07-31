@@ -1,6 +1,8 @@
 import base64
 import functools
+import importlib
 import json
+import operator
 from collections import Counter
 from enum import Enum
 from types import MappingProxyType
@@ -223,17 +225,12 @@ class TypedGraphQLBuilder(NetworkxBuilder):
     class Graph:
         name: str
         types: strawberry.scalars.JSON
+        node_count: int
+        edge_count: int
         size: int
         order: int
-        degree_avg: float
+        average_degree: float
         weisfeiler_lehman_graph_hash: str
-        # is_planar: bool
-        # is_regular: bool
-        #
-        # small_world_sigma: float
-        # small_world_omega: float
-        # s_metric: float
-        # wiener_index: float
 
     @strawberry.interface
     class GraphNode:
@@ -245,6 +242,91 @@ class TypedGraphQLBuilder(NetworkxBuilder):
         lineage: str
         neighbors: Optional[List['TypedGraphQLBuilder.GraphNode']]
         children: Optional[List['TypedGraphQLBuilder.GraphNode']]
+
+    @strawberry.enum
+    class Measure(Enum):
+        """
+        See Netweorkx documentation for explanations:
+        https://networkx.org/documentation/stable/reference/index.html
+        """
+
+        is_empty = 'is_empty'
+        is_directed = 'is_directed'
+        is_weighted = 'is_weighted'
+        is_negatively_weighted = 'is_negatively_weighted'
+        """
+        A graph is planar iff it can be drawn in a plane without any edge intersections.
+        """
+        is_planar = 'is_planar'
+        """
+        A regular graph is a graph where each vertex has the same degree. A regular digraph is a graph where the
+        indegree and outdegree of each vertex are equal.
+        """
+        is_regular = 'is_regular'
+        is_bipartite = 'is_bipartite'
+        is_chordal = 'is_chordal'
+        is_eulerian = 'is_eulerian'
+        is_semieulerian = 'is_semieulerian'
+        has_eulerian_path = 'has_eulerian_path'
+        has_bridges = 'has_bridges'
+        is_asteroidal_triple_free = 'is_at_free'
+        is_directed_acyclic_graph = 'is_directed_acyclic_graph'
+        is_aperiodic = 'is_aperiodic'
+        is_distance_regular = 'is_distance_regular'
+        is_strongly_regular = 'is_strongly_regular'
+        is_threshold_graph = ('networkx.algorithms.threshold', 'is_threshold_graph')
+        is_connected = 'is_connected'
+
+        """
+        A graph is biconnected if, and only if, it cannot be disconnected by removing only one node (and all edges
+        incident on that node). If removing a node increases the number of disconnected components in the graph, that
+        node is called an articulation point, or cut vertex. A biconnected graph has no articulation points.
+        """
+        is_biconnected = 'is_biconnected'
+        """
+        A directed graph is strongly connected if and only if every vertex in the graph is reachable from every other
+        vertex.
+        """
+        is_strongly_connected = 'is_strongly_connected'
+
+        """
+        A directed graph is weakly connected if and only if the graph is connected when the direction of the edge
+        between nodes is ignored.
+        """
+        is_weakly_connected = 'is_weakly_connected'
+
+        """
+        A graph is semiconnected if, and only if, for any pair of nodes, either one is reachable from the other,
+        or they are mutually reachable.
+        """
+        is_semiconnected = 'is_semiconnected'
+        is_attracting_component = 'is_attracting_component'
+        is_tournament = ('networkx.algorithms.tournament', 'is_tournament')
+        is_tree = 'is_tree'
+        is_forest = 'is_forest'
+        is_arborescence = 'is_arborescence'
+        is_branching = 'is_branching'
+        is_triad = 'is_triad'
+        diameter = 'diameter'
+        radius = 'radius'
+        density = 'density'
+        number_of_isolates = 'number_of_isolates'
+        number_connected_components = 'number_connected_components'
+        number_strongly_connected_components = 'number_strongly_connected_components'
+        number_weakly_connected_components = ' number_weakly_connected_components'
+        number_attracting_components = 'number_attracting_components'
+        node_connectivity = 'node_connectivity'
+        transitivity = 'transitivity'
+        average_clustering = 'average_clustering'
+        chordal_graph_treewidth = 'chordal_graph_treewidth'
+        degree_assortativity_coefficient = 'degree_assortativity_coefficient'
+        degree_pearson_correlation_coefficient = 'degree_pearson_correlation_coefficient'
+        local_efficiency = 'local_efficiency'
+        global_efficiency = 'global_efficiency'
+        flow_hierarchy = 'flow_hierarchy'
+        average_shortest_path_length = 'average_shortest_path_length'
+        overall_reciprocity = 'overall_reciprocity'
+        wiener_index = 'wiener_index'
 
     def __init__(self, model: GraphModel):
         super().__init__(model)
@@ -283,6 +365,7 @@ class TypedGraphQLBuilder(NetworkxBuilder):
     def _children_types(self, node_type: str):
         return self.model.node_children(node_type).get(node_type, [])
 
+    @functools.lru_cache()
     def _graphql_types(self, graph: nx.Graph) -> Dict[str, Type['TypedGraphQLBuilder.GraphNode']]:
 
         graphql_types: Dict[str, Type['TypedGraphQLBuilder.GraphNode']] = {}
@@ -321,7 +404,7 @@ class TypedGraphQLBuilder(NetworkxBuilder):
         return {k: strawberry.type(v, name=k.capitalize() if k.lower().endswith('node') else f"{k.capitalize()}Node")
                 for k, v in graphql_types.items()}
 
-    def _schema(self, graph: nx.Graph) -> strawberry.Schema:
+    def _graphql_query(self, graph: nx.Graph):
         def graph_nodes_resolver(graphql_type: Type['TypedGraphQLBuilder.GraphNode'],
                                  node_type: str) -> Callable[[], list['TypedGraphQLBuilder.GraphNode']]:
             def graph_nodes() -> Optional[List['TypedGraphQLBuilder.GraphNode']]:
@@ -334,35 +417,59 @@ class TypedGraphQLBuilder(NetworkxBuilder):
         graphql_types = self._graphql_types(graph)
 
         inflection = inflect.engine()
+
         query_class_dict = {'__annotations__': {}}
+
+        # definitions for GraphQL types implementing 'GraphNode' GraphQL interface
         for node_type, graphql_type in graphql_types.items():
             field_name = inflection.plural(node_type)
             query_class_dict[field_name] = strawberry.field(resolver=graph_nodes_resolver(graphql_type, node_type))
             query_class_dict['__annotations__'][field_name] = 'Optional[List[TypedGraphQLBuilder.GraphNode]]'
 
+        # definition for 'Graph' GraphQL object type
         query_class_dict['graph'] = strawberry.field(
             resolver=lambda: TypedGraphQLBuilder.Graph(
                 name=graph.graph['name'],
                 types=json.dumps(graph.graph['types']),
-                size=graph.size(),
+                node_count=graph.number_of_nodes(),
+                edge_count=graph.number_of_edges(),
                 order=graph.order(),
-                degree_avg=1.0 * sum(d for _, d in graph.degree()) / graph.order(),
+                size=graph.size(weight='weight'),
+                average_degree=1.0 * sum(d for _, d in graph.degree()) / graph.order(),
                 weisfeiler_lehman_graph_hash=nx.weisfeiler_lehman_graph_hash(graph)
-                # is_planar=nx.is_planar(graph),
-                # is_regular=nx.is_regular(graph),
-                #
-                # small_world_sigma=nx.sigma(graph),
-                # small_world_omega=nx.omega(graph),
-                # s_metric=nx.s_metric(graph),
-                # wiener_index=nx.wiener_index(graph)
             )
         )
         query_class_dict['__annotations__']['graph'] = 'TypedGraphQLBuilder.Graph'
 
-        query_type = strawberry.type(type('Query', tuple(), query_class_dict), name='Query')
+        # definition for 'GraphMeasure' GraphQL type
+        @strawberry.field()
+        async def graph_measure(measure: TypedGraphQLBuilder.Measure) -> float:
+            if isinstance(measure.value, str):
+                method = measure.value
+                module = nx
+            else:
+                method = measure.value[1]
+                module = importlib.import_module(measure.value[0])
 
+            measure = operator.attrgetter(method)(module)
+            return float(measure(graph))
+
+        query_class_dict['graph_measure'] = graph_measure
+        query_class_dict['__annotations__']['graph_measure'] = 'float'
+
+        # definition of GraphQL root Query object type
+        query_graphql_type = strawberry.type(type('Query', tuple(), query_class_dict), name='Query')
+
+        return query_graphql_type
+
+    def _schema(self, graph: nx.Graph) -> strawberry.Schema:
+
+        query_graphql_type = self._graphql_query(graph)
+        graphql_types = self._graphql_types(graph)
+
+        # define and return Schema
         return strawberry.Schema(
-            query=query_type,
+            query=query_graphql_type,
             types=graphql_types.values()
         )
 
