@@ -3,6 +3,7 @@ import functools
 import importlib
 import json
 import operator
+from abc import ABC
 from collections import Counter
 from enum import Enum
 from types import MappingProxyType
@@ -26,7 +27,7 @@ class GraphType(Enum):
     MultiGraph = nx.MultiGraph
 
 
-class NetworkxBuilder:
+class Builder(ABC):
     default_node_attributes: Mapping = MappingProxyType({
         'type': 'node',
         'label': str,
@@ -38,6 +39,15 @@ class NetworkxBuilder:
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
         self.model = model
         self.graph_type = graph_type
+
+    def build(self, default_node_attributes: Mapping = default_node_attributes, **kwargs):
+        pass
+
+
+class NetworkxBuilder(Builder):
+
+    def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
+        super().__init__(model, graph_type)
 
     def _initialize_graph(self):
         self._graph = self.graph_type.value(name=self.model.name, types=Counter())
@@ -125,22 +135,22 @@ class NetworkxBuilder:
         self._rectify_node_attributes(**defaults)
         self._graph.graph['types'] = mutate.dictify(types_counter)
 
-    def build(self, default_node_attributes: Mapping = default_node_attributes, **kwargs):
+    def build(self, default_node_attributes: Mapping = Builder.default_node_attributes, **kwargs) -> nx.Graph:
         self.model.rectify()
         self._initialize_graph()
         self._populate_node_type(**kwargs)
         self._populate_edges(**kwargs)
-        self._finalize_graph(**self.default_node_attributes)
+        self._finalize_graph(**default_node_attributes)
         return self._graph
 
 
 class D3Builder(NetworkxBuilder):
 
-    def __init__(self, model: GraphModel):
-        super().__init__(model)
+    def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
+        super().__init__(model, graph_type)
 
-    def build(self, **kwargs) -> dict:
-        nx_graph: nx.Graph = super().build(**kwargs)
+    def build(self, default_node_attributes: Mapping = Builder.default_node_attributes, **kwargs) -> dict:
+        nx_graph: nx.Graph = super().build(default_node_attributes, **kwargs)
         return self.from_networkx(nx_graph)
 
     @staticmethod
@@ -149,13 +159,10 @@ class D3Builder(NetworkxBuilder):
         return mutate.dictify_tuple(d3_graph)
 
 
-# region Simple GraphQL Builder
-
-
 class GenericGraphQLBuilder(D3Builder):
 
-    def __init__(self, model: GraphModel):
-        super().__init__(model)
+    def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
+        super().__init__(model, graph_type)
 
     def _schema(self, d3_graph) -> strawberry.Schema:
         data = {k: v for k, v in d3_graph.items() if k not in ('nodes', 'links')}
@@ -210,12 +217,9 @@ class GenericGraphQLBuilder(D3Builder):
 
         return strawberry.Schema(query=Query)
 
-    def build(self, **kwargs) -> strawberry.Schema:
-        d3_graph: dict = super().build(**kwargs)
+    def build(self, default_node_attributes: Mapping = Builder.default_node_attributes, **kwargs) -> strawberry.Schema:
+        d3_graph: dict = super().build(default_node_attributes, **kwargs)
         return self._schema(d3_graph)
-
-
-# endregion Simple GraphQL Builder
 
 
 class TypedGraphQLBuilder(NetworkxBuilder):
@@ -232,7 +236,7 @@ class TypedGraphQLBuilder(NetworkxBuilder):
         average_degree: float
         weisfeiler_lehman_graph_hash: str
 
-    @strawberry.interface
+    @strawberry.interface(description="Represents a Graph Node")
     class GraphNode:
         id: ID
         label: str
@@ -243,25 +247,16 @@ class TypedGraphQLBuilder(NetworkxBuilder):
         neighbors: Optional[List['TypedGraphQLBuilder.GraphNode']]
         children: Optional[List['TypedGraphQLBuilder.GraphNode']]
 
-    @strawberry.enum
-    class Measure(Enum):
-        """
-        See Netweorkx documentation for explanations:
+    @strawberry.enum(description="""
+        See NetworkX documentation for explanations:
         https://networkx.org/documentation/stable/reference/index.html
-        """
-
+        """)
+    class Measure(Enum):
         is_empty = 'is_empty'
         is_directed = 'is_directed'
         is_weighted = 'is_weighted'
         is_negatively_weighted = 'is_negatively_weighted'
-        """
-        A graph is planar iff it can be drawn in a plane without any edge intersections.
-        """
         is_planar = 'is_planar'
-        """
-        A regular graph is a graph where each vertex has the same degree. A regular digraph is a graph where the
-        indegree and outdegree of each vertex are equal.
-        """
         is_regular = 'is_regular'
         is_bipartite = 'is_bipartite'
         is_chordal = 'is_chordal'
@@ -276,29 +271,9 @@ class TypedGraphQLBuilder(NetworkxBuilder):
         is_strongly_regular = 'is_strongly_regular'
         is_threshold_graph = ('networkx.algorithms.threshold', 'is_threshold_graph')
         is_connected = 'is_connected'
-
-        """
-        A graph is biconnected if, and only if, it cannot be disconnected by removing only one node (and all edges
-        incident on that node). If removing a node increases the number of disconnected components in the graph, that
-        node is called an articulation point, or cut vertex. A biconnected graph has no articulation points.
-        """
         is_biconnected = 'is_biconnected'
-        """
-        A directed graph is strongly connected if and only if every vertex in the graph is reachable from every other
-        vertex.
-        """
         is_strongly_connected = 'is_strongly_connected'
-
-        """
-        A directed graph is weakly connected if and only if the graph is connected when the direction of the edge
-        between nodes is ignored.
-        """
         is_weakly_connected = 'is_weakly_connected'
-
-        """
-        A graph is semiconnected if, and only if, for any pair of nodes, either one is reachable from the other,
-        or they are mutually reachable.
-        """
         is_semiconnected = 'is_semiconnected'
         is_attracting_component = 'is_attracting_component'
         is_tournament = ('networkx.algorithms.tournament', 'is_tournament')
@@ -328,8 +303,8 @@ class TypedGraphQLBuilder(NetworkxBuilder):
         overall_reciprocity = 'overall_reciprocity'
         wiener_index = 'wiener_index'
 
-    def __init__(self, model: GraphModel):
-        super().__init__(model)
+    def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
+        super().__init__(model, graph_type)
 
     @staticmethod
     def _encode_id(graph_node_id: tuple, encoding: str = 'utf-8'):
@@ -365,12 +340,19 @@ class TypedGraphQLBuilder(NetworkxBuilder):
     def _children_types(self, node_type: str):
         return self.model.node_children(node_type).get(node_type, [])
 
+    @staticmethod
+    def _graphql_type(name: str, type_class: Type[GraphNode]) -> Type[GraphNode]:
+        capitalized_name = name.capitalize()
+        return strawberry.type(type_class,
+                               name=f"{capitalized_name}{'' if name.lower().endswith('node') else 'Node'}",
+                               description=f"Represents a {capitalized_name} Graph Node")
+
     @functools.lru_cache()
     def _graphql_types(self, graph: nx.Graph) -> Dict[str, Type['TypedGraphQLBuilder.GraphNode']]:
 
         graphql_types: Dict[str, Type['TypedGraphQLBuilder.GraphNode']] = {}
 
-        # Create classes for nodes accordong to thier type
+        # Create classes for nodes according to their type
         for node_model in self.model.node_models.values():
             class_name = node_model.type.capitalize()
             bases = (TypedGraphQLBuilder.GraphNode,)
@@ -401,8 +383,7 @@ class TypedGraphQLBuilder(NetworkxBuilder):
             graphql_types[node_type].neighbors = strawberry.field(resolver=neighbors_resolver())
             graphql_types[node_type].children = strawberry.field(resolver=neighbors_resolver(children_types))
 
-        return {k: strawberry.type(v, name=k.capitalize() if k.lower().endswith('node') else f"{k.capitalize()}Node")
-                for k, v in graphql_types.items()}
+        return {k: self._graphql_type(k, v) for k, v in graphql_types.items()}
 
     def _graphql_query(self, graph: nx.Graph):
         def graph_nodes_resolver(graphql_type: Type['TypedGraphQLBuilder.GraphNode'],
@@ -473,7 +454,15 @@ class TypedGraphQLBuilder(NetworkxBuilder):
             types=graphql_types.values()
         )
 
-    def build(self, **kwargs):
+    def build(self, default_node_attributes: Mapping = Builder.default_node_attributes, **kwargs) -> strawberry.Schema:
         nx_graph: nx.Graph = super().build(**kwargs)
         schema: strawberry.Schema = self._schema(nx_graph)
         return schema
+
+
+def build(builder: Type[Builder],
+          graph_model: GraphModel,
+          graph_type: GraphType = GraphType.Graph,
+          **kwargs):
+    materialized_graph = builder(graph_model, graph_type).build(**kwargs)
+    return materialized_graph
