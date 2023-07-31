@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 
-import sv_ttk
+# import sv_ttk
 
 from .builders import D3Builder, TypedGraphQLBuilder, GenericGraphQLBuilder, NetworkxBuilder
 from .modeling import GraphModel
@@ -73,6 +73,7 @@ def choose_mode(title: str):
     # win.geometry("200x125")
     win.title(title)
     win.wm_attributes('-toolwindow', 'True')
+    win.wm_attributes('-topmost', 'True')
     win.resizable(False, False)
 
     # let us create a Tkinter string variable
@@ -119,7 +120,7 @@ def choose_mode(title: str):
     exit_button = ttk.Button(win, text="OK", command=win.destroy, state=tk.DISABLED)
     exit_button.pack(pady=4, side=tk.BOTTOM)
 
-    sv_ttk.set_theme("dark")
+    # sv_ttk.set_theme("dark")
 
     win.mainloop()
 
