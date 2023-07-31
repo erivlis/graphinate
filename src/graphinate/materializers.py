@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from pprint import pprint
+from typing import Mapping, Optional
 
 from . import builders, server
 from .modeling import GraphModel
@@ -74,9 +75,14 @@ def gui_mode_chooser(title: str):
 def materialize(title: str,
                 graph_model: GraphModel,
                 graph_type: builders.GraphType = builders.GraphType.Graph,
+                default_node_attributes: Optional[Mapping] = None,
                 **kwargs):
     if mode := gui_mode_chooser(title):
         builder, show = output_modes.get(mode, (None, None))
         if builder:
-            materialized_graph = builders.build(builder, graph_model, graph_type, **kwargs)
+            materialized_graph = builders.build(builder,
+                                                graph_model,
+                                                graph_type,
+                                                default_node_attributes=default_node_attributes,
+                                                **kwargs)
             show(materialized_graph)

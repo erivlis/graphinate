@@ -37,5 +37,6 @@ if __name__ == '__main__':
         title="Github Followers Graph",
         graph_model=followers_model,
         graph_type=graphinate.GraphType.DiGraph,
+        default_node_attributes={'type': 'user'},
         **params
     )

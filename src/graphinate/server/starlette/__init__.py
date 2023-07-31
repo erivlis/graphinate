@@ -21,6 +21,9 @@ def _mount_static_files(named_paths: Mapping[str, Path]) -> List[Mount]:
 def routes():
     route_list = _mount_static_files(paths_mapping)
 
+    from .views import favicon_route
+    route_list.append(favicon_route())
+
     return route_list
 
 

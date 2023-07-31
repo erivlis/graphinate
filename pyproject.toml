@@ -14,9 +14,16 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Private :: Do Not Upload",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: Implementation :: CPython",
     "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "Natural Language :: English",
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries",
     "Typing :: Typed"
 ]
 keywords = ['graph', 'declarative']
@@ -33,8 +40,9 @@ dependencies = [
 
 [project.urls]
 "Homepage" = "https://github.com/erivlis/graphinate"
+"Documentation" = "https://github.com/erivlis/graphinate#README.md"
 "Bug Tracker" = "https://github.com/erivlis/graphinate/issues"
-
+"Source" = "https://github.com/erivlis/graphinate"
 
 [project.optional-dependencies]
 dev = [

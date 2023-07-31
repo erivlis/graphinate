@@ -7,7 +7,7 @@ from abc import ABC
 from collections import Counter
 from enum import Enum
 from types import MappingProxyType
-from typing import Union, Hashable, Optional, List, Callable, Type, Dict, Iterable, Mapping
+from typing import Union, Hashable, Optional, List, Callable, Type, Dict, Iterable, Mapping, Any
 
 import inflect
 import networkx as nx
@@ -16,8 +16,37 @@ from loguru import logger
 from strawberry import ID
 
 from . import mutate
+from .color import node_color_mapping, color_converter
 from .modeling import GraphModel, UNIVERSE_NODE
 from .typing import NodeTypeAbsoluteId
+
+_ID_DELIMITER = '»'
+
+
+def label_converter(value):
+    if value:
+        return _ID_DELIMITER.join(value) if isinstance(value, tuple) else str(value)
+    else:
+        return value
+
+
+_dictify_graph = functools.partial(mutate.dictify, key_converter=label_converter)
+
+
+def _encode_id(graph_node_id: tuple, encoding: str = 'utf-8') -> str:
+    obj_s: str = _ID_DELIMITER.join(graph_node_id)
+    obj_b: bytes = obj_s.encode(encoding)
+    enc_b: bytes = base64.b85encode(obj_b)
+    enc_s: str = enc_b.decode(encoding)
+    return enc_s
+
+
+def _decode_id(graphql_node_id: strawberry.ID, encoding: str = 'utf-8') -> tuple[str, ...]:
+    enc_b: bytes = graphql_node_id.encode(encoding)
+    obj_b: bytes = base64.b85decode(enc_b)
+    obj_s: str = obj_b.decode(encoding)
+    obj: tuple = tuple(obj_s.split(_ID_DELIMITER))
+    return obj
 
 
 class GraphType(Enum):
@@ -30,9 +59,8 @@ class GraphType(Enum):
 class Builder(ABC):
     default_node_attributes: Mapping = MappingProxyType({
         'type': 'node',
-        'label': str,
+        'label': label_converter,
         'value': None,
-        'color': 'blue',
         'lineage': None
     })
 
@@ -40,8 +68,8 @@ class Builder(ABC):
         self.model = model
         self.graph_type = graph_type
 
-    def build(self, default_node_attributes: Mapping = default_node_attributes, **kwargs):
-        pass
+    def build(self, **kwargs) -> Any:
+        raise NotImplementedError()
 
 
 class NetworkxBuilder(Builder):
@@ -120,22 +148,38 @@ class NetworkxBuilder(Builder):
                     self._graph.add_edge((edge.source,), (edge.target,), **edge_attributes)
 
     def _rectify_node_attributes(self, **defaults):
-        for _type, default in defaults.items():
-            if callable(default):
-                attributes = {n: default(n) for n, a in self._graph.nodes(data=_type, default=None) if a is None}
-            elif default:
-                attributes = {n: a for n, a in self._graph.nodes(data=_type, default=default) if a == default}
-            else:
-                attributes = {n: n for n, a in self._graph.nodes(data=_type, default=default) if a is default}
 
-            nx.set_node_attributes(self._graph, attributes, _type)
+        if 'color' not in defaults:
+            defaults['color'] = node_color_mapping(self._graph)
+
+        for name, default in defaults.items():
+            if callable(default):
+                values = {n: default(n) for n, a in self._graph.nodes(data=name, default=None) if a is None}
+            elif isinstance(default, dict):
+                values = default
+            elif default:
+                values = {n: a for n, a in self._graph.nodes(data=name, default=default) if a == default}
+            else:
+                values = {n: n for n, a in self._graph.nodes(data=name, default=default) if a is default}
+
+            if values:
+                nx.set_node_attributes(self._graph, values=values, name=name)
+
+        default_type = defaults['type']
+        node_type_count = sum(1 for n, d in self._graph.nodes(data='type') if d == default_type)
+        if node_type_count:
+            self._graph.graph['types'].update({'node': node_type_count})
 
     def _finalize_graph(self, **defaults):
-        types_counter = self._graph.graph['types']
         self._rectify_node_attributes(**defaults)
+        types_counter = self._graph.graph['types']
         self._graph.graph['types'] = mutate.dictify(types_counter)
 
-    def build(self, default_node_attributes: Mapping = Builder.default_node_attributes, **kwargs) -> nx.Graph:
+    def build(self, **kwargs) -> nx.Graph:
+        default_node_attributes = dict(**self.default_node_attributes)
+        if 'default_node_attributes' in kwargs:
+            default_node_attributes.update(kwargs.pop('default_node_attributes') or {})
+
         self.model.rectify()
         self._initialize_graph()
         self._populate_node_type(**kwargs)
@@ -149,14 +193,14 @@ class D3Builder(NetworkxBuilder):
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
         super().__init__(model, graph_type)
 
-    def build(self, default_node_attributes: Mapping = Builder.default_node_attributes, **kwargs) -> dict:
-        nx_graph: nx.Graph = super().build(default_node_attributes, **kwargs)
+    def build(self, **kwargs) -> dict:
+        nx_graph: nx.Graph = super().build(**kwargs)
         return self.from_networkx(nx_graph)
 
     @staticmethod
     def from_networkx(nx_graph: nx.Graph):
         d3_graph = nx.node_link_data(nx_graph)
-        return mutate.dictify_tuple(d3_graph)
+        return d3_graph
 
 
 class GenericGraphQLBuilder(D3Builder):
@@ -168,19 +212,19 @@ class GenericGraphQLBuilder(D3Builder):
         data = {k: v for k, v in d3_graph.items() if k not in ('nodes', 'links')}
 
         @strawberry.interface
-        class Element:
+        class GraphElement:
             label: str
             color: Optional[str] = None
             type: str
             value: strawberry.scalars.JSON
 
         @strawberry.type
-        class Node(Element):
+        class GraphNode(GraphElement):
             id: ID
             lineage: List[str]
 
         @strawberry.type
-        class Edge(Element):
+        class GraphEdge(GraphElement):
             source: ID
             target: ID
             weight: float
@@ -188,24 +232,24 @@ class GenericGraphQLBuilder(D3Builder):
         @strawberry.type
         class Graph:
             data: strawberry.scalars.JSON
-            nodes: List[Node]
-            edges: List[Edge]
+            nodes: List[GraphNode]
+            edges: List[GraphEdge]
 
-        nodes = [Node(id=str(node['id']),
-                      lineage=node.get('lineage', []),
-                      label=node.get('label', str(node['id'])),
-                      color=node.get('color'),
-                      type=node.get('type', 'Node'),
-                      value=json.dumps(node.get('value', node['id'])))
+        nodes = [GraphNode(id=_encode_id(node['id']),
+                           lineage=node.get('lineage', []),
+                           label=node.get('label', label_converter(node['id'])),
+                           color=color_converter(node.get('color')),
+                           type=node.get('type', 'Node'),
+                           value=json.dumps(node.get('value', node['id'])))
                  for node in d3_graph['nodes']]
 
-        edges = [Edge(source=str(edge['source']),
-                      target=str(edge['target']),
-                      weight=edge.get('weight', 1.0),
-                      label=edge.get('label', ''),
-                      color=edge.get('color', ''),
-                      type=edge.get('type', ''),
-                      value=json.dumps(edge.get('value')))
+        edges = [GraphEdge(source=_encode_id(edge['source']),
+                           target=_encode_id(edge['target']),
+                           weight=edge.get('weight', 1.0),
+                           label=edge.get('label', ''),
+                           color=color_converter(edge.get('color')),
+                           type=edge.get('type', ''),
+                           value=json.dumps(edge.get('value')))
                  for edge in d3_graph['links']]
 
         def get_graph():
@@ -217,14 +261,12 @@ class GenericGraphQLBuilder(D3Builder):
 
         return strawberry.Schema(query=Query)
 
-    def build(self, default_node_attributes: Mapping = Builder.default_node_attributes, **kwargs) -> strawberry.Schema:
-        d3_graph: dict = super().build(default_node_attributes, **kwargs)
+    def build(self, **kwargs) -> strawberry.Schema:
+        d3_graph: dict = super().build(**kwargs)
         return self._schema(d3_graph)
 
 
 class TypedGraphQLBuilder(NetworkxBuilder):
-    _id_delimiter = '»'
-
     @strawberry.type
     class Graph:
         name: str
@@ -307,28 +349,12 @@ class TypedGraphQLBuilder(NetworkxBuilder):
         super().__init__(model, graph_type)
 
     @staticmethod
-    def _encode_id(graph_node_id: tuple, encoding: str = 'utf-8'):
-        msg = TypedGraphQLBuilder._id_delimiter.join(graph_node_id)
-        msg_bytes = msg.encode(encoding)
-        b64_bytes = base64.b85encode(msg_bytes)
-        b64_msg = b64_bytes.decode(encoding)
-        return b64_msg
-
-    @staticmethod
-    def _decode_id(graphql_node_id: strawberry.ID, encoding: str = 'utf-8'):
-        b64_bytes = graphql_node_id.encode(encoding)
-        msg_bytes = base64.b85decode(b64_bytes)
-        msg = msg_bytes.decode(encoding)
-        output = tuple(msg.split(TypedGraphQLBuilder._id_delimiter))
-        return output
-
-    @staticmethod
     def _graph_node(node_class: Type['TypedGraphQLBuilder.GraphNode'], node: tuple,
                     node_data: dict) -> 'TypedGraphQLBuilder.GraphNode':
         kwargs = {
-            'id': TypedGraphQLBuilder._encode_id(node),
+            'id': _encode_id(node),
             'label': node_data['label'],
-            'color': node_data['color'],
+            'color': color_converter(node_data['color']),
             'type': node_data['type'],
             'value': json.dumps(node_data['value']),
             'lineage': str(node_data['lineage']),
@@ -366,7 +392,7 @@ class TypedGraphQLBuilder(NetworkxBuilder):
         def neighbors_resolver(neighbors_types: Optional[Iterable[str]] = None) -> Callable[
             ['TypedGraphQLBuilder.GraphNode'], List['TypedGraphQLBuilder.GraphNode']]:
             def neighbors(self, children: bool = False) -> Optional[List['TypedGraphQLBuilder.GraphNode']]:
-                node = TypedGraphQLBuilder._decode_id(self.id)
+                node = _decode_id(self.id)
                 items = (TypedGraphQLBuilder._graph_node(graphql_types[d['type']], n, d)
                          for n, d in graph.nodes(data=True) if n in graph.neighbors(node))
 
@@ -454,15 +480,17 @@ class TypedGraphQLBuilder(NetworkxBuilder):
             types=graphql_types.values()
         )
 
-    def build(self, default_node_attributes: Mapping = Builder.default_node_attributes, **kwargs) -> strawberry.Schema:
+    def build(self, **kwargs) -> strawberry.Schema:
         nx_graph: nx.Graph = super().build(**kwargs)
         schema: strawberry.Schema = self._schema(nx_graph)
         return schema
 
 
-def build(builder: Type[Builder],
+def build(builder_cls: Type[Builder],
           graph_model: GraphModel,
           graph_type: GraphType = GraphType.Graph,
+          default_node_attributes: Optional[Mapping] = None,
           **kwargs):
-    materialized_graph = builder(graph_model, graph_type).build(**kwargs)
+    builder = builder_cls(graph_model, graph_type)
+    materialized_graph = builder.build(default_node_attributes=default_node_attributes, **kwargs)
     return materialized_graph

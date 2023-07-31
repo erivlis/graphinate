@@ -46,6 +46,7 @@ def repo_graph_model():
                                    label=commit_label)
 
     file_node = graph_model.node(parent_type='commit',
+                                 uniqueness=True,
                                  key=operator.attrgetter('filename'),
                                  value=operator.attrgetter('raw_data'),
                                  label=operator.itemgetter('filename'))

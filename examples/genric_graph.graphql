@@ -1,0 +1,22 @@
+query GenericGraph {
+  graph {
+    nodes {
+      id
+      name: label
+      type
+      label
+      # value
+      color
+      lineage
+    }
+    links: edges {
+      source
+      target
+      name: label
+      type
+      # value
+      color
+      weight
+    }
+  }
+}

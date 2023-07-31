@@ -9,18 +9,19 @@
 <div id="3d-graph"></div>
 <script>
     const d3GraphQuery = `query GenericGraph {
-  graph {
-    nodes {
-      id
-      name: label
-      type
-    }
-    links: edges {
-      source
-      target
-    }
-  }
-}`
+      graph {
+        nodes {
+          id
+          name: label
+          type
+          color
+        }
+        links: edges {
+          source
+          target
+        }
+      }
+    }`
 
 
     function fetchGraphQL(payload) {
@@ -43,7 +44,13 @@
     .then((gData) => {
       const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
       .graphData(gData)
-      .nodeAutoColorBy('type');
+      .nodeColor('color')
+<!--  .nodeAutoColorBy('type')-->
+      .nodeLabel(node => `${node.type}: '${node.name}'`)
+      .linkDirectionalArrowLength(3.5)
+      .linkDirectionalArrowRelPos(1)
+      .linkCurvature(0.0)
+      .onEngineStop(() => Graph.zoomToFit(100));
       });
 
 </script>
