@@ -2,7 +2,7 @@ from typing import Union
 
 import matplotlib as mpl
 import networkx as nx
-from matplotlib import pyplot as plt, patheffects
+from matplotlib import pyplot as plt
 
 
 def color_map(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = "coolwarm"):

@@ -24,8 +24,11 @@ dependencies = [
     "click~=8.1.3",
     "inflect~=7.0.0",
     "loguru",
+    "matplotlib",
     "networkx>=3",
-    "strawberry-graphql"
+    "strawberry-graphql[asgi,opentelemetry]",
+#    "starlette-prometheus",
+    "uvicorn[standard]"
 ]
 
 [project.urls]

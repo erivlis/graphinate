@@ -12,10 +12,17 @@
 ## Install
 
 [//]: # (```shell)
+
 [//]: # (python -m pip install graphinate )
+
 [//]: # (```)
 
-## Usage
+## Examples
+
+- GitHub
+  - Repository
+  - Followers
+- Code AST (Python)
 
 ## API
 
