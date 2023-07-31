@@ -58,4 +58,4 @@ def ast_graph_model():
 
 if __name__ == '__main__':
     ast_model = ast_graph_model()
-    graphinate.display("AST Graph", ast_model)
+    graphinate.materialize("AST Graph", ast_model)
