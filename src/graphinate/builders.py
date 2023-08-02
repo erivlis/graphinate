@@ -8,7 +8,7 @@ from collections import Counter
 from datetime import datetime
 from enum import Enum
 from types import MappingProxyType
-from typing import Union, Hashable, Optional, List, Callable, Type, Dict, Iterable, Mapping, Any
+from typing import Union, Hashable, Optional, List, Callable, Type, Dict, Iterable, Mapping
 
 import inflect
 import networkx as nx
@@ -83,7 +83,7 @@ class Builder(ABC):
         self.model = model
         self.graph_type = graph_type
 
-    def build(self, **kwargs) -> Any:
+    def build(self, **kwargs):
         raise NotImplementedError()
 
 
@@ -93,7 +93,9 @@ class NetworkxBuilder(Builder):
         super().__init__(model, graph_type)
 
     def _initialize_graph(self):
-        self._graph = self.graph_type.value(name=self.model.name, node_types=Counter(), edge_types=Counter())
+        self._graph = self.graph_type.value(name=self.model.name,
+                                            node_types=Counter(),
+                                            edge_types=Counter())
 
     def _populate_node_type(self, node_type: Union[Hashable, UNIVERSE_NODE] = UNIVERSE_NODE, **kwargs):
         for parent_node_type, child_node_types in self.model.node_children(node_type).items():
@@ -263,13 +265,21 @@ class D3Builder(NetworkxBuilder):
         return d3_graph
 
 
-class GenericGraphQLBuilder(D3Builder):
+class GraphQLBuilder(D3Builder):
 
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
         super().__init__(model, graph_type)
 
     def _schema(self, d3_graph) -> strawberry.Schema:
-        data = {k: v for k, v in d3_graph.items() if k not in ('nodes', 'links')}
+        @strawberry.type
+        class Count:
+            name: str
+            count: int
+
+        @strawberry.type
+        class Detail:
+            name: str
+            value: str
 
         @strawberry.interface
         class GraphElement:
@@ -281,10 +291,19 @@ class GenericGraphQLBuilder(D3Builder):
             updated: Optional[datetime]
 
         @strawberry.type
+        class GraphData:
+            name: str
+            node_types: List[Count]
+            edge_types: Optional[List[Count]]
+            details: List[Detail]
+            created: datetime
+
+        @strawberry.type
         class GraphNode(GraphElement):
             id: ID
             magnitude: int
             lineage: List[str]
+            # neighbors: Optional[List['GraphNode']]
 
         @strawberry.type
         class GraphEdge(GraphElement):
@@ -294,9 +313,19 @@ class GenericGraphQLBuilder(D3Builder):
 
         @strawberry.type
         class Graph:
-            data: strawberry.scalars.JSON
+            data: GraphData
             nodes: List[GraphNode]
             edges: List[GraphEdge]
+
+        fields = ('nodes', 'links', 'graph')
+
+        graph_data = d3_graph['graph']
+
+        data = GraphData(name=graph_data['name'],
+                         node_types=[Count(name=k, count=v) for k, v in graph_data['node_types'].items()],
+                         edge_types=[Count(name=k, count=v) for k, v in graph_data['edge_types'].items()],
+                         details=[Detail(name=k, value=v) for k, v in d3_graph.items() if k not in fields],
+                         created=graph_data['created'])
 
         nodes = [GraphNode(id=_encode_id(node['id']),
                            type=node.get('type', 'Node'),
@@ -320,8 +349,10 @@ class GenericGraphQLBuilder(D3Builder):
                            updated=edge.get('updated'))
                  for edge in d3_graph['links']]
 
+        graph = Graph(data=data, nodes=nodes, edges=edges)
+
         def get_graph():
-            return Graph(data=data, nodes=nodes, edges=edges)
+            return graph
 
         @strawberry.type
         class Query:

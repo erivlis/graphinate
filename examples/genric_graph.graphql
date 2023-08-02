@@ -1,22 +1,28 @@
 query GenericGraph {
   graph {
+    data
     nodes {
       id
       name: label
       type
       label
-      # value
+      magnitude
       color
       lineage
+      created
+      updated
     }
     links: edges {
       source
       target
-      name: label
       type
+      label
       # value
-      color
       weight
+      color
+      # created
+      updated
+
     }
   }
 }

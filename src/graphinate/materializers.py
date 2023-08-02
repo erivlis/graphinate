@@ -10,7 +10,7 @@ from .plot import show
 output_modes = {
     'NetworkX': (builders.NetworkxBuilder, show),
     'D3 Graph': (builders.D3Builder, pprint),
-    'Generic GraphQL': (builders.GenericGraphQLBuilder, server.run_graphql),
+    'GraphQL': (builders.GraphQLBuilder, server.run_graphql),
     'Typed GraphQL': (builders.TypedGraphQLBuilder, server.run_graphql)
 }
 
