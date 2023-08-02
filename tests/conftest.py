@@ -21,8 +21,8 @@ def map_graph_model(country_count, city_count):
     country_count = random.randint(1, 10)
     city_count = random.randint(20, 40)
 
-    country_ids = {c: None for c in range(1, country_count + 1)}
-    city_ids = {c: random.choice(list(country_ids.keys())) for c in range(1, city_count + 1)}
+    country_ids = {str(c): None for c in range(1, country_count + 1)}
+    city_ids = {str(c): random.choice(list(country_ids.keys())) for c in range(1, city_count + 1)}
 
     graph_model = graphinate.GraphModel(name='Map')
 
@@ -50,3 +50,39 @@ def map_graph_model(country_count, city_count):
             yield from (k for k, v in city_ids.items() if v == country_id)
 
     return country_count, city_count, graph_model
+
+@pytest.fixture
+def graphql_query():
+    return """
+    query GenericGraph {
+      graph {
+        data {
+          name
+          nodeTypes {name count}
+          edgeTypes {name count}
+          details {name value}
+          created
+        }
+        nodes {
+          id
+          name: label
+          type
+          label
+          magnitude
+          color
+          lineage
+          created
+          updated
+        }
+        links: edges {
+          source
+          target
+          type
+          label
+          weight
+          color
+          updated
+        }
+      }
+    }
+    """
