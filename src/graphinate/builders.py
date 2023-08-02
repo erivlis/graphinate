@@ -5,6 +5,7 @@ import json
 import operator
 from abc import ABC
 from collections import Counter
+from datetime import datetime
 from enum import Enum
 from types import MappingProxyType
 from typing import Union, Hashable, Optional, List, Callable, Type, Dict, Iterable, Mapping, Any
@@ -20,14 +21,21 @@ from .color import node_color_mapping, color_converter
 from .modeling import GraphModel, UNIVERSE_NODE
 from .typing import NodeTypeAbsoluteId
 
-_ID_DELIMITER = '»'
+_ID_DELIMITER = '∋'
 
 
-def label_converter(value):
+def label_converter(value, delimiter):
     if value:
-        return _ID_DELIMITER.join(value) if isinstance(value, tuple) else str(value)
+        return delimiter.join(str(v) for v in value) if isinstance(value, tuple) else str(value)
     else:
         return value
+
+
+node_label_converter = functools.partial(label_converter, delimiter=_ID_DELIMITER)
+
+
+def edge_label_converter(value):
+    return label_converter(tuple(node_label_converter(n) for n in value), delimiter='↔')
 
 
 _dictify_graph = functools.partial(mutate.dictify, key_converter=label_converter)
@@ -59,9 +67,16 @@ class GraphType(Enum):
 class Builder(ABC):
     default_node_attributes: Mapping = MappingProxyType({
         'type': 'node',
-        'label': label_converter,
-        'value': None,
+        'label': node_label_converter,
+        'value': [],
         'lineage': None
+    })
+
+    default_edge_attributes: Mapping = MappingProxyType({
+        'type': 'edge',
+        'label': edge_label_converter,
+        'value': [],
+        'weight': 1.0
     })
 
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
@@ -78,7 +93,7 @@ class NetworkxBuilder(Builder):
         super().__init__(model, graph_type)
 
     def _initialize_graph(self):
-        self._graph = self.graph_type.value(name=self.model.name, types=Counter())
+        self._graph = self.graph_type.value(name=self.model.name, node_types=Counter(), edge_types=Counter())
 
     def _populate_node_type(self, node_type: Union[Hashable, UNIVERSE_NODE] = UNIVERSE_NODE, **kwargs):
         for parent_node_type, child_node_types in self.model.node_children(node_type).items():
@@ -117,14 +132,21 @@ class NetworkxBuilder(Builder):
                 node_type = node_model.type.lower()
 
             logger.debug("Adding node: '{}'", node_id)
-            self._graph.add_node(node_id,
-                                 label=label,
-                                 color='type',
-                                 type=node_type,
-                                 value=node.value,
-                                 lineage=list(node_lineage))
 
-            self._graph.graph['types'].update({node_type: 1})
+            if node_id in self._graph:
+                self._graph.nodes[node_id]['value'].append(node.value)
+                self._graph.nodes[node_id]['magnitude'] += 1
+                self._graph.nodes[node_id]['updated'] = datetime.utcnow()
+            else:
+                self._graph.add_node(node_id,
+                                     label=label,
+                                     type=node_type,
+                                     value=[node.value],
+                                     magnitude=1,
+                                     lineage=list(node_lineage),
+                                     created=datetime.utcnow())
+
+                self._graph.graph['node_types'].update({node_type: 1})
 
             if node_model.parent_type is not UNIVERSE_NODE:
                 logger.debug("Adding edge from: '{}' to '{}'", parent_node_id, node_id)
@@ -138,19 +160,25 @@ class NetworkxBuilder(Builder):
         for edge_type, edge_generators in self.model.edge_generators.items():
             for edge_generator in edge_generators:
                 for edge in edge_generator(**kwargs):
-                    edge_attributes = {
-                        'type': edge_type,
-                        'label': edge.label,
-                        'value': edge.value,
-                        'weight': edge.weight
-                    }
+                    edge_id = ((edge.source,), (edge.target,))
+                    edge_weight = edge.weight or 1.0
                     logger.debug("Adding edge from: '{}' to: '{}'", edge.source, edge.target)
-                    self._graph.add_edge((edge.source,), (edge.target,), **edge_attributes)
+
+                    if isinstance(self._graph, nx.MultiGraph) or edge_id not in self._graph.edges:
+                        self._graph.add_edge((edge.source,),
+                                             (edge.target,),
+                                             label=edge.label,
+                                             type=edge_type,
+                                             value=[edge.value],
+                                             weight=edge_weight,
+                                             created=datetime.utcnow())
+                        self._graph.graph['edge_types'].update({edge_type: 1})
+                    else:
+                        self._graph.edges[edge_id]['value'].append(edge.value)
+                        self._graph.edges[edge_id]['weight'] += edge_weight
+                        self._graph.edges[edge_id]['updated'] = datetime.utcnow()
 
     def _rectify_node_attributes(self, **defaults):
-
-        if 'color' not in defaults:
-            defaults['color'] = node_color_mapping(self._graph)
 
         for name, default in defaults.items():
             if callable(default):
@@ -165,15 +193,47 @@ class NetworkxBuilder(Builder):
             if values:
                 nx.set_node_attributes(self._graph, values=values, name=name)
 
-        default_type = defaults['type']
-        node_type_count = sum(1 for n, d in self._graph.nodes(data='type') if d == default_type)
-        if node_type_count:
-            self._graph.graph['types'].update({'node': node_type_count})
+        if default_type := defaults.get('type'):
+            type_count = sum(1 for n, d in self._graph.nodes(data='type') if d == default_type)
+            if type_count:
+                self._graph.graph['node_types'].update({default_type: type_count})
+
+    def _rectify_edge_attributes(self, **defaults):
+
+        for name, default in defaults.items():
+            if callable(default):
+                values = {(s, t): default((s, t)) for s, t, a
+                          in self._graph.edges(data=name, default=None) if a is None}
+            elif isinstance(default, dict):
+                values = default
+            elif default:
+                values = {(s, t): a for s, t, a
+                          in self._graph.edges(data=name, default=default) if a == default}
+            else:
+                values = {(s, t): (s, t) for s, t, a
+                          in self._graph.edges(data=name, default=default) if a is default}
+
+            if values:
+                nx.set_edge_attributes(self._graph, values=values, name=name)
+
+        if default_type := defaults.get('type'):
+            type_count = sum(1 for s, t, d in self._graph.edges(data='type') if d == default_type)
+            if type_count:
+                self._graph.graph['edge_types'].update({default_type: type_count})
 
     def _finalize_graph(self, **defaults):
         self._rectify_node_attributes(**defaults)
-        types_counter = self._graph.graph['types']
-        self._graph.graph['types'] = mutate.dictify(types_counter)
+
+        if 'color' not in defaults:
+            self._rectify_node_attributes(color=node_color_mapping(self._graph))
+
+        self._rectify_edge_attributes(**self.default_edge_attributes)
+
+        for counter_name in ('node_types', 'edge_types'):
+            counter = self._graph.graph[counter_name]
+            self._graph.graph[counter_name] = mutate.dictify(counter)
+
+        self._graph.graph['created'] = datetime.utcnow()
 
     def build(self, **kwargs) -> nx.Graph:
         default_node_attributes = dict(**self.default_node_attributes)
@@ -213,14 +273,17 @@ class GenericGraphQLBuilder(D3Builder):
 
         @strawberry.interface
         class GraphElement:
-            label: str
-            color: Optional[str] = None
             type: str
-            value: strawberry.scalars.JSON
+            label: str
+            value: List[strawberry.scalars.JSON]
+            color: Optional[str] = None
+            created: datetime
+            updated: Optional[datetime]
 
         @strawberry.type
         class GraphNode(GraphElement):
             id: ID
+            magnitude: int
             lineage: List[str]
 
         @strawberry.type
@@ -236,20 +299,25 @@ class GenericGraphQLBuilder(D3Builder):
             edges: List[GraphEdge]
 
         nodes = [GraphNode(id=_encode_id(node['id']),
-                           lineage=node.get('lineage', []),
-                           label=node.get('label', label_converter(node['id'])),
-                           color=color_converter(node.get('color')),
                            type=node.get('type', 'Node'),
-                           value=json.dumps(node.get('value', node['id'])))
+                           label=node.get('label', node_label_converter(node['id'])),
+                           value=[json.dumps(v) for v in node.get('value', [node['id']])],
+                           magnitude=node.get('magnitude', 1),
+                           lineage=node.get('lineage', []),
+                           color=color_converter(node.get('color')),
+                           created=node.get('created'),
+                           updated=node.get('updated'))
                  for node in d3_graph['nodes']]
 
         edges = [GraphEdge(source=_encode_id(edge['source']),
                            target=_encode_id(edge['target']),
-                           weight=edge.get('weight', 1.0),
-                           label=edge.get('label', ''),
-                           color=color_converter(edge.get('color')),
                            type=edge.get('type', ''),
-                           value=json.dumps(edge.get('value')))
+                           label=edge.get('label', edge_label_converter((edge['source'], edge['target']))),
+                           value=json.dumps(edge.get('value')),
+                           weight=edge.get('weight', 1.0),
+                           color=color_converter(edge.get('color')),
+                           created=edge.get('created'),
+                           updated=edge.get('updated'))
                  for edge in d3_graph['links']]
 
         def get_graph():
@@ -270,7 +338,9 @@ class TypedGraphQLBuilder(NetworkxBuilder):
     @strawberry.type
     class Graph:
         name: str
-        types: strawberry.scalars.JSON
+        node_types: strawberry.scalars.JSON
+        edge_types: strawberry.scalars.JSON
+        created: datetime
         node_count: int
         edge_count: int
         size: int
@@ -281,11 +351,14 @@ class TypedGraphQLBuilder(NetworkxBuilder):
     @strawberry.interface(description="Represents a Graph Node")
     class GraphNode:
         id: ID
-        label: str
-        color: str
         type: str
-        value: Optional[strawberry.scalars.JSON]
+        label: str
+        value: Optional[List[strawberry.scalars.JSON]]
+        magnitude: int
         lineage: str
+        color: str
+        created: datetime
+        updated: Optional[datetime]
         neighbors: Optional[List['TypedGraphQLBuilder.GraphNode']]
         children: Optional[List['TypedGraphQLBuilder.GraphNode']]
 
@@ -349,15 +422,19 @@ class TypedGraphQLBuilder(NetworkxBuilder):
         super().__init__(model, graph_type)
 
     @staticmethod
-    def _graph_node(node_class: Type['TypedGraphQLBuilder.GraphNode'], node: tuple,
+    def _graph_node(node_class: Type['TypedGraphQLBuilder.GraphNode'],
+                    node: tuple,
                     node_data: dict) -> 'TypedGraphQLBuilder.GraphNode':
         kwargs = {
             'id': _encode_id(node),
-            'label': node_data['label'],
-            'color': color_converter(node_data['color']),
             'type': node_data['type'],
-            'value': json.dumps(node_data['value']),
+            'label': node_data['label'],
+            'value': [json.dumps(v) for v in node_data['value']],
+            'magnitude': node_data['magnitude'],
             'lineage': str(node_data['lineage']),
+            'color': color_converter(node_data['color']),
+            'created': node_data['created'],
+            'updated': node_data.get('updated')
         }
 
         return node_class(**kwargs)
@@ -437,13 +514,15 @@ class TypedGraphQLBuilder(NetworkxBuilder):
         query_class_dict['graph'] = strawberry.field(
             resolver=lambda: TypedGraphQLBuilder.Graph(
                 name=graph.graph['name'],
-                types=json.dumps(graph.graph['types']),
+                node_types=json.dumps(graph.graph['node_types']),
+                edge_types=json.dumps(graph.graph['edge_types']),
                 node_count=graph.number_of_nodes(),
                 edge_count=graph.number_of_edges(),
                 order=graph.order(),
                 size=graph.size(weight='weight'),
                 average_degree=1.0 * sum(d for _, d in graph.degree()) / graph.order(),
-                weisfeiler_lehman_graph_hash=nx.weisfeiler_lehman_graph_hash(graph)
+                weisfeiler_lehman_graph_hash=nx.weisfeiler_lehman_graph_hash(graph),
+                created=graph.graph['created']
             )
         )
         query_class_dict['__annotations__']['graph'] = 'TypedGraphQLBuilder.Graph'

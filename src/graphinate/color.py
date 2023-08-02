@@ -12,7 +12,7 @@ def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = 
     cmap : str or `~matplotlib.colors.Colormap` - The colormap used to map values to RGBA colors.
     :return: Nodes RGBA Color list
     """
-    type_lookup = {t: i for i, t in enumerate(graph.graph['types'].keys())}
+    type_lookup = {t: i for i, t in enumerate(graph.graph['node_types'].keys())}
     color_lookup = {node: type_lookup.get(data.get('type'), 0) for node, data in graph.nodes.data()}
     if len(color_lookup) > 1:
         low, *_, high = sorted(color_lookup.values())
