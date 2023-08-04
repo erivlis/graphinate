@@ -51,6 +51,7 @@ def map_graph_model(country_count, city_count):
 
     return country_count, city_count, graph_model
 
+
 @pytest.fixture
 def graphql_query():
     return """

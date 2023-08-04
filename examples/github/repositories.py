@@ -7,7 +7,7 @@ import pathlib
 from typing import Optional
 
 import graphinate
-from _client import github_user, github_repositories, github_commits, _files
+from _client import github_user, github_repositories, github_commits, github_files
 
 
 def repo_graph_model():
@@ -24,7 +24,7 @@ def repo_graph_model():
             yield {'source': (user.login,), 'target': (user.login, repo.name)}
             for commit in github_commits(repo, commit_id):
                 yield {'source': (user.login, repo.name), 'target': (user.login, repo.name, commit.sha)}
-                for file in _files(commit, file_id):
+                for file in github_files(commit, file_id):
                     yield {'source': (user.login, repo.name, commit.sha),
                            'target': (user.login, repo.name, commit.sha, file.filename)}
 
@@ -82,7 +82,7 @@ def repo_graph_model():
         for repo in github_repositories(user_id, repository_id):
             for commit in github_commits(repo, commit_id):
                 yield from ((k, list(g)) for k, g in
-                            itertools.groupby(sorted(_files(commit), key=group_key), group_key))
+                            itertools.groupby(sorted(github_files(commit), key=group_key), group_key))
 
     @file_node
     def file(user_id: Optional[str] = None,
@@ -92,7 +92,7 @@ def repo_graph_model():
              **kwargs):
         for repo in github_repositories(user_id, repository_id):
             for commit in github_commits(repo, commit_id):
-                yield from _files(commit, file_id)
+                yield from github_files(commit, file_id)
 
     return graph_model
 

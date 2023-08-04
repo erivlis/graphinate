@@ -41,7 +41,7 @@ def github_commits(repo, commit_id: Optional[str] = None):
         yield from repo.get_commits()
 
 
-def _files(commit: Commit, file_id: Optional[str] = None):
+def github_files(commit: Commit, file_id: Optional[str] = None):
     files: list[File] = commit.files
     if file_id:
         yield from [file for file in files if file.filename == file_id]
