@@ -46,13 +46,15 @@ def test_graphql_builder(map_graph_model, graphql_query):
     import strawberry
     schema: strawberry.Schema = builder.build()
     execution_result = schema.execute_sync(graphql_query)
-    actual_graph = execution_result.data['graph']
-    node_types_counts = {c['name']: c['count'] for c in actual_graph['data']['nodeTypes']}
+    actual_graph = execution_result.data
 
     # assert
     assert actual_graph
-    assert actual_graph['data']
-    assert actual_graph['data']['name'] == 'Map'
+    assert actual_graph['graph']
+    assert actual_graph['nodes']
+    assert actual_graph['edges']
+    assert actual_graph['graph']['name'] == 'Map'
+    node_types_counts = {c['name']: c['count'] for c in actual_graph['graph']['nodeTypes']}
     assert node_types_counts['country'] == country_count
     assert node_types_counts['city'] == city_count
     assert len(actual_graph['nodes']) == country_count + city_count

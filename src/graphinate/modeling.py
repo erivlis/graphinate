@@ -201,9 +201,20 @@ class GraphModel:
 
         return register_edge
 
-    def rectify(self):
+    def rectify(self, _type: Optional[Extractor] = None,
+                parent_type: Optional[str] = UNIVERSE_NODE,
+                key: Optional[Extractor] = None,
+                value: Optional[Extractor] = None,
+                label: Optional[Extractor] = None):
         if self._edge_generators and not self._node_models:
-            @self.node(parent_type='node', uniqueness=True, label=str)
+            @self.node(
+                _type=_type or 'node',
+                parent_type=parent_type or 'node',
+                uniqueness=True,
+                key=key,
+                value=value,
+                label=label or str
+            )
             def node():
                 return
                 yield

@@ -3,26 +3,31 @@
     <title></title>
     <style> body { margin: 0; } </style>
     <script src="//unpkg.com/3d-force-graph"></script>
-    <!--<script src="../../dist/3d-force-graph.js"></script>-->
+    <script src="/static/scripts/murmurhash3_gc.js"></script>
 </head>
 <body>
 <div id="3d-graph"></div>
 <script>
-    const d3GraphQuery = `query GenericGraph {
-      graph {
-        nodes {
-          id
-          name: label
-          type
-          color
-        }
-        links: edges {
-          source
-          target
-        }
-      }
-    }`
+    const graphQuery = `query GenericGraph {
+  nodes {
+    ...Details
+  }
+  links: edges {
+    source {
+      ...Details
+    }
+    target {
+      ...Details
+    }
+  }
+}
 
+fragment Details on GraphElement {
+  id
+  name: label
+  type
+  color
+}`
 
     function fetchGraphQL(payload) {
       return fetch(
@@ -35,13 +40,11 @@
           }).then((response) => response.json());
     };
 
-    function fetchForceDirected3D() {
-      return fetchGraphQL({query: d3GraphQuery}).then((responseJson) => responseJson.data.graph);
-    };
-
-    fetchGraphQL({query: d3GraphQuery})
-    .then((responseJson) => responseJson.data.graph)
+    fetchGraphQL({query: graphQuery})
+    .then((responseJson) => responseJson.data)
     .then((gData) => {
+      gData.nodes = gData.nodes.map((node) => {node.id = murmurhash3_32_gc(node.id, 1); return node;});
+      gData.links = gData.links.map((link) => {return {"source": murmurhash3_32_gc(link.source.id,1), "target": murmurhash3_32_gc(link.target.id, 1)};});
       const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
       .graphData(gData)
       .nodeColor('color')

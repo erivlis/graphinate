@@ -49,7 +49,7 @@ def ast_graph_model():
     def ast_node(**kwargs):
         yield from _ast_nodes([root_ast_node])
 
-    @graph_model.edge(label=operator.itemgetter('type'))
+    @graph_model.edge(_type='edge', label=operator.itemgetter('type'))
     def ast_edge(**kwargs):
         yield from _ast_edge(root_ast_node)
 

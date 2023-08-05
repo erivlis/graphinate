@@ -1,7 +1,7 @@
 import pathlib
 from typing import Mapping
 
-from ...filepath import current_file
+from ...helpers import current_file
 
 paths_mapping: Mapping[str, pathlib.Path] = {p.name: p for p in current_file().parent.iterdir() if p.is_dir()}
 

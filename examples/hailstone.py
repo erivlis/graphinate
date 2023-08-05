@@ -1,6 +1,6 @@
 import graphinate
 import graphinate.builders
-from graphinate.plot import show
+from graphinate.visualizers import show
 
 graph_model = graphinate.GraphModel(name='Hailstone')
 

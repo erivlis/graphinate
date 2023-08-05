@@ -1,7 +1,6 @@
 import dataclasses
-import functools
 import inspect
-from typing import Callable, Any, Mapping, Iterable, Optional
+from typing import Any, Callable, Iterable, Mapping, Optional
 
 
 def is_strict_iterable(obj: Any) -> bool:

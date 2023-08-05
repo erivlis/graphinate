@@ -6,7 +6,7 @@ import networkx as nx
 
 
 @functools.lru_cache()
-def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = "coolwarm") -> Mapping:
+def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = "tab20") -> Mapping:
     """
     graph: graph_id
     cmap : str or `~matplotlib.colors.Colormap` - The colormap used to map values to RGBA colors.
@@ -24,7 +24,7 @@ def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = 
     return node_colors
 
 
-def color_converter(color):
+def color_hex(color):
     if isinstance(color, (tuple, list, Iterable)):
         rgb = color[:3]
 

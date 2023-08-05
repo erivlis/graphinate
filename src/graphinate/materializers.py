@@ -5,13 +5,13 @@ from typing import Mapping, Optional
 
 from . import builders, server
 from .modeling import GraphModel
-from .plot import show
+from .visualizers import show
 
 output_modes = {
     'NetworkX': (builders.NetworkxBuilder, show),
     'D3 Graph': (builders.D3Builder, pprint),
     'GraphQL': (builders.GraphQLBuilder, server.run_graphql),
-    'Typed GraphQL': (builders.TypedGraphQLBuilder, server.run_graphql)
+    'D3 GraphQL': (builders.D3GraphQLBuilder, server.run_graphql)
 }
 
 

@@ -55,35 +55,49 @@ def map_graph_model(country_count, city_count):
 @pytest.fixture
 def graphql_query():
     return """
-    query GenericGraph {
+    query Graph {
       graph {
-        data {
+        name
+        nodeTypes {
           name
-          nodeTypes {name count}
-          edgeTypes {name count}
-          details {name value}
-          created
+          count
         }
-        nodes {
-          id
-          name: label
-          type
-          label
-          magnitude
-          color
-          lineage
-          created
-          updated
+        edgeTypes {
+          name
+          count
         }
-        links: edges {
-          source
-          target
-          type
-          label
-          weight
-          color
-          updated
-        }
+        created
+        nodeCount
+        edgeCount
+        size
+        order
+        averageDegree
+        hash
       }
+      nodes {
+        ...Details
+      }
+      edges {
+        source {
+          ...Details
+        }
+        target {
+          ...Details
+        }
+        label
+        type
+        color
+        weight
+      }
+    }
+    
+    fragment Details on GraphElement {
+      id
+      label
+      type
+      label
+      color
+      created
+      updated
     }
     """

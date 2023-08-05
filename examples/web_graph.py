@@ -10,7 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 
 import graphinate.builders
-from graphinate.plot import show
+from graphinate.visualizers import show
 
 DEPTH = 0
 
