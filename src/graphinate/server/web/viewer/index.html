@@ -50,10 +50,10 @@ fragment Details on GraphElement {
       .nodeColor('color')
 <!--  .nodeAutoColorBy('type')-->
       .nodeLabel(node => `${node.type}: '${node.name}'`)
-      .linkDirectionalArrowLength(3.5)
-      .linkDirectionalArrowRelPos(1)
-      .linkCurvature(0.0)
-      .onEngineStop(() => Graph.zoomToFit(100));
+<!--      .linkDirectionalArrowLength(3.5)-->
+<!--      .linkDirectionalArrowRelPos(1)-->
+<!--      .linkCurvature(0.0)-->
+      .onEngineStop(() => Graph.zoomToFit(400));
       });
 
 </script>

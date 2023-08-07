@@ -10,9 +10,8 @@ from .starlette import routes
 
 def run_graphql(graphql_schema: strawberry.Schema, port: int = 8000):
     def open_url():
-        webbrowser.open(f'http://localhost:{port}/viewer')
-        webbrowser.open(f'http://localhost:{port}/voyager')
-        webbrowser.open(f'http://localhost:{port}/graphiql')
+        for app_name in ('voyager', 'graphiql', 'viewer'):
+            webbrowser.open(f'http://localhost:{port}/{app_name}')
 
     graphql_app = GraphQL(graphql_schema)
     app = Starlette(

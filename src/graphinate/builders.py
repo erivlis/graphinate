@@ -378,8 +378,11 @@ class GraphQLBuilder(NetworkxBuilder):
         created: datetime
         node_count: int
         edge_count: int
-        size: int
         order: int
+        size: int
+        radius: int
+        diameter: int
+        # girth: int
         average_degree: float
         hash: str
 
@@ -491,7 +494,7 @@ class GraphQLBuilder(NetworkxBuilder):
         inflection = inflect.engine()
 
         # local references to instance fields in order to "inject" into dynamically generated class methods
-        graph = self._graph
+        graph: nx.Graph = self._graph
         graphql_types = self._graphql_types
 
         # region - Defining GraphQL Query Class dict
@@ -507,6 +510,9 @@ class GraphQLBuilder(NetworkxBuilder):
                 edge_count=graph.number_of_edges(),
                 order=graph.order(),
                 size=graph.size(weight='weight'),
+                radius=nx.radius(graph, weight='weight'),
+                diameter=nx.diameter(graph, weight='weight'),
+                # girth=min(len(cycle) for cycle in nx.simple_cycles(graph)),
                 average_degree=1.0 * sum(d for _, d in graph.degree()) / graph.order(),
                 hash=nx.weisfeiler_lehman_graph_hash(graph),
                 created=graph.graph['created'],
