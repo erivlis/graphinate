@@ -73,9 +73,20 @@ def modal_listbox_chooser(window_title: str, options: dict, default=None):
 
     selection_var = tk.Variable(root)
 
+    lisbox_frame = ttk.Frame(
+        root,
+        # borderwidth=5,
+        # relief='solid',
+    )
+    lisbox_frame.pack(padx=2, pady=2)
+
     # Creating a Listbox and
     # attaching it to root window
-    listbox = tk.Listbox(root, listvariable=choices_var, selectmode="multiple")
+    listbox = tk.Listbox(lisbox_frame,
+                         listvariable=choices_var,
+                         selectmode="EXTENDED",
+                         height=min(len(choices), 50),
+                         width=max(len(c) for c in choices))
 
     # Adding Listbox to the left
     # side of root window
@@ -83,7 +94,7 @@ def modal_listbox_chooser(window_title: str, options: dict, default=None):
 
     # Creating a Scrollbar and
     # attaching it to root window
-    scrollbar = tk.Scrollbar(root)
+    scrollbar = tk.Scrollbar(lisbox_frame)
 
     # Adding Scrollbar to the right
     # side of root window

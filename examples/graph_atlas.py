@@ -18,6 +18,23 @@ def get_graph():
     ladder_mobius.add_edge(ladder_size, ladder_size - 1)
     ladder_mobius.add_edge(0, ladder_size * 2 - 1)
 
+    def cylinder_edges(circumference: int, length: int):
+        for k in range(length):
+            start = k * circumference
+            stop = (k + 1) * circumference - 1
+            if k > 0:
+                yield start, start - circumference
+                yield stop, stop - circumference
+            for i in range(start, stop):
+                yield i, i + 1
+                if k > 0:
+                    yield i, i - circumference
+            yield stop, start
+
+    cylinder = nx.Graph(cylinder_edges(6, 8))
+
+
+
     adjacencies = {
         'Buckyball - Truncated Icosahedral Graph': {
             1: [2, 3, 4],
@@ -754,6 +771,7 @@ def get_graph():
         'Ladder': ladder,
         'Ring': ladder_ring,
         'Möbius': ladder_mobius,
+        'Cylinder': cylinder,
         'Circulant[10,[2]]': nx.circulant_graph(10, [2])
     }
 
