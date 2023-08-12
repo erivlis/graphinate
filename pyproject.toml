@@ -1,5 +1,5 @@
 [project]
-name = "graphinate"
+name = "Graphinate"
 version = "0.0.4-alpha"
 authors = [
     { name = "Eran Rivlis", email = "eran@rivlis.info" },
@@ -33,8 +33,6 @@ dependencies = [
     "matplotlib",
     "networkx>=3",
     "strawberry-graphql[asgi,opentelemetry]",
-#    "starlette-prometheus",
-    "uvicorn[standard]"
 ]
 
 [project.urls]
@@ -61,6 +59,10 @@ testing = [
 plot = [
     "matplotlib",
     "scipy"
+]
+server = [
+    "starlette-prometheus",
+    "uvicorn[standard]"
 ]
 
 [build-system]

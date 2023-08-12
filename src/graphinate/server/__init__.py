@@ -1,7 +1,7 @@
 import webbrowser
 
 import strawberry
-import uvicorn
+
 from starlette.applications import Starlette
 from strawberry.asgi import GraphQL
 
@@ -20,4 +20,5 @@ def run_graphql(graphql_schema: strawberry.Schema, port: int = 8000):
     app.add_route("/graphql", graphql_app)
     app.add_websocket_route("/graphql", graphql_app)
 
+    import uvicorn
     uvicorn.run(app, host='0.0.0.0', port=port)

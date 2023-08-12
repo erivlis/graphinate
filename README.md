@@ -1,10 +1,18 @@
 # Graphinate. Data to Graphs.
 
-> ⚠️ **Under Development!** This library is alpha-quality ⚠️
+## ⚠️ **Under Development!** ⚠️
+This library is alpha-quality 
+
+![PyPI](https://img.shields.io/pypi/v/graphinate)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/graphinate)
+
+[![Contributors](https://img.shields.io/github/contributors/erivlis/graphinate.svg)](https://github.com/erivlis/graphinate/graphs/contributors)
 
 [![Tests](https://github.com/erivlis/graphinate/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/erivlis/graphinate/actions/workflows/tests.yml)
-[![Supported Versions](https://img.shields.io/pypi/pyversions/graphinate.svg)](https://pypi.org/project/graphinate)
-[![Contributors](https://img.shields.io/github/contributors/erivlis/graphinate.svg)](https://github.com/erivlis/graphinate/graphs/contributors)
+[![Publish](https://github.com/erivlis/graphinate/actions/workflows/publish.yml/badge.svg)](https://github.com/erivlis/graphinate/actions/workflows/publish.yml)
+
+
+
 ## Gallery
 
 ![d3_graph_ast](https://github.com/erivlis/graphinate/assets/9897520/9e7e1ed2-3a5c-41fe-8c5f-999da4b741ff)
