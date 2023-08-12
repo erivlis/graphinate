@@ -1,9 +1,9 @@
 import inspect
-from collections import namedtuple, defaultdict
+from collections import defaultdict, namedtuple
 from dataclasses import dataclass
-from typing import Callable, Any, Iterable, Mapping, Self, Set, Optional, Union, List
+from typing import Any, Callable, Iterable, List, Mapping, Optional, Set, Union
 
-from .typing import Node, Edge, Element, Items, Nodes, Edges, NodeTypeAbsoluteId, Extractor
+from .typing import Edge, Edges, Element, Extractor, Items, Node, NodeTypeAbsoluteId, Nodes
 
 UNIVERSE_NODE = None
 
@@ -84,7 +84,7 @@ class GraphModel:
         self._edge_generators: dict[str, list[Edges]] = defaultdict(list)
         self._networkx_graph = None
 
-    def __add__(self, other: Self):
+    def __add__(self, other: 'GraphModel'):
         self._node_models.update(other._node_models)
         self._node_children.update(other._node_children)
         self._edge_generators.update(other._edge_generators)

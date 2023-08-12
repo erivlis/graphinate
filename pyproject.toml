@@ -1,6 +1,6 @@
 [project]
 name = "graphinate"
-version = "0.0.3-alpha"
+version = "0.0.4-alpha"
 authors = [
     { name = "Eran Rivlis", email = "eran@rivlis.info" },
 ]
@@ -12,7 +12,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Information Technology",
     "Intended Audience :: Science/Research",
-    "Private :: Do Not Upload",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
