@@ -1,6 +1,6 @@
 # Graphinate. Data to Graphs.
 
-> **Under Development!**
+> ⚠️ **Under Development!** This library is alpha-quality ⚠️
 
 [![Tests](https://github.com/erivlis/graphinate/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/erivlis/graphinate/actions/workflows/tests.yml)
 [![Supported Versions](https://img.shields.io/pypi/pyversions/graphinate.svg)](https://pypi.org/project/graphinate)
@@ -35,6 +35,10 @@ Graphinate officially supports Python 3.9+.
 ### By Configuration
 
 ## Build
+
+```console
+python -m build
+```
 
 ## Test
 
