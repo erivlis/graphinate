@@ -34,14 +34,14 @@ theme:
       primary: deep purple
 #      accent: deep purple
       toggle:
-        icon: material/brightness-7
+        icon: material/weather-night
         name: Switch to light mode
     # Palette toggle for light mode
     - scheme: default
       primary: deep purple
 #      accent: deep purple
       toggle:
-        icon: material/brightness-4
+        icon: material/weather-sunny
         name: Switch to dark mode
 
   logo: assets/images/network_graph.png

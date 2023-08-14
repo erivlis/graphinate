@@ -4,6 +4,6 @@
 
 Graphinate is available on PyPI:
 
-```console
+```shell
 python -m pip install graphinate 
 ```
