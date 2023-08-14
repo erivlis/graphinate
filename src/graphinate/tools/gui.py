@@ -84,7 +84,7 @@ def modal_listbox_chooser(window_title: str, options: dict, default=None):
     # attaching it to root window
     listbox = tk.Listbox(lisbox_frame,
                          listvariable=choices_var,
-                         selectmode="EXTENDED",
+                         selectmode="MULTIPLE",
                          height=min(len(choices), 50),
                          width=max(len(c) for c in choices))
 

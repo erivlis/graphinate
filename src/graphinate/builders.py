@@ -1,9 +1,11 @@
 import base64
+import decimal
 import functools
 import gzip
 import importlib
 import inspect
 import json
+import math
 import operator
 import pickle
 from abc import ABC
@@ -11,7 +13,7 @@ from collections import Counter
 from datetime import datetime
 from enum import Enum
 from types import MappingProxyType
-from typing import Callable, Dict, Hashable, Iterable, List, Mapping, Optional, Type, Union
+from typing import Callable, Dict, Hashable, Iterable, List, Mapping, NewType, Optional, Type, Union
 
 import inflect
 import networkx as nx
@@ -286,10 +288,17 @@ class D3Builder(NetworkxBuilder):
 
 class GraphQLBuilder(NetworkxBuilder):
     # region Strawberry Types
+
+    InfNumber = strawberry.scalar(
+        NewType("InfInt", Union[float, int, decimal.Decimal]),
+        serialize=lambda v: 'Infinity' if v == math.inf else ('-Infinity' if v == -math.inf else v),
+        parse_value=lambda v: math.inf if v == 'Infinity' else (-math.inf if v == '-Infinity' else v),
+    )
+
     @strawberry.type
-    class Count:
+    class Measure:
         name: str
-        count: int
+        value: 'GraphQLBuilder.InfNumber'
 
     @strawberry.interface
     class GraphElement:
@@ -313,6 +322,30 @@ class GraphQLBuilder(NetworkxBuilder):
         source: 'GraphQLBuilder.GraphNode'
         target: 'GraphQLBuilder.GraphNode'
         weight: float
+
+    @strawberry.type
+    class Graph:
+        graph: strawberry.Private[nx.Graph]
+
+        name: str
+        created: datetime
+        hash: str
+        node_type_counts: List['GraphQLBuilder.Measure']
+        edge_type_counts: List['GraphQLBuilder.Measure']
+        node_count: int
+        edge_count: int
+        order: int
+        size: int
+        # girth: int
+        average_degree: float
+
+        @strawberry.field()
+        def radius(self) -> 'GraphQLBuilder.InfNumber':
+            return nx.radius(self.graph, weight='weight') if nx.is_connected(self.graph) else math.inf
+
+        @strawberry.field()
+        def diameter(self) -> 'GraphQLBuilder.InfNumber':
+            return nx.diameter(self.graph, weight='weight') if nx.is_connected(self.graph) else math.inf
 
     @strawberry.enum(description="""
         See NetworkX documentation for explanations:
@@ -349,8 +382,8 @@ class GraphQLBuilder(NetworkxBuilder):
         is_arborescence = 'is_arborescence'
         is_branching = 'is_branching'
         is_triad = 'is_triad'
-        diameter = 'diameter'
         radius = 'radius'
+        diameter = 'diameter'
         density = 'density'
         number_of_isolates = 'number_of_isolates'
         number_connected_components = 'number_connected_components'
@@ -369,22 +402,6 @@ class GraphQLBuilder(NetworkxBuilder):
         average_shortest_path_length = 'average_shortest_path_length'
         overall_reciprocity = 'overall_reciprocity'
         wiener_index = 'wiener_index'
-
-    @strawberry.type
-    class Graph:
-        name: str
-        node_types: List['GraphQLBuilder.Count']
-        edge_types: List['GraphQLBuilder.Count']
-        created: datetime
-        node_count: int
-        edge_count: int
-        order: int
-        size: int
-        radius: int
-        diameter: int
-        # girth: int
-        average_degree: float
-        hash: str
 
     # endregion Strawberry Types
 
@@ -502,21 +519,25 @@ class GraphQLBuilder(NetworkxBuilder):
 
         # region - Defining GraphQL Query Class dict - graph field
         def graphql_graph(self) -> GraphQLBuilder.Graph:
-            return GraphQLBuilder.Graph(
+
+            output = GraphQLBuilder.Graph(
+                graph=graph,
                 name=graph.graph['name'],
-                node_types=[GraphQLBuilder.Count(name=t, count=c) for t, c in graph.graph['node_types'].items()],
-                edge_types=[GraphQLBuilder.Count(name=t, count=c) for t, c in graph.graph['edge_types'].items()],
+                node_type_counts=[GraphQLBuilder.Measure(name=t, value=c) for t, c in
+                                  graph.graph['node_types'].items()],
+                edge_type_counts=[GraphQLBuilder.Measure(name=t, value=c) for t, c in
+                                  graph.graph['edge_types'].items()],
                 node_count=graph.number_of_nodes(),
                 edge_count=graph.number_of_edges(),
                 order=graph.order(),
                 size=graph.size(weight='weight'),
-                radius=nx.radius(graph, weight='weight'),
-                diameter=nx.diameter(graph, weight='weight'),
                 # girth=min(len(cycle) for cycle in nx.simple_cycles(graph)),
                 average_degree=1.0 * sum(d for _, d in graph.degree()) / graph.order(),
                 hash=nx.weisfeiler_lehman_graph_hash(graph),
                 created=graph.graph['created'],
             )
+
+            return output
 
         self.add_field_resolver(query_class_dict, 'graph', graphql_graph)
 
@@ -587,7 +608,7 @@ class GraphQLBuilder(NetworkxBuilder):
 
         #  region  - Defining GraphQL Query Class dict - field measure for 'GraphMeasure' GraphQL type
 
-        def graph_measure(self, measure: GraphQLBuilder.GraphMeasure) -> float:
+        def graph_measure(self, measure: GraphQLBuilder.GraphMeasure) -> GraphQLBuilder.Measure:
             if isinstance(measure.value, str):
                 method = measure.value
                 module = nx
@@ -595,8 +616,9 @@ class GraphQLBuilder(NetworkxBuilder):
                 method = measure.value[1]
                 module = importlib.import_module(measure.value[0])
 
-            measure = operator.attrgetter(method)(module)
-            return float(measure(graph))
+            value_getter = operator.attrgetter(method)(module)
+            value = float(value_getter(graph))
+            return GraphQLBuilder.Measure(name=measure.name, value=value)
 
         # query_class_dict['measure'] = strawberry.field(resolver=graph_measure)
         # query_class_dict['__annotations__']['measure'] = float

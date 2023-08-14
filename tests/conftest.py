@@ -58,41 +58,34 @@ def graphql_query():
     query Graph {
       graph {
         name
-        nodeTypes {
+        nodeTypeCounts {
           name
-          count
+          value
         }
-        edgeTypes {
+        edgeTypeCounts {
           name
-          count
+          value
         }
         created
         nodeCount
         edgeCount
         size
         order
+        radius
+        diameter
         averageDegree
         hash
       }
-      nodes {
-        ...Details
-      }
+      nodes {id ...ElementDetails}
       edges {
-        source {
-          ...Details
-        }
-        target {
-          ...Details
-        }
-        label
-        type
-        color
+        source {id ...ElementDetails}
+        target {id ...ElementDetails}
+        ...ElementDetails
         weight
       }
     }
     
-    fragment Details on GraphElement {
-      id
+    fragment ElementDetails on GraphElement {
       label
       type
       label

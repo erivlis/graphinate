@@ -1,8 +1,11 @@
+import pytest
+
 import graphinate
 import graphinate.builders
 
 
-def test_networkx_builder(map_graph_model):
+@pytest.mark.parametrize('execution_number', range(10))
+def test_networkx_builder(execution_number, map_graph_model):
     # arrange
     country_count, city_count, graph_model = map_graph_model
 
@@ -19,7 +22,8 @@ def test_networkx_builder(map_graph_model):
     # show(graph)
 
 
-def test_d3_builder(map_graph_model):
+@pytest.mark.parametrize('execution_number', range(10))
+def test_d3_builder(execution_number, map_graph_model):
     # arrange
     country_count, city_count, graph_model = map_graph_model
 
@@ -36,7 +40,8 @@ def test_d3_builder(map_graph_model):
     assert len(actual_graph['nodes']) == city_count + country_count
 
 
-def test_graphql_builder(map_graph_model, graphql_query):
+@pytest.mark.parametrize('execution_number', range(10))
+def test_graphql_builder(execution_number, map_graph_model, graphql_query):
     # arrange
     country_count, city_count, graph_model = map_graph_model
 
@@ -54,7 +59,7 @@ def test_graphql_builder(map_graph_model, graphql_query):
     assert actual_graph['nodes']
     assert actual_graph['edges']
     assert actual_graph['graph']['name'] == 'Map'
-    node_types_counts = {c['name']: c['count'] for c in actual_graph['graph']['nodeTypes']}
+    node_types_counts = {c['name']: c['value'] for c in actual_graph['graph']['nodeTypeCounts']}
     assert node_types_counts['country'] == country_count
     assert node_types_counts['city'] == city_count
     assert len(actual_graph['nodes']) == country_count + city_count
