@@ -1,0 +1,79 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+
+site_name: "Graphinate"
+site_author: Eran Rivlis
+site_description: >-
+  Data to Graphs.
+
+repo_url: https://github.com/erivlis/graphinate
+repo_name: erivlis/graphinate
+
+
+# Copyright
+copyright: Copyright &copy; 2023 Eran Rivlis
+
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - content.code.select
+#    - navigation.tabs
+    - navigation.path
+    - navigation.indexes
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+    - toc.integrate
+  font: false
+  palette:
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: deep purple
+#      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode
+    # Palette toggle for light mode
+    - scheme: default
+      primary: deep purple
+#      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to dark mode
+
+  logo: assets/images/network_graph.png
+  favicon: assets/images/network_graph.png
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+nav:
+  - Introduction: index.md
+  - Install: install.md
+  - Usage: usage.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/erivlis/graphinate
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/graphinate
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/erivlis
+
+
+plugins:
+- search
+#- mkdocstrings:
+#    handlers:
+#      python:
+#        paths: [../src]  # search packages in the src folder
