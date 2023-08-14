@@ -15,10 +15,7 @@ def edges_labels(graph: nx.Graph):
 
 def draw(graph: nx.Graph, with_labels=True):
     pos = nx.planar_layout(graph) if nx.is_planar(graph) else None
-    if pos:
-        pos = nx.spring_layout(graph, pos=pos)
-    else:
-        pos = nx.spring_layout(graph)
+    pos = nx.spring_layout(graph, pos=pos) if pos else nx.spring_layout(graph)
 
     draw_params = {}
     if with_labels:
@@ -30,7 +27,13 @@ def draw(graph: nx.Graph, with_labels=True):
                 'font_color': 'blue',
                 # 'horizontalalignment':'left',
                 # 'verticalalignment':'bottom',
-                # 'bbox': {'boxstyle': 'round', 'fc': (0.02, 0.02, 0.02), 'lw': 0, 'alpha': 0.15, 'path_effects': [patheffects.withStroke(linewidth=1, foreground="red")]}
+                # 'bbox': {
+                #     'boxstyle': 'round',
+                #     'fc': (0.02, 0.02, 0.02),
+                #     'lw': 0,
+                #     'alpha': 0.15,
+                #     'path_effects': [patheffects.withStroke(linewidth=1, foreground="red")]
+                # }
             }
         )
 

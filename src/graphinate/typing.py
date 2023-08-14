@@ -1,11 +1,12 @@
-from typing import Union, NamedTuple, Tuple, Any, Protocol, Iterable, TypeVar, FrozenSet, Mapping, Callable
+from collections.abc import Iterable, Mapping
+from typing import Any, Callable, NamedTuple, Protocol, TypeVar, Union
 
-Node = Union[type(NamedTuple), Tuple[str, Any]]
-Edge = Union[type(NamedTuple), Tuple[str, str, Any]]
+Node = Union[type(NamedTuple), tuple[str, Any]]
+Edge = Union[type(NamedTuple), tuple[str, str, Any]]
 Element = Union[Node, Edge]
 Extractor = Union[str, Callable[[Any], str]]
 
-NodeTypeAbsoluteId = TypeVar("NodeTypeAbsoluteId", bound=Tuple[str, str])
+NodeTypeAbsoluteId = TypeVar("NodeTypeAbsoluteId", bound=tuple[str, str])
 
 T = TypeVar("T")
 
@@ -37,7 +38,7 @@ class Supplier(Protocol):
         ...
 
 
-ParametersId = FrozenSet
+ParametersId = frozenset
 
 
 def parameters_id(mapping: Mapping) -> ParametersId:

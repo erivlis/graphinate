@@ -1,6 +1,7 @@
 import dataclasses
 import inspect
-from typing import Any, Callable, Iterable, Mapping, Optional
+from collections.abc import Iterable, Mapping
+from typing import Any, Callable, Optional
 
 
 def is_strict_iterable(obj: Any) -> bool:
@@ -15,14 +16,15 @@ def _process_obj(obj: Any,
                  **kwargs):
     if callable(mapping_handler) and isinstance(obj, Mapping):
         return mapping_handler(obj, *args, **kwargs)
-    elif callable(iterable_handler) and is_strict_iterable(obj):
+    if callable(iterable_handler) and is_strict_iterable(obj):
         return iterable_handler(obj, *args, **kwargs)
-    elif callable(class_handler) and inspect.isclass(obj):
+    if callable(class_handler) and inspect.isclass(obj):
         return class_handler(obj, *args, **kwargs)
-    else:
-        if (value_converter := kwargs.get('value_converter')) and callable(value_converter):
-            return value_converter(obj)
-        return obj
+
+    if (value_converter := kwargs.get('value_converter')) and callable(value_converter):
+        return value_converter(obj)
+
+    return obj
 
 
 def dictify_mapping(obj: Mapping[Any, Any],
@@ -44,8 +46,8 @@ def dictify_class(obj,
     if dataclasses.is_dataclass(obj):
         return {key_converter(k) if key_converter else k: dictify(v, key_converter, value_converter)
                 for k, v in inspect.getmembers(obj) if not k.startswith("_")}
-    else:
-        return str(obj)
+
+    return str(obj)
 
 
 def dictify(obj,

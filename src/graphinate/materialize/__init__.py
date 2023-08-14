@@ -1,10 +1,11 @@
+from collections.abc import Mapping
 from enum import Enum
 from pprint import pprint
-from typing import Mapping, Optional
+from typing import Optional
 
-from .matplotlib import show
-from .. import builders, server, modeling
+from .. import builders, modeling, server
 from ..tools.gui import modal_radiobutton_chooser
+from .matplotlib import show
 
 
 class Materializers(Enum):

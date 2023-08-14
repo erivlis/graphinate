@@ -1,5 +1,5 @@
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Mapping, List
 
 from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
@@ -7,7 +7,7 @@ from starlette.staticfiles import StaticFiles
 from ..web import paths_mapping
 
 
-def _mount_static_files(named_paths: Mapping[str, Path]) -> List[Mount]:
+def _mount_static_files(named_paths: Mapping[str, Path]) -> list[Mount]:
     mounts = []
     for name, path in named_paths.items():
         if not name.startswith('__'):

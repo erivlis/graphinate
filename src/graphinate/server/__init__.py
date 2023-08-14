@@ -1,7 +1,6 @@
 import webbrowser
 
 import strawberry
-
 from starlette.applications import Starlette
 from strawberry.asgi import GraphQL
 

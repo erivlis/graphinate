@@ -10,10 +10,11 @@ import operator
 import pickle
 from abc import ABC
 from collections import Counter
+from collections.abc import Hashable, Iterable, Mapping
 from datetime import datetime
 from enum import Enum
 from types import MappingProxyType
-from typing import Callable, Dict, Hashable, Iterable, List, Mapping, NewType, Optional, Type, Union
+from typing import Callable, NewType, Optional, Union
 
 import inflect
 import networkx as nx
@@ -21,7 +22,7 @@ import strawberry
 from loguru import logger
 
 from . import color
-from .modeling import GraphModel, UNIVERSE_NODE
+from .modeling import UNIVERSE_NODE, GraphModel
 from .tools import mutators
 from .typing import NodeTypeAbsoluteId
 
@@ -32,8 +33,8 @@ DEFAULT_EDGE_DELIMITER = ' ↔ '
 def label_converter(value, delimiter: str):
     if value:
         return delimiter.join(str(v) for v in value) if isinstance(value, tuple) else str(value)
-    else:
-        return value
+
+    return value
 
 
 node_label_converter = functools.partial(label_converter, delimiter=DEFAULT_NODE_DELIMITER)
@@ -126,13 +127,13 @@ class NetworkxBuilder(Builder):
     def _parent_node_id(node_type_absolute_id: NodeTypeAbsoluteId, **kwargs):
         if node_type_absolute_id[0] is UNIVERSE_NODE:
             return UNIVERSE_NODE
-        else:
-            ids = []
-            for k, v in kwargs.items():
-                if k[:-3] == node_type_absolute_id[1]:
-                    break
-                ids.append(v)
-            return tuple(ids)
+
+        ids = []
+        for k, v in kwargs.items():
+            if k[:-3] == node_type_absolute_id[1]:
+                break
+            ids.append(v)
+        return tuple(ids)
 
         # return (*(kwargs.values()),) if kwargs else UNIVERSE_NODE
 
@@ -305,7 +306,7 @@ class GraphQLBuilder(NetworkxBuilder):
         id: strawberry.ID
         type: str
         label: str
-        value: Optional[List[strawberry.scalars.JSON]]
+        value: Optional[list[strawberry.scalars.JSON]]
         color: Optional[str] = None
         created: Optional[datetime]
         updated: Optional[datetime]
@@ -315,7 +316,7 @@ class GraphQLBuilder(NetworkxBuilder):
         node_id: strawberry.ID
         magnitude: int
         lineage: str
-        neighbors: Optional[List['GraphQLBuilder.GraphNode']]
+        neighbors: Optional[list['GraphQLBuilder.GraphNode']]
 
     @strawberry.type(description="Represents a Graph Edge")
     class GraphEdge(GraphElement):
@@ -330,8 +331,8 @@ class GraphQLBuilder(NetworkxBuilder):
         name: str
         created: datetime
         hash: str
-        node_type_counts: List['GraphQLBuilder.Measure']
-        edge_type_counts: List['GraphQLBuilder.Measure']
+        node_type_counts: list['GraphQLBuilder.Measure']
+        edge_type_counts: list['GraphQLBuilder.Measure']
         node_count: int
         edge_count: int
         order: int
@@ -414,7 +415,7 @@ class GraphQLBuilder(NetworkxBuilder):
         class_dict['__annotations__'][field_name] = inspect.getfullargspec(resolver).annotations['return']
 
     @staticmethod
-    def _graph_node(node_class: Type['GraphQLBuilder.GraphNode'],
+    def _graph_node(node_class: type['GraphQLBuilder.GraphNode'],
                     node: tuple,
                     node_data: dict) -> 'GraphQLBuilder.GraphNode':
         kwargs = {
@@ -452,7 +453,7 @@ class GraphQLBuilder(NetworkxBuilder):
         )
 
     @staticmethod
-    def _graphql_type(name: str, type_class: Type['GraphQLBuilder.GraphNode']) -> Type['GraphQLBuilder.GraphNode']:
+    def _graphql_type(name: str, type_class: type['GraphQLBuilder.GraphNode']) -> type['GraphQLBuilder.GraphNode']:
         capitalized_name = name.capitalize()
         return strawberry.type(
             type_class,
@@ -461,18 +462,18 @@ class GraphQLBuilder(NetworkxBuilder):
         )
 
     @classmethod
-    @functools.lru_cache()
+    @functools.lru_cache
     def _children_types(cls, model: GraphModel, node_type: str):
         return model.node_children(node_type).get(node_type, [])
 
     @property
-    @functools.lru_cache()
-    def _graphql_types(self) -> Dict[str, Type['GraphQLBuilder.GraphNode']]:
+    @functools.lru_cache
+    def _graphql_types(self) -> dict[str, type['GraphQLBuilder.GraphNode']]:
         # node_types = self.model.node_types
         node_types = list(self._graph.graph['node_types'].keys())
 
         # Create classes for nodes according to their type
-        graphql_types: Dict[str, Type[GraphQLBuilder.GraphNode]] = {}
+        graphql_types: dict[str, type[GraphQLBuilder.GraphNode]] = {}
         for node_type in node_types:
             class_name = node_type.capitalize()
             bases = (GraphQLBuilder.GraphNode,)
@@ -480,13 +481,13 @@ class GraphQLBuilder(NetworkxBuilder):
                 '__doc__': f"A {class_name} Graph Node",
             }
             # noinspection PyTypeChecker
-            graphql_type: Type[GraphQLBuilder.GraphNode] = type(class_name, bases, class_dict)
+            graphql_type: type[GraphQLBuilder.GraphNode] = type(class_name, bases, class_dict)
             graphql_types[node_type] = graphql_type
 
         def neighbors_resolver(neighbors_types: Optional[Iterable[str]] = None):
             graph = self._graph
 
-            def neighbors(self, children: bool = False) -> List[GraphQLBuilder.GraphNode]:
+            def neighbors(self, children: bool = False) -> list[GraphQLBuilder.GraphNode]:
                 node = decode_id(self.id)
                 items = (GraphQLBuilder._graph_node(graphql_types[d['type']], n, d) for n, d in graph.nodes(data=True)
                          if n in graph.neighbors(node))
@@ -519,8 +520,7 @@ class GraphQLBuilder(NetworkxBuilder):
 
         # region - Defining GraphQL Query Class dict - graph field
         def graphql_graph(self) -> GraphQLBuilder.Graph:
-
-            output = GraphQLBuilder.Graph(
+            return GraphQLBuilder.Graph(
                 graph=graph,
                 name=graph.graph['name'],
                 node_type_counts=[GraphQLBuilder.Measure(name=t, value=c) for t, c in
@@ -537,20 +537,18 @@ class GraphQLBuilder(NetworkxBuilder):
                 created=graph.graph['created'],
             )
 
-            return output
-
         self.add_field_resolver(query_class_dict, 'graph', graphql_graph)
 
         # endregion
 
         # region - Defining GraphQL Query Class dict - nodes field
         def graph_nodes_resolver(
-                graphql_type: Optional[Type[GraphQLBuilder.GraphNode]] = None,
+                graphql_type: Optional[type[GraphQLBuilder.GraphNode]] = None,
                 node_type: Optional[str] = None
         ) -> Callable[[Optional[strawberry.ID]], list[GraphQLBuilder.GraphNode]]:
 
             def graph_nodes(self,
-                            node_id: Optional[strawberry.ID] = strawberry.UNSET) -> List[GraphQLBuilder.GraphNode]:
+                            node_id: Optional[strawberry.ID] = strawberry.UNSET) -> list[GraphQLBuilder.GraphNode]:
                 if graphql_type:
                     nodes = (GraphQLBuilder._graph_node(graphql_type, n, d) for n, d in graph.nodes(data=True))
                 else:
@@ -567,7 +565,7 @@ class GraphQLBuilder(NetworkxBuilder):
 
                     return output
 
-                return list(node for node in nodes if filter_node(node))
+                return [node for node in nodes if filter_node(node)]
 
             return graph_nodes
 
@@ -576,12 +574,12 @@ class GraphQLBuilder(NetworkxBuilder):
         # endregion
 
         # region - Defining GraphQL Query Class dict - edges field
-        def graph_edges_resolver() -> Callable[[Optional[strawberry.ID]], List[GraphQLBuilder.GraphEdge]]:
+        def graph_edges_resolver() -> Callable[[Optional[strawberry.ID]], list[GraphQLBuilder.GraphEdge]]:
 
             graph_edge = self._graph_edge
 
             def graph_edges(self,
-                            edge_id: Optional[strawberry.ID] = strawberry.UNSET) -> List[GraphQLBuilder.GraphEdge]:
+                            edge_id: Optional[strawberry.ID] = strawberry.UNSET) -> list[GraphQLBuilder.GraphEdge]:
                 edges = (graph_edge((source, target), data) for source, target, data in graph.edges(data=True))
 
                 def filter_edge(edge):
@@ -591,7 +589,7 @@ class GraphQLBuilder(NetworkxBuilder):
 
                     return output
 
-                return list(edge for edge in edges if filter_edge(edge))
+                return [edge for edge in edges if filter_edge(edge)]
 
             return graph_edges
 
@@ -626,7 +624,7 @@ class GraphQLBuilder(NetworkxBuilder):
         # endregion
 
         # region - Defining GraphQL Query Class dict - create Query Class and Query Type
-        query_class = type('Query', tuple(), query_class_dict)
+        query_class = type('Query', (), query_class_dict)
         query_graphql_type = strawberry.type(query_class, name='Query')
         # endregion
 
@@ -642,7 +640,7 @@ class GraphQLBuilder(NetworkxBuilder):
         return strawberry.Schema(query=query_graphql_type, types=graphql_types.values())
 
     def build(self, **kwargs) -> strawberry.Schema:
-        nx_graph: nx.Graph = super().build(**kwargs)
+        super().build(**kwargs)
         schema: strawberry.Schema = self.schema()
         return schema
 
@@ -667,7 +665,7 @@ class D3GraphQLBuilder(D3Builder):
         class GraphElement:
             type: str
             label: str
-            value: List[strawberry.scalars.JSON]
+            value: list[strawberry.scalars.JSON]
             color: Optional[str] = None
             created: datetime
             updated: Optional[datetime]
@@ -675,16 +673,16 @@ class D3GraphQLBuilder(D3Builder):
         @strawberry.type
         class GraphData:
             name: str
-            node_types: List[Count]
-            edge_types: Optional[List[Count]]
-            details: List[Detail]
+            node_types: list[Count]
+            edge_types: Optional[list[Count]]
+            details: list[Detail]
             created: datetime
 
         @strawberry.type
         class GraphNode(GraphElement):
             id: strawberry.ID
             magnitude: int
-            lineage: List[str]
+            lineage: list[str]
             # neighbors: Optional[List['GraphNode']]
 
         @strawberry.type
@@ -696,8 +694,8 @@ class D3GraphQLBuilder(D3Builder):
         @strawberry.type
         class Graph:
             data: GraphData
-            nodes: List[GraphNode]
-            edges: List[GraphEdge]
+            nodes: list[GraphNode]
+            edges: list[GraphEdge]
 
         fields = ('nodes', 'links', 'graph')
 
@@ -747,7 +745,7 @@ class D3GraphQLBuilder(D3Builder):
         return self._schema(d3_graph)
 
 
-def build(builder_cls: Type[Builder],
+def build(builder_cls: type[Builder],
           graph_model: GraphModel,
           graph_type: GraphType = GraphType.Graph,
           default_node_attributes: Optional[Mapping] = None,

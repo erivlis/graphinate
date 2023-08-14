@@ -1,7 +1,7 @@
 from . import builders
 from .builders import GraphType
 from .materialize import materialize
-from .modeling import GraphModel, UNIVERSE_NODE
+from .modeling import UNIVERSE_NODE, GraphModel
 
 
 def model(name: str):

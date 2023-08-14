@@ -38,7 +38,7 @@ def modal_radiobutton_chooser(window_title: str, options: dict, default=None):
     def change_state():
         exit_button['state'] = tk.NORMAL
 
-    for option in options.keys():
+    for option in options:
         ttk.Radiobutton(
             radiobuttons_frame,
             text=option,
