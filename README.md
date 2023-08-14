@@ -31,10 +31,22 @@ Graphinate officially supports Python 3.9+.
 
 ## Examples
 
-- GitHub
-  - Repository
-  - Followers
-- Code AST (Python)
+
+- [ ] Code
+  - [ ] Call Graph 
+  - [x] Python AST
+- [x] GitHub
+  - [x] Repository
+  - [x] Followers
+- [ ] Ethernet
+  - [ ] Traceroute
+- [ ] Math
+  - [x] Graph Atlas
+  - [ ] Hailstone
+- [ ] Text
+  - [ ] NLP
+- [ ] Web
+  - [ ] Web Graph
 
 ## API
 
