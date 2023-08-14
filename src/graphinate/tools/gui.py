@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk as ttk
 
 
-def modal_window(title: str):
+def _modal_window(title: str):
     # Creating parent Tkinter window
     win = tk.Tk()
     # win.geometry("200x125")
@@ -15,7 +15,7 @@ def modal_window(title: str):
 
 def modal_radiobutton_chooser(window_title: str, options: dict, default=None):
     # Creating parent Tkinter window
-    win = modal_window(window_title)
+    win = _modal_window(window_title)
 
     # let us create a Tkinter string variable
     # that is able to store any string value
@@ -65,24 +65,24 @@ def modal_radiobutton_chooser(window_title: str, options: dict, default=None):
 
 
 def modal_listbox_chooser(window_title: str, options: dict, default=None):
-    root = modal_window(window_title)
+    win = _modal_window(window_title)
 
     choices = list(options.keys())
 
-    choices_var = tk.Variable(root, value=choices)
+    choices_var = tk.Variable(win, value=choices)
 
-    selection_var = tk.Variable(root)
+    selection_var = tk.Variable(win)
 
-    lisbox_frame = ttk.Frame(
-        root,
+    listbox_frame = ttk.Frame(
+        win,
         # borderwidth=5,
         # relief='solid',
     )
-    lisbox_frame.pack(padx=2, pady=2)
+    listbox_frame.pack(padx=2, pady=2)
 
     # Creating a Listbox and
     # attaching it to root window
-    listbox = tk.Listbox(lisbox_frame,
+    listbox = tk.Listbox(listbox_frame,
                          listvariable=choices_var,
                          selectmode="MULTIPLE",
                          height=min(len(choices), 50),
@@ -94,7 +94,7 @@ def modal_listbox_chooser(window_title: str, options: dict, default=None):
 
     # Creating a Scrollbar and
     # attaching it to root window
-    scrollbar = tk.Scrollbar(lisbox_frame)
+    scrollbar = tk.Scrollbar(listbox_frame)
 
     # Adding Scrollbar to the right
     # side of root window
@@ -118,10 +118,10 @@ def modal_listbox_chooser(window_title: str, options: dict, default=None):
     listbox.bind("<<ListboxSelect>>", on_select)
     # listbox.bind("<Double-1>", lambda e: selection_var.set(listbox.curselection()))
 
-    exit_button = ttk.Button(root, text="OK", command=root.destroy, state=tk.DISABLED)
+    exit_button = ttk.Button(win, text="OK", command=win.destroy, state=tk.DISABLED)
     exit_button.pack(pady=4, side=tk.BOTTOM)
 
-    root.mainloop()
+    win.mainloop()
 
     for choice in selection_var.get():
         yield choice, options.get(choices[choice], default)

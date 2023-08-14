@@ -1,8 +1,7 @@
 import graphinate
-import graphinate.builders
-from graphinate.visualizers import show
+from graphinate.materialize.matplotlib import show
 
-graph_model = graphinate.GraphModel(name='Hailstone')
+graph_model = graphinate.model(name='Hailstone')
 
 
 def h(h_id):

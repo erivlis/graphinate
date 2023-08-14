@@ -20,9 +20,9 @@ import networkx as nx
 import strawberry
 from loguru import logger
 
-from . import color, mutators
-from .color import node_color_mapping
+from . import color
 from .modeling import GraphModel, UNIVERSE_NODE
+from .tools import mutators
 from .typing import NodeTypeAbsoluteId
 
 DEFAULT_NODE_DELIMITER = ' ∋ '
@@ -246,7 +246,7 @@ class NetworkxBuilder(Builder):
         self._rectify_node_attributes(**defaults)
 
         if 'color' not in defaults:
-            self._rectify_node_attributes(color=node_color_mapping(self._graph))
+            self._rectify_node_attributes(color=color.node_color_mapping(self._graph))
 
         self._rectify_edge_attributes(**self.default_edge_attributes)
 

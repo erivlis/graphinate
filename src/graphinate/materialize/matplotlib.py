@@ -1,7 +1,7 @@
 import networkx as nx
 from matplotlib import pyplot as plt
 
-from .color import node_color_mapping
+from ..color import node_color_mapping
 
 
 def nodes_labels(graph: nx.Graph):

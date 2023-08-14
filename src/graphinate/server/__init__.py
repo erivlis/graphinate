@@ -8,7 +8,7 @@ from strawberry.asgi import GraphQL
 from .starlette import routes
 
 
-def run_graphql(graphql_schema: strawberry.Schema, port: int = 8000):
+def run_graphql(graphql_schema: strawberry.Schema, port: int = 8072):
     def open_url():
         for app_name in ('voyager', 'graphiql', 'viewer'):
             webbrowser.open(f'http://localhost:{port}/{app_name}')

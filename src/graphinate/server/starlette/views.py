@@ -1,7 +1,7 @@
 from starlette.responses import FileResponse
 from starlette.routing import Route
 
-from graphinate.server.web import get_static_path
+from ..web import get_static_path
 
 
 async def favicon(request):
