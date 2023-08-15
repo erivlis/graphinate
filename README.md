@@ -58,7 +58,7 @@ Graphinate officially supports Python 3.9+.
 
 ## Development
 
-### Linter
+### Lint
 
 ```shell
 ruff check src
@@ -67,16 +67,16 @@ ruff check src
 ### Docs
 
 ```shell
-python -m bmkdocs build
+python -m mkdocs build
 ```
 
-## Build
+### Build
 
 ```shell
 python -m build
 ```
 
-## Test
+### Test
 
 ```shell
  python -m pytest ./tests --cov=./src --cov-branch --cov-report=xml --junitxml=test_results.xml
