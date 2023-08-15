@@ -1,12 +1,11 @@
 import itertools
 
-import networkx as nx
-
 import graphinate
 import graphinate.tools.gui
+import networkx as nx
 
 
-def get_graph():
+def atlas():
     ladder_size = 16
     ladder = nx.ladder_graph(ladder_size)
 
@@ -43,14 +42,32 @@ def get_graph():
     spiral = nx.Graph(e for e in spiral_edges(128, 8))
 
     def spiral_torus_edges(n, k):
-        yield from spiral_edges(n-1, k)
+        yield from spiral_edges(n - 1, k)
         yield n - 1, 0
         for i in range(k):
             yield i, n - k + i
 
     spiral_torus = nx.Graph(spiral_torus_edges(128, 8))
 
-    adjacencies = {
+    graphs = {
+        'Tetrahedron': nx.tetrahedral_graph(),
+        'Cube': nx.hypercube_graph(3),
+        'Octahedron': nx.octahedral_graph(),
+        'Dodecahedron': nx.dodecahedral_graph(),
+        'Icosahedron': nx.icosahedral_graph(),
+        'Tesseract': nx.hypercube_graph(4),
+        'Truncated Cube': nx.truncated_cube_graph(),
+        'Truncated Tetrahedron': nx.truncated_tetrahedron_graph(),
+        'Ladder': ladder,
+        'Ring': ladder_ring,
+        'Möbius': ladder_mobius,
+        'Cylinder': cylinder,
+        'Spiral': spiral,
+        'Spiral Torus': spiral_torus,
+        'Circulant[10,[2]]': nx.circulant_graph(10, [2])
+    }
+
+    adjacency_mapping = {
         'Buckyball - Truncated Icosahedral Graph': {
             1: [2, 3, 4],
             2: [1, 55, 56],
@@ -739,38 +756,17 @@ def get_graph():
     def edges_iter(adjacency_list: dict[int, [int]]):
         yield from itertools.chain.from_iterable(((k, t) for t in v) for k, v in adjacency_list.items())
 
-    edges = ((n, edges_iter(l)) for n, l in adjacencies.items())
+    edges = ((name, edges_iter(adjacency_list)) for name, adjacency_list in adjacency_mapping.items())
 
-    graphs = {n: nx.Graph(list(e)) for n, e in edges}
+    graphs.update({n: nx.Graph(list(e)) for n, e in edges})
 
-    options = {
-        'Tetrahedron': nx.tetrahedral_graph(),
-        'Cube': nx.hypercube_graph(3),
-        'Octahedron': nx.octahedral_graph(),
-        'Dodecahedron': nx.dodecahedral_graph(),
-        'Icosahedron': nx.icosahedral_graph(),
-        'Tesseract': nx.hypercube_graph(4),
-        'Truncated Cube': nx.truncated_cube_graph(),
-        'Truncated Tetrahedron': nx.truncated_tetrahedron_graph(),
-        'Ladder': ladder,
-        'Ring': ladder_ring,
-        'Möbius': ladder_mobius,
-        'Cylinder': cylinder,
-        'Spiral': spiral,
-        'Spiral Torus': spiral_torus,
-        'Circulant[10,[2]]': nx.circulant_graph(10, [2])
-    }
-
-    options.update(graphs)
-
-    # return graphinate.tools.gui.modal_radiobutton_chooser('Choose Graph', options)
-    yield from graphinate.tools.gui.modal_listbox_chooser('Choose Graph', options)
+    return graphs
 
 
-def models():
+def models(iterable):
     graph_model = graphinate.GraphModel('Graph Atlas')
 
-    graph_atlas = nx.disjoint_union_all(g for _, g in get_graph())
+    graph_atlas = nx.disjoint_union_all(g for _, g in iterable)
 
     @graph_model.edge()
     def edge():
@@ -780,6 +776,10 @@ def models():
     yield graph_model
 
 
+model = next(models(atlas()))
+
 if __name__ == '__main__':
-    for model in models():
+    choices = graphinate.tools.gui.modal_listbox_chooser('Choose Graph', atlas())
+
+    for model in models(choices):
         graphinate.materialize(model.name, model)
