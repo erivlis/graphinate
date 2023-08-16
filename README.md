@@ -56,6 +56,40 @@ Graphinate officially supports Python 3.9+.
 
 ### By Configuration
 
+## CLI
+
+### Commands
+
+```
+Usage: python -m graphinate [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  save
+  server
+```
+
+#### Save
+
+```
+Usage: python -m graphinate save [OPTIONS] MODEL
+
+Options:
+  --help  Show this message and exit.
+```
+
+#### Server
+
+```
+Usage: python -m graphinate server [OPTIONS] MODEL
+
+Options:
+  -p, --port INTEGER
+  --help              Show this message and exit.
+```
+
 ## Development
 
 ### Lint
@@ -81,3 +115,11 @@ python -m build
 ```shell
  python -m pytest ./tests --cov=./src --cov-branch --cov-report=xml --junitxml=test_results.xml
 ```
+
+
+## Acknowledgements
+
+Developed using:
+
+<a href="https://www.jetbrains.com/pycharm/"><img height="40" style="background: linear-gradient(-45deg, #FCF84A, #3DEA62, #21D789);" src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm.png" alt="PyCharm logo."></a>
+

@@ -32,7 +32,7 @@ dependencies = [
     "loguru>=0.7",
     "matplotlib>=3.7",
     "networkx>=3",
-    "strawberry-graphql[asgi,opentelemetry]",
+    "strawberry-graphql[asgi,opentelemetry]"
 ]
 
 [project.urls]
@@ -43,18 +43,16 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pip-tools",
-    "pipdeptree"
+    "ruff",
+    # "pip-tools",
+    # "pipdeptree"
 ]
-testing = [
+test = [
     "pytest >= 7.3.2",
     "pytest-cov >= 4.1.0",
-    "pytest-asyncio"
-    #  "pytest-rerunfailures",
-    #  "pytest-xdist",
-    # build deps for tests
-    #  "flit_core >=2,<4",
-    #  "poetry_core>=1.0.0",
+    # "pytest-asyncio"
+    # "pytest-rerunfailures",
+    # "pytest-xdist",
 ]
 plot = [
     "matplotlib",
@@ -66,8 +64,6 @@ server = [
 ]
 
 [build-system]
-#requires = ["setuptools>=61.0"]
-#build-backend = "setuptools.build_meta"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
@@ -77,6 +73,10 @@ allow-direct-references = true
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[tool.black]
+line-length = 120
+#extend-exclude = ''
 
 [tool.ruff]
 select = [
