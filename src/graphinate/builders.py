@@ -100,11 +100,12 @@ class Builder(ABC):
     })
 
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
+        self._cached_build_kwargs = {}
         self.model = model
         self.graph_type = graph_type
 
     def build(self, **kwargs):
-        raise NotImplementedError()
+        self._cached_build_kwargs = kwargs
 
 
 class NetworkxBuilder(Builder):
@@ -257,7 +258,8 @@ class NetworkxBuilder(Builder):
 
         self._graph.graph['created'] = datetime.utcnow()
 
-    def build(self, **kwargs) -> nx.Graph:
+    def build(self, **kwargs):
+        super().build(**kwargs)
         default_node_attributes = dict(**self.default_node_attributes)
         if 'default_node_attributes' in kwargs:
             default_node_attributes.update(kwargs.pop('default_node_attributes') or {})
@@ -278,8 +280,8 @@ class D3Builder(NetworkxBuilder):
         super().__init__(model, graph_type)
 
     def build(self, **kwargs) -> dict:
-        nx_graph: nx.Graph = super().build(**kwargs)
-        return self.from_networkx(nx_graph)
+        super().build(**kwargs)
+        return self.from_networkx(self._graph)
 
     @staticmethod
     def from_networkx(nx_graph: nx.Graph):
@@ -507,12 +509,14 @@ class GraphQLBuilder(NetworkxBuilder):
 
         return {k: GraphQLBuilder._graphql_type(k, v) for k, v in graphql_types.items()}
 
-    def _graphql_query(self):
+    def _graphql_query(self):  # noqa: C901
         # inflect engine to generate Plurals when needed
         inflection = inflect.engine()
 
-        # local references to instance fields in order to "inject" into dynamically generated class methods
-        graph: nx.Graph = self._graph
+        # local reference to instance fields in order to "inject" into dynamically generated class methods
+        def get_graph():
+            return self._graph
+
         graphql_types = self._graphql_types
 
         # region - Defining GraphQL Query Class dict
@@ -520,6 +524,7 @@ class GraphQLBuilder(NetworkxBuilder):
 
         # region - Defining GraphQL Query Class dict - graph field
         def graphql_graph(self) -> GraphQLBuilder.Graph:
+            graph = get_graph()
             return GraphQLBuilder.Graph(
                 graph=graph,
                 name=graph.graph['name'],
@@ -549,6 +554,9 @@ class GraphQLBuilder(NetworkxBuilder):
 
             def graph_nodes(self,
                             node_id: Optional[strawberry.ID] = strawberry.UNSET) -> list[GraphQLBuilder.GraphNode]:
+
+                graph = get_graph()
+
                 if graphql_type:
                     nodes = (GraphQLBuilder._graph_node(graphql_type, n, d) for n, d in graph.nodes(data=True))
                 else:
@@ -580,6 +588,8 @@ class GraphQLBuilder(NetworkxBuilder):
 
             def graph_edges(self,
                             edge_id: Optional[strawberry.ID] = strawberry.UNSET) -> list[GraphQLBuilder.GraphEdge]:
+                graph = get_graph()
+
                 edges = (graph_edge((source, target), data) for source, target, data in graph.edges(data=True))
 
                 def filter_edge(edge):
@@ -607,6 +617,9 @@ class GraphQLBuilder(NetworkxBuilder):
         #  region  - Defining GraphQL Query Class dict - field measure for 'GraphMeasure' GraphQL type
 
         def graph_measure(self, measure: GraphQLBuilder.GraphMeasure) -> GraphQLBuilder.Measure:
+
+            graph = get_graph()
+
             if isinstance(measure.value, str):
                 method = measure.value
                 module = nx
@@ -632,17 +645,29 @@ class GraphQLBuilder(NetworkxBuilder):
 
         return query_graphql_type
 
-    def schema(self) -> strawberry.Schema:
-        query_graphql_type = self._graphql_query()
-        graphql_types = self._graphql_types
+    def _graphql_mutation(self):
 
+        refresh_graph = functools.partial(super().build, **self._cached_build_kwargs)
+
+        @strawberry.type
+        class Mutation:
+
+            @strawberry.mutation
+            def refresh(self) -> bool:
+                refresh_graph()
+                return True
+
+        return Mutation
+
+    def schema(self) -> strawberry.Schema:
         # define and return Schema
-        return strawberry.Schema(query=query_graphql_type, types=graphql_types.values())
+        return strawberry.Schema(query=self._graphql_query(),
+                                 mutation=self._graphql_mutation(),
+                                 types=self._graphql_types.values())
 
     def build(self, **kwargs) -> strawberry.Schema:
         super().build(**kwargs)
-        schema: strawberry.Schema = self.schema()
-        return schema
+        return self.schema()
 
 
 class D3GraphQLBuilder(D3Builder):

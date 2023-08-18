@@ -6,7 +6,7 @@ import click
 from . import builders
 from .materialize import materialize
 from .modeling import GraphModel
-from .server import run_graphql
+from .server import DEFAULT_PORT, run_graphql
 from .tools.importer import import_from_string
 
 
@@ -28,7 +28,7 @@ def save(model, *args, **kwargs):
 
 @cli.command()
 @click.argument('model')
-@click.option('-p', '--port', type=int, default=8072)
+@click.option('-p', '--port', type=int, default=DEFAULT_PORT)
 def server(model, port, *args, **kwargs):
     graph_model: GraphModel = import_from_string(model) if isinstance(model, str) else model
     materialize(title=graph_model.name,
