@@ -1,15 +1,9 @@
-"""
-pip install beautifulsoup4
-pip install lxml
-pip install requests
-"""
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urljoin, urlparse
 
+import graphinate.builders
 import networkx as nx
 import requests
 from bs4 import BeautifulSoup
-
-import graphinate.builders
 from graphinate.materialize.matplotlib import show
 
 DEPTH = 0

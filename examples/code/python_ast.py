@@ -2,7 +2,7 @@ import ast
 import inspect
 import operator
 from _ast import AST
-from typing import Iterable
+from collections.abc import Iterable
 
 import graphinate
 import graphinate.builders
