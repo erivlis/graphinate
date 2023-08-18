@@ -776,7 +776,7 @@ def models(iterable):
     yield graph_model
 
 
-model = next(models(atlas()))
+model = next(models(atlas().items()))
 
 if __name__ == '__main__':
     choices = graphinate.tools.gui.modal_listbox_chooser('Choose Graph', atlas())
