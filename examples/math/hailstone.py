@@ -1,5 +1,5 @@
 import graphinate
-from graphinate.materialize.matplotlib import show
+from graphinate.materializers.matplotlib import plot
 
 graph_model = graphinate.model(name='Hailstone')
 
@@ -22,4 +22,4 @@ if __name__ == '__main__':
         'h_id': 7
     }
     graph = networkx_graph.build(**params)
-    show(graph)
+    plot(graph)

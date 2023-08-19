@@ -129,7 +129,7 @@ class GraphModel:
              key: Optional[Extractor] = None,
              value: Optional[Extractor] = None,
              label: Optional[Extractor] = None) -> Callable[[Items], None]:
-        """Decorator to Register a Generator of node payloads as a source to materialize Graph Nodes. It creates a
+        """Decorator to Register a Generator of node payloads as a source to create Graph Nodes. It creates a
         NodeModel object.
         :param _type: Optional source for the Node Type. Defaults to use Generator function name as the Node Type.
         :param parent_type: Optional parent Node Type. Defaults to UNIVERSE_NODE
@@ -170,7 +170,7 @@ class GraphModel:
              value: Optional[Extractor] = None,
              weight: Union[float, Callable[[Any], float]] = 1.0,
              ) -> Callable[[Items], None]:
-        """Decorator to Register a Generator of edge payloads as a source to materialize Graph Edges. It creates an Edge
+        """Decorator to Register a Generator of edge payloads as a source to create Graph Edges. It creates an Edge
         Generator function.
         :param _type:
         :param source:

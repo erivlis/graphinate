@@ -7,7 +7,7 @@ DEPTH = 0
 
 
 def followers_graph_model(max_depth: int = DEPTH):
-    graph_model = graphinate.GraphModel(name='github-followers')
+    graph_model = graphinate.GraphModel(name='Github Followers Graph')
 
     def _followers(user_id: Optional[str] = None, depth: int = 0, **kwargs):
         user = github_user(user_id)
@@ -34,8 +34,7 @@ if __name__ == '__main__':
     }
 
     graphinate.materialize(
-        title="Github Followers Graph",
-        graph_model=followers_model,
+        model=followers_model,
         graph_type=graphinate.GraphType.DiGraph,
         default_node_attributes={'type': 'user'},
         **params

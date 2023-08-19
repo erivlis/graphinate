@@ -1,9 +1,15 @@
-# Install
-
-## PyPI
+## Install
 
 Graphinate is available on PyPI:
 
 ```shell
-python -m pip install graphinate 
+pip install graphinate
 ```
+
+To install with server support
+
+```shell
+pip install graphinate[server]
+```
+
+Graphinate officially supports Python 3.9+.

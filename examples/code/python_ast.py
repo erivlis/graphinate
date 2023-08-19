@@ -29,7 +29,7 @@ def _ast_edge(parsed_ast: AST):
 
 
 def ast_graph_model():
-    graph_model = graphinate.GraphModel(name='AST')
+    graph_model = graphinate.GraphModel(name='AST Graph')
 
     root_ast_node = ast.parse(inspect.getsource(graphinate.builders.D3Builder))
 
@@ -58,4 +58,4 @@ def ast_graph_model():
 
 if __name__ == '__main__':
     ast_model = ast_graph_model()
-    graphinate.materialize("AST Graph", ast_model)
+    graphinate.materialize(ast_model)

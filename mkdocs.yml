@@ -57,9 +57,15 @@ markdown_extensions:
   - pymdownx.superfences
 
 nav:
-  - Introduction: index.md
+  - Home: index.md
   - Install: install.md
+  - Introduction: intro.md
+  - Quick Start: start.md
+  - Gallery: gallery.md
   - Usage: usage.md
+  - Examples: examples.md
+#  - Acknowledgements: acknowledgements.md
+
 
 extra:
   social:

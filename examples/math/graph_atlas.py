@@ -782,4 +782,4 @@ if __name__ == '__main__':
     choices = graphinate.tools.gui.modal_listbox_chooser('Choose Graph', atlas())
 
     for model in models(choices):
-        graphinate.materialize(model.name, model)
+        graphinate.materialize(model)

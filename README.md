@@ -1,8 +1,9 @@
 # Graphinate. Data to Graphs.
 
-## ⚠️ **Under Development!** ⚠️
-
-This library is alpha-quality
+> [!WARNING]
+> **UNDER DEVELOPMENT**
+> 
+> **This library is alpha-quality**
 
 ![PyPI](https://img.shields.io/pypi/v/graphinate)
 ![PyPI - Status](https://img.shields.io/pypi/status/graphinate)
@@ -16,98 +17,70 @@ This library is alpha-quality
 [![Tests](https://github.com/erivlis/graphinate/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/erivlis/graphinate/actions/workflows/test.yml)
 [![Publish](https://github.com/erivlis/graphinate/actions/workflows/publish.yml/badge.svg)](https://github.com/erivlis/graphinate/actions/workflows/publish.yml)
 
+## Introduction
+
+### What is Graphinate?
+
+Graphinate is a library that aims to simplify the generation of Graph Data Structures from Data Sources.
+
+It utilizes and builds upon the excellent [**_NetworkX_**](https://networkx.org/) library.
+
+In addition, it has several interfaces for ease of use:
+
+- CLI (using [**_Click_**](https://palletsprojects.com/p/click/)),
+- GraphQL API (using [**_Strawberry GraphQL_**](https://strawberry.rocks/)).
+
+[//]: # (- TUI &#40;using [**_Textual_**]&#40;https://textual.textualize.io/&#41;&#41; **⚠️Not available yet⚠️**)
+
 ## Install
 
 Graphinate is available on PyPI:
 
 ```shell
-python -m pip install graphinate 
+pip install graphinate
+```
+
+To install with server support
+
+```shell
+pip install graphinate[server]
 ```
 
 Graphinate officially supports Python 3.9+.
 
-## Introduction
+## Quick Start
 
-### What is Graphinate?
+### `GraphModel`
 
-Graphinate aims to simplify the generation of Graph data structures from sources of data.
-It utilizes and build upon [NetworkX](https://networkx.org/)
+Graphinate defines the `GraphModel` Class which can be used to declaratively register _Edge_ and/or _Node_ data
+supplier functions by using decorators.
 
-### What is a Graph?
+### `materialize`
 
-> In a mathematician's terminology, a graph is a collection of points and lines connecting some (possibly empty) subset
-> of them. The points of a graph are most commonly known as graph vertices, but may also be called "nodes" or simply "
-> points." Similarly, the lines connecting the vertices of a graph are most commonly known as graph edges, but may also
-> be
-> called "arcs" or "lines."
->
-> &mdash; [https://mathworld.wolfram.com/Graph.html](https://mathworld.wolfram.com/Graph.html)
+Graphinate supplies a `materialize` function to output the `GraphModel`.
 
-### What is Data?
+### Example
 
-> ...data is a collection of discrete or continuous values that convey information, describing the quantity, quality,
-> fact, statistics, other basic units of meaning, or simply sequences of symbols that may be further interpreted
-> formally.
->
-> &mdash; [https://en.wikipedia.org/wiki/Data](https://en.wikipedia.org/wiki/Data)
+```python
+import graphinate
 
-### Defining a Graph
+N: int = 8
 
-One can define Graphs in two general ways:
+# Define GraphModel
+graph_model = graphinate.GraphModel(name="Octagonal Graph")
 
-#### Edge first
 
-Generate a Graph by supplying a list of edges. The simplest definition of an edge will be a tuple of 2 values. Each
-value represent a node (or vertex) in the graph. Additional attributes may be also added to the edge definition to
-signify additional meaning.
+# Register edges supplier function
+@graph_model.edge()
+def edge():
+    for i in range(N):
+        yield {'source': i, 'target': i + 1}
+    yield {'source': N, 'target': 0}
 
-In this case one defines the **edges explicitly** and the **nodes implicitly**.
 
-Such graph is focused more on the _relationships_ or the _structure_ of the Graph than on the nodes themselves.
-
-#### Node first
-
-Alternatively, one can first add nodes (vertices) to a graph without defining edges. Additional attributes may be added
-to the node definition to signify additional meaning. Later on edge definitions are added to generate the relationships
-between the nodes.
-
-In this case **both nodes and the edges** are defines **explicitly**.
-
-Such a graph has focus first on the nodes and later on the relationship between them.
-
-## Gallery
-
-![d3_graph_ast](https://github.com/erivlis/graphinate/assets/9897520/9e7e1ed2-3a5c-41fe-8c5f-999da4b741ff)
-![repo_graph](https://github.com/erivlis/graphinate/assets/9897520/9c044bbe-1f21-41b8-b879-95b8362ad48d)
-![AST 3D Force animation](https://github.com/erivlis/graphinate/assets/9897520/2e9a53b1-5686-4683-a0e4-fbffa850a27b)
-
-## Examples
-
-- [ ] Code
-  - [ ] Call Graph
-  - [x] Python AST
-- [x] GitHub
-  - [x] Repository
-  - [x] Followers
-- [ ] Ethernet
-  - [ ] Traceroute
-- [ ] Math
-  - [x] Graph Atlas
-  - [ ] Hailstone
-- [ ] Text
-  - [ ] NLP
-- [ ] Web
-  - [ ] Web Graph
-
-## Guide
-
-### By Convention
-
-https://github.com/erivlis/graphinate/blob/f5b363a360907aecf52cf11249b78666eb470d20/examples/github/followers.py#L1
-
-### By Configuration
-
-https://github.com/erivlis/graphinate/blob/f5b363a360907aecf52cf11249b78666eb470d20/examples/github/repositories.py#L1
+# Materialize the GraphModel
+graphinate.materialize(graph_model)
+```
 
 ## CLI
 
@@ -143,6 +116,24 @@ Options:
   --help              Show this message and exit.
 ```
 
+## TUI
+
+UNDER DEVELOPMENT
+
+## Gallery
+
+### Python AST
+
+![d3_graph_ast](https://github.com/erivlis/graphinate/assets/9897520/9e7e1ed2-3a5c-41fe-8c5f-999da4b741ff)
+
+### GitHub Repository
+
+![repo_graph](https://github.com/erivlis/graphinate/assets/9897520/9c044bbe-1f21-41b8-b879-95b8362ad48d)
+
+### Python AST - 3D Force-Directed Animation
+
+![AST 3D Force animation](https://github.com/erivlis/graphinate/assets/9897520/2e9a53b1-5686-4683-a0e4-fbffa850a27b)
+
 ## Development
 
 ### Lint
@@ -173,12 +164,18 @@ python -m build
 
 ### Dependencies
 
-<a href="https://vasturiano.github.io/3d-force-graph/"><img height="50" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="http://gist.github.com/vasturiano/02affe306ce445e423f992faeea13521/raw/preview.png" alt="3D Force-Directed Graph Logo."></a>
+#### Python
+
 <a href="https://palletsprojects.com/p/click/"><img height="50" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://click.palletsprojects.com/en/7.x/_images/click-logo.png" alt="Click Logo."></a>
 <a href="https://github.com/Delgan/loguru"><img height="50" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://raw.githubusercontent.com/Delgan/loguru/master/docs/_static/img/logo.png" alt="Loguru Logo."></a>
 <a href="https://matplotlib.org/"><img height="50" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://matplotlib.org/_static/logo_dark.svg" alt="matplotlib Logo."></a>
 <a href="https://networkx.org/"><img height="50" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://networkx.org/_static/networkx_logo.svg" alt="NetworkX Logo."></a>
 <a href="https://strawberry.rocks/"><img height="50" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://github.com/strawberry-graphql/strawberry/raw/main/.github/logo.png" alt="Strawberry GraphQL Logo."></a>
+
+#### Javascript and HTML
+
+<a href="https://vasturiano.github.io/3d-force-graph/"><img height="50" style="background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="http://gist.github.com/vasturiano/02affe306ce445e423f992faeea13521/raw/preview.png" alt="3D Force-Directed Graph Logo."></a>
+<a href="https://github.com/graphql-kit/graphql-voyager"><img height="50" style="background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://github.com/graphql-kit/graphql-voyager/raw/main/docs/cover.png" alt="Graphql Voyager Logo."></a>
 
 ### Dev Tools
 

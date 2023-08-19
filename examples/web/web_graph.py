@@ -4,7 +4,7 @@ import graphinate.builders
 import networkx as nx
 import requests
 from bs4 import BeautifulSoup
-from graphinate.materialize.matplotlib import show
+from graphinate.materializers import plot
 
 DEPTH = 0
 
@@ -49,4 +49,4 @@ if __name__ == '__main__':
 
     nx_graph: nx.Graph = networkx_graph.build(url=base_url)
 
-    show(nx_graph)
+    plot(nx_graph)

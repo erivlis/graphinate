@@ -7,11 +7,11 @@ import pathlib
 from typing import Optional
 
 import graphinate
-from _client import github_user, github_repositories, github_commits, github_files
+from _client import github_commits, github_files, github_repositories, github_user
 
 
 def repo_graph_model():
-    graph_model = graphinate.GraphModel(name='github-repository')
+    graph_model = graphinate.GraphModel(name='GitHub Repository Graph')
 
     @graph_model.edge
     def github(user_id: Optional[str] = None,
@@ -60,8 +60,7 @@ def repo_graph_model():
                    repository_id: Optional[str] = None,
                    **kwargs):
         repos = github_repositories(user_id, repository_id)
-        for repo in repos:
-            yield repo
+        yield from repos
 
     @commit_node
     def commit(user_id: Optional[str] = None,
@@ -110,4 +109,4 @@ if __name__ == '__main__':
         # 'user_id' "strawberry-graphql"
     }
 
-    graphinate.materialize("GitHub Repository Graph", repo_model, **params)
+    graphinate.materialize(repo_model, **params)

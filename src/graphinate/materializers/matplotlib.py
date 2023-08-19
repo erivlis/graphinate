@@ -1,15 +1,15 @@
 import networkx as nx
-from matplotlib import pyplot as plt
+from matplotlib import pyplot
 
 from ..color import node_color_mapping
 
 
-def nodes_labels(graph: nx.Graph):
+def _nodes_labels(graph: nx.Graph):
     # return {node: data.get('label', node) or node for node, data in graph.nodes.data()}
     return nx.get_node_attributes(graph, 'label')
 
 
-def edges_labels(graph: nx.Graph):
+def _edges_labels(graph: nx.Graph):
     return nx.get_edge_attributes(graph, 'label')
 
 
@@ -22,7 +22,7 @@ def draw(graph: nx.Graph, with_labels=True):
         draw_params.update(
             {
                 'with_labels': True,
-                'labels': nodes_labels(graph),
+                'labels': _nodes_labels(graph),
                 'font_size': 6,
                 'font_color': 'blue',
                 # 'horizontalalignment':'left',
@@ -39,9 +39,9 @@ def draw(graph: nx.Graph, with_labels=True):
 
     node_color = list(node_color_mapping(graph).values())
     nx.draw(graph, pos, node_color=node_color, **draw_params)
-    nx.draw_networkx_edge_labels(graph, pos, edge_labels=edges_labels(graph), font_color='red', font_size=6)
+    nx.draw_networkx_edge_labels(graph, pos, edge_labels=_edges_labels(graph), font_color='red', font_size=6)
 
 
-def show(graph: nx.Graph):
+def plot(graph: nx.Graph):
     draw(graph)
-    plt.show()
+    pyplot.show()

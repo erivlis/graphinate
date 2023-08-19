@@ -11,5 +11,4 @@ for chunk in doc.noun_chunks:
           chunk.root.head.text)
 
 for token in doc:
-    print(token.text, token.dep_, token.head.text, token.head.pos_,
-            [child for child in token.children])
+    print(token.text, token.dep_, token.head.text, token.head.pos_, list(token.children))
