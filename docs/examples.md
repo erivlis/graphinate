@@ -10,7 +10,6 @@
     - Traceroute
 - Math
     - Graph Atlas
-    - Hailstone
     - Polygonal Graph
 - Text
     - NLP

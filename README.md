@@ -2,7 +2,7 @@
 
 > [!WARNING]
 > **UNDER DEVELOPMENT**
-> 
+>
 > **This library is alpha-quality**
 
 ![PyPI](https://img.shields.io/pypi/v/graphinate)
@@ -21,14 +21,14 @@
 
 ### What is Graphinate?
 
-Graphinate is a library that aims to simplify the generation of Graph Data Structures from Data Sources.
+Graphinate is a python library that aims to simplify the generation of Graph Data Structures from Data Sources.
 
-It utilizes and builds upon the excellent [**_NetworkX_**](https://networkx.org/) library.
+It can help create an efficient retrieval pipeline from a given data source, while also enabling the developer to easily
+map data payloads and hierarchies to a Graph.
 
-In addition, it has several interfaces for ease of use:
+In addition, there are several modes of output to enable examination of the Graph, and it's content.  
 
-- CLI (using [**_Click_**](https://palletsprojects.com/p/click/)),
-- GraphQL API (using [**_Strawberry GraphQL_**](https://strawberry.rocks/)).
+Graphinate utilizes and builds upon the excellent [**_NetworkX_**](https://networkx.org/).
 
 [//]: # (- TUI &#40;using [**_Textual_**]&#40;https://textual.textualize.io/&#41;&#41; **⚠️Not available yet⚠️**)
 
@@ -50,17 +50,6 @@ Graphinate officially supports Python 3.9+.
 
 ## Quick Start
 
-### `GraphModel`
-
-Graphinate defines the `GraphModel` Class which can be used to declaratively register _Edge_ and/or _Node_ data
-supplier functions by using decorators.
-
-### `materialize`
-
-Graphinate supplies a `materialize` function to output the `GraphModel`.
-
-### Example
-
 ```python
 import graphinate
 
@@ -81,6 +70,14 @@ def edge():
 # Materialize the GraphModel
 graphinate.materialize(graph_model)
 ```
+
+> [!NOTE]
+> ### `graphinate.GraphModel` class
+> This class is used to declaratively register _Edge_ and/or _Node_ data
+> supplier functions by using decorators.
+> ### `graphinate.materialize` function
+> This function can be used to easily generate an output from a `GraphModel` instance.
+> By default it will prompt the user to choose the output format, using a popup dialog.
 
 ## CLI
 
