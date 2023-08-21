@@ -537,7 +537,8 @@ class GraphQLBuilder(NetworkxBuilder):
                 order=graph.order(),
                 size=graph.size(weight='weight'),
                 # girth=min(len(cycle) for cycle in nx.simple_cycles(graph)),
-                average_degree=1.0 * sum(d for _, d in graph.degree()) / graph.order(),
+                average_degree=graph.number_of_nodes() and (
+                            1.0 * sum(d for _, d in graph.degree()) / graph.number_of_nodes()),
                 hash=nx.weisfeiler_lehman_graph_hash(graph),
                 created=graph.graph['created'],
             )

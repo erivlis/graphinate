@@ -13,12 +13,12 @@ def _edges_labels(graph: nx.Graph):
     return nx.get_edge_attributes(graph, 'label')
 
 
-def draw(graph: nx.Graph, with_labels=True):
+def draw(graph: nx.Graph, with_node_labels=True, with_edge_labels=False):
     pos = nx.planar_layout(graph) if nx.is_planar(graph) else None
     pos = nx.spring_layout(graph, pos=pos) if pos else nx.spring_layout(graph)
 
     draw_params = {}
-    if with_labels:
+    if with_node_labels:
         draw_params.update(
             {
                 'with_labels': True,
@@ -39,9 +39,10 @@ def draw(graph: nx.Graph, with_labels=True):
 
     node_color = list(node_color_mapping(graph).values())
     nx.draw(graph, pos, node_color=node_color, **draw_params)
-    nx.draw_networkx_edge_labels(graph, pos, edge_labels=_edges_labels(graph), font_color='red', font_size=6)
+    if with_edge_labels:
+        nx.draw_networkx_edge_labels(graph, pos, edge_labels=_edges_labels(graph), font_color='red', font_size=6)
 
 
-def plot(graph: nx.Graph):
-    draw(graph)
+def plot(graph: nx.Graph, with_node_labels=True, with_edge_labels=False):
+    draw(graph, with_node_labels, with_edge_labels)
     pyplot.show()

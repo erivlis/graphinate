@@ -35,11 +35,13 @@ dependencies = [
     "strawberry-graphql[asgi,opentelemetry]"
 ]
 
+
 [project.urls]
 "Homepage" = "https://github.com/erivlis/graphinate"
 "Documentation" = "https://github.com/erivlis/graphinate#README.md"
 "Bug Tracker" = "https://github.com/erivlis/graphinate/issues"
 "Source" = "https://github.com/erivlis/graphinate"
+
 
 [project.optional-dependencies]
 dev = [
@@ -62,20 +64,25 @@ server = [
     "uvicorn[standard]"
 ]
 
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+
 [tool.hatch.metadata]
 allow-direct-references = true
+
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
 
+
 [tool.black]
 line-length = 120
 #extend-exclude = ''
+
 
 [tool.ruff]
 select = [
@@ -94,7 +101,7 @@ select = [
     "TRY",
     "RUF",
 ]
-ignore = ['F401']
+ignore = ["F401"]
 # Exclude a variety of commonly ignored directories.
 exclude = [
     ".bzr",
@@ -120,15 +127,17 @@ exclude = [
     "venv",
 ]
 
-line-length = 120
-
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+line-length = 120
+
 
 [tool.ruff.flake8-quotes]
 docstring-quotes = "double"
 inline-quotes = "single"
 multiline-quotes = "single"
+
 
 [tool.ruff.mccabe]
 # Unlike Flake8, default to a complexity level of 10.

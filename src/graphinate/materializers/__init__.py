@@ -1,3 +1,4 @@
+import functools
 from collections.abc import Mapping
 from enum import Enum
 from pprint import pprint
@@ -12,6 +13,7 @@ graphql = server.run_graphql
 
 class Materializers(Enum):
     NetworkX = (builders.NetworkxBuilder, plot)
+    NetworkX_with_edge_labels = (builders.NetworkxBuilder, functools.partial(plot, with_edge_labels=True))
     D3Graph = (builders.D3Builder, pprint)
     GraphQL = (builders.GraphQLBuilder, graphql)
     D3GraphQL = (builders.D3GraphQLBuilder, graphql)
@@ -37,6 +39,7 @@ def materialize(model: modeling.GraphModel,
                                         graph_type,
                                         default_node_attributes=default_node_attributes,
                                         **kwargs)
+
     actualizer(materialized_graph)
 
 
