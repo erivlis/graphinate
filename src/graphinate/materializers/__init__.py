@@ -1,4 +1,5 @@
 import functools
+import os
 from collections.abc import Mapping
 from enum import Enum
 from pprint import pprint
@@ -7,6 +8,8 @@ from typing import Callable, Optional
 from .. import builders, modeling, server
 from ..tools.gui import modal_radiobutton_chooser
 from .matplotlib import plot
+
+ENABLE_GUI = bool(os.getenv('GRAPHINATE_ENABLE_GUI', True))
 
 graphql = server.run_graphql
 
@@ -27,7 +30,7 @@ def materialize(model: modeling.GraphModel,
                 actualizer: Optional[Callable] = None,
                 **kwargs):
     title = title or model.name
-    if builder is None and actualizer is None:
+    if ENABLE_GUI and builder is None and actualizer is None:
         result = modal_radiobutton_chooser(title,
                                            options={m.name: m.value for m in Materializers},
                                            default=(None, None))

@@ -29,7 +29,9 @@ class GraphModelType(click.ParamType):
 
 model_option = click.option('-m', '--model',
                             type=GraphModelType(),
-                            help="A GraphModel instance reference {module-name}:{GraphModel-instance-variable-name}")
+                            help="A GraphModel instance reference {module-name}:{GraphModel-instance-variable-name}"
+                                 " For example, given var `model=GraphModel()` defined in app.py file, then the"
+                                 " reference should be app:model")
 
 
 @click.group()
@@ -51,7 +53,7 @@ def save(ctx, model):
 
 @cli.command()
 @model_option
-@click.option('-p', '--port', type=int, default=DEFAULT_PORT)
+@click.option('-p', '--port', type=int, default=DEFAULT_PORT, help='Port number.')
 @click.pass_context
 def server(ctx, model, port):
     materialize(model=model,

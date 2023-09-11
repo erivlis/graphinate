@@ -1,7 +1,6 @@
 # Examples
 
 - Code
-    - Call Graph
     - Python AST
 - GitHub
     - Repository

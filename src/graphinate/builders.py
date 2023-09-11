@@ -52,6 +52,7 @@ def encode_id(graph_node_id: tuple,
     obj_b = gzip.compress(pickle.dumps(graph_node_id))
     enc_b: bytes = base64.b64encode(obj_b)
     enc_s: str = enc_b.decode(encoding)
+
     return enc_s
 
 
@@ -538,7 +539,7 @@ class GraphQLBuilder(NetworkxBuilder):
                 size=graph.size(weight='weight'),
                 # girth=min(len(cycle) for cycle in nx.simple_cycles(graph)),
                 average_degree=graph.number_of_nodes() and (
-                            1.0 * sum(d for _, d in graph.degree()) / graph.number_of_nodes()),
+                        1.0 * sum(d for _, d in graph.degree()) / graph.number_of_nodes()),
                 hash=nx.weisfeiler_lehman_graph_hash(graph),
                 created=graph.graph['created'],
             )

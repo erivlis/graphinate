@@ -97,26 +97,29 @@ Commands:
 #### Save
 
 ```
-Usage: python -m graphinate save [OPTIONS] MODEL
+Usage: python -m graphinate save [OPTIONS]
 
 Options:
-  --help  Show this message and exit.
+  -m, --model MODEL  A GraphModel instance reference {module-
+                     name}:{GraphModel-instance-variable-name} For example,
+                     given var `model=GraphModel()` defined in app.py file,
+                     then the  reference should be app:model
+  --help             Show this message and exit.
 ```
 
 #### Server
 
 ```
-Usage: python -m graphinate server [OPTIONS] MODEL
+Usage: python -m graphinate server [OPTIONS]
 
 Options:
-  -p, --port INTEGER
+  -m, --model MODEL   A GraphModel instance reference {module-
+                      name}:{GraphModel-instance-variable-name} For example,
+                      given var `model=GraphModel()` defined in app.py file,
+                      then the  reference should be app:model
+  -p, --port INTEGER  Port number.
   --help              Show this message and exit.
 ```
-
-## TUI
-
-UNDER DEVELOPMENT
-
 ## Gallery
 
 ### Python AST
@@ -154,7 +157,7 @@ python -m build
 ### Test
 
 ```shell
- python -m pytest ./tests --cov=./src --cov-branch --cov-report=xml --junitxml=test_results.xml
+ python -m pytest ./tests --cov=./src --cov-branch --doctest-modules --cov-report=xml --junitxml=test_results.xml
 ```
 
 ## Acknowledgements

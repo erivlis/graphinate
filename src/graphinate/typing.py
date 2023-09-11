@@ -27,13 +27,11 @@ class Edges(Protocol):
 
 
 class Predicate(Protocol):
-
     def __call__(self, **kwargs) -> bool:
         ...
 
 
 class Supplier(Protocol):
-
     def __call__(self) -> Any:
         ...
 
