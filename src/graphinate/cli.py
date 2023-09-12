@@ -31,7 +31,7 @@ model_option = click.option('-m', '--model',
                             type=GraphModelType(),
                             help="A GraphModel instance reference {module-name}:{GraphModel-instance-variable-name}"
                                  " For example, given var `model=GraphModel()` defined in app.py file, then the"
-                                 " reference should be app:model")
+                                 " reference would be app:model")
 
 
 @click.group()

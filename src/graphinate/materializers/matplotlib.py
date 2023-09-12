@@ -45,4 +45,7 @@ def draw(graph: nx.Graph, with_node_labels=True, with_edge_labels=False):
 
 def plot(graph: nx.Graph, with_node_labels=True, with_edge_labels=False):
     draw(graph, with_node_labels, with_edge_labels)
+    ax = pyplot.gca()
+    ax.margins(0.20)
+    pyplot.axis("off")
     pyplot.show()
