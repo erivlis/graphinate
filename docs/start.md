@@ -1,31 +1,30 @@
-
-## Quick Start
+# Quick Start
 
 Graphinate is designed to be used as library first and foremost. In addition, it has several interfaces for ease of
-use: CLI, TUI (using [Textual]) and a GraphQL API (using [**_Strawberry GraphQL_**](https://strawberry.rocks/)).
+use: CLI and a GraphQL API (using [**_Strawberry GraphQL_**](https://strawberry.rocks/)).
 
-### GraphModel
+## GraphModel
 
 Graphinate defines the _**GraphModel**_ Class which can be used to declaratively register Edge and/or Node data
 supplier functions by using decorators.
 
-### Materialize
+## Materialize
 
 Graphinate supplies quick materialize function to output the GraphModel.
 
-### Sample Code
+## Sample Code
 
 ```python
 import graphinate
 
-# Define GraphModel
-model = graphinate.GraphModel(name= "Octagonal Graph")
-
-# Register edges supplier function
 N: int = 8
 
+# Define a GraphModel
+graph_model = graphinate.GraphModel(name="Octagonal Graph")
 
-@model.edge()
+
+# Register in the Graph Model the edges supplier function
+@graph_model.edge()
 def edge():
     for i in range(N):
         yield {'source': i, 'target': i + 1}
@@ -33,5 +32,5 @@ def edge():
 
 
 # Materialize the GraphModel
-graphinate.materialize(model)
+graphinate.materialize(graph_model)
 ```

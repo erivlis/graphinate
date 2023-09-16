@@ -48,10 +48,19 @@ dev = [
     "ruff",
     # "pip-tools",
     # "pipdeptree"
+
+]
+docs = [
+    "mkdocs-material",
+    "mkdocstrings-python",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "mkdocs-section-index"
 ]
 test = [
     "pytest >= 7.3.2",
     "pytest-cov >= 4.1.0",
+    "pytest-randomly >= 3.15.0"
     # "pytest-asyncio"
     # "pytest-rerunfailures",
     # "pytest-xdist",

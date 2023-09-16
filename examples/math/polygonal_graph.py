@@ -1,6 +1,5 @@
-import networkx as nx
-
 import graphinate
+import networkx as nx
 
 N: int = 8
 

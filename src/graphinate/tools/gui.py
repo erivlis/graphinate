@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk as ttk
 
 
-def _modal_window(title: str):
+def _modal_window(title: str) -> tk.Tk:
     # Creating parent Tkinter window
     win = tk.Tk()
     # win.geometry("200x125")

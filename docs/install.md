@@ -1,4 +1,4 @@
-## Install
+# Install
 
 Graphinate is available on PyPI:
 

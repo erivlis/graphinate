@@ -8,9 +8,12 @@ import networkx as nx
 
 @functools.lru_cache
 def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = "tab20") -> Mapping:
-    """graph: graph_id
-    cmap : str or `~matplotlib.colors.Colormap` - The colormap used to map values to RGBA colors.
-    :return: Nodes RGBA Color list.
+    """
+    Parameters:
+        graph: graph_id
+        cmap : str or `~matplotlib.colors.Colormap` - The colormap used to map values to RGBA colors.
+    Returns:
+        Nodes RGBA Color list.
     """
     type_lookup = {t: i for i, t in enumerate(graph.graph['node_types'].keys())}
     color_lookup = {node: type_lookup.get(data.get('type'), 0) for node, data in graph.nodes.data()}
@@ -24,7 +27,14 @@ def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = 
     return node_colors
 
 
-def color_hex(color):
+def color_hex(color: Iterable[int]) -> str:
+    """Get HEX color code
+
+    Parameters:
+        color: input color
+    Return:
+         Color HEX code
+    """
     if isinstance(color, (tuple, list, Iterable)):
         rgb = color[:3]
 

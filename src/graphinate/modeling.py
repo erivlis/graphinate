@@ -34,11 +34,16 @@ def elements(iterable: Iterable[Any],
              element_type: Optional[Extractor] = None,
              **getters: Extractor) -> Iterable[Element]:
     """Abstract Generator of Graph elements (nodes or edges)
-    :param iterable: source of payload
-    :param element_type: Optional[Extractor] source of type of the element. Defaults to Element Type name.
-    :param getters: Extractor node field sources
-    :return: elements.
+
+    Parameters:
+        iterable: source of payload
+        element_type: Optional[Extractor] source of type of the element. Defaults to Element Type name.
+        getters: Extractor node field sources
+
+    Returns:
+        Iterable of elements.
     """
+
     if callable(element_type):
         for item in iterable:
             create_element = element(element_type(item), getters.keys())
@@ -54,12 +59,14 @@ def elements(iterable: Iterable[Any],
 @dataclass
 class NodeModel:
     """Represents a Node Model
+
     Attributes:
-        type
-        parent_type
-        uniqueness
-        parameters
-        generator.
+        type: the type of the Node
+        parent_type: the type of the node's parent
+        uniqueness: is the Node universally unique
+        parameters: parameters
+        generator: Nodes generator method
+        label: label source
     """
 
     type: str
@@ -75,9 +82,17 @@ class NodeModel:
 
 
 class GraphModel:
+    """A Graph Model
+
+       Used to declaratively register Edge and/or Node data supplier functions by using
+       decorators.
+    """
     def __init__(self, name: str):
-        """Defines a model for graph.
-        :param name: the archetype name for Graphs generated based on the GraphModel.
+        """Create a model for graph
+
+
+        Parameters:
+            name: the archetype name for Graphs generated based on the GraphModel.
         """
         self.name = name
         self._node_models: dict[NodeTypeAbsoluteId, NodeModel] = {}
@@ -92,23 +107,36 @@ class GraphModel:
 
     @property
     def node_models(self) -> dict[NodeTypeAbsoluteId, NodeModel]:
-        """:return: Dict containing NodeModel for Node Types. Key values are NodeTypeAbsoluteId."""
+        """
+        Returns:
+            NodeModel for Node Types. Key values are NodeTypeAbsoluteId.
+        """
         return self._node_models
 
     @property
     def edge_generators(self):
-        """:return: Dict containing edge generator functions for Edge Types"""
+        """
+        Returns:
+            Edge generator functions for Edge Types
+        """
         return self._edge_generators
 
     @property
     def node_types(self) -> set[str]:
-        """:return: Set of Node Types"""
+        """
+        Returns:
+            Node Types
+        """
         return {v.type for v in self._node_models.values()}
 
-    def node_children(self, _type: str = UNIVERSE_NODE) -> dict[str, list[str]]:
-        """Gets children Node Types for given input Node Type
-        :param _type:  Node Type. Default value is UNIVERSE_NODE
-        :return: List of children Node Types.
+    def node_children_types(self, _type: str = UNIVERSE_NODE) -> dict[str, list[str]]:
+        """Children Node Types for given input Node Type
+
+        Parameters:
+            _type:  Node Type. Default value is UNIVERSE_NODE.
+
+        Returns:
+            List of children Node Types.
         """
         return {k: v for k, v in self._node_children.items() if k == _type}
 
@@ -131,14 +159,21 @@ class GraphModel:
              label: Optional[Extractor] = None) -> Callable[[Items], None]:
         """Decorator to Register a Generator of node payloads as a source to create Graph Nodes. It creates a
         NodeModel object.
-        :param _type: Optional source for the Node Type. Defaults to use Generator function name as the Node Type.
-        :param parent_type: Optional parent Node Type. Defaults to UNIVERSE_NODE
-        :param uniqueness: Is the generated Node ID universally unique. Defaults to False.
-        :param key: Optional source for Node IDs. Defaults to use the complete Node payload as Node ID.
-        :param value: Optional source for Node value field. Defaults to use the complete Node payload as Node ID.
-        :param label: Optional source for Node label field. Defaults to use a 'str' representation of the complete Node
-                      payload.
-        :return: None.
+
+        Parameters:
+            _type: Optional source for the Node Type. Defaults to use Generator function
+                   name as the Node Type.
+            parent_type: Optional parent Node Type. Defaults to UNIVERSE_NODE
+            uniqueness: Is the generated Node ID universally unique. Defaults to False.
+            key: Optional source for Node IDs. Defaults to use the complete Node payload
+                 as Node ID.
+            value: Optional source for Node value field. Defaults to use the complete
+                   Node payload as Node ID.
+            label: Optional source for Node label field. Defaults to use a 'str'
+                   representation of the complete Node payload.
+
+        Returns:
+            None
         """
 
         def register_node(f: Items):
@@ -170,15 +205,20 @@ class GraphModel:
              value: Optional[Extractor] = None,
              weight: Union[float, Callable[[Any], float]] = 1.0,
              ) -> Callable[[Items], None]:
-        """Decorator to Register a Generator of edge payloads as a source to create Graph Edges. It creates an Edge
-        Generator function.
-        :param _type:
-        :param source:
-        :param target:
-        :param label:
-        :param value:
-        :param weight:
-        :return:
+        """Decorator to Register a generator of edge payloads as a source to create
+           Graph Edges. It creates an Edge generator function.
+
+        Parameters:
+            _type: Optional source for the Node Type. Defaults to use Generator function
+                   name as the Node Type.
+            source: Source for edge source Node ID.
+            target: Source for edge target Node ID.
+            label: Source for edge label.
+            value: Source for edge value.
+            weight: Source for edge weight.
+
+        Returns:
+            None.
         """
 
         def register_edge(f: Items):

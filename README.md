@@ -8,14 +8,16 @@
 ![PyPI](https://img.shields.io/pypi/v/graphinate)
 ![PyPI - Status](https://img.shields.io/pypi/status/graphinate)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/graphinate)
-![GitHub](https://img.shields.io/github/license/erivlis/graphinate)
 ![PyPI - Downloads](https://img.shields.io/pypi/dd/graphinate)
+
+![GitHub](https://img.shields.io/github/license/erivlis/graphinate)
 ![GitHub repo size](https://img.shields.io/github/repo-size/erivlis/graphinate)
-[![Contributors](https://img.shields.io/github/contributors/erivlis/graphinate.svg)](https://github.com/erivlis/graphinate/graphs/contributors)
 ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/erivlis/graphinate)
+[![Contributors](https://img.shields.io/github/contributors/erivlis/graphinate.svg)](https://github.com/erivlis/graphinate/graphs/contributors)
 
 [![Tests](https://github.com/erivlis/graphinate/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/erivlis/graphinate/actions/workflows/test.yml)
 [![Publish](https://github.com/erivlis/graphinate/actions/workflows/publish.yml/badge.svg)](https://github.com/erivlis/graphinate/actions/workflows/publish.yml)
+
 
 ## Introduction
 
@@ -26,11 +28,13 @@ Graphinate is a python library that aims to simplify the generation of Graph Dat
 It can help create an efficient retrieval pipeline from a given data source, while also enabling the developer to easily
 map data payloads and hierarchies to a Graph.
 
-In addition, there are several modes of output to enable examination of the Graph, and it's content.  
+In addition, there are several modes of output to enable examination of the Graph, and it's content.
 
 Graphinate utilizes and builds upon the excellent [**_NetworkX_**](https://networkx.org/).
 
 [//]: # (- TUI &#40;using [**_Textual_**]&#40;https://textual.textualize.io/&#41;&#41; **⚠️Not available yet⚠️**)
+
+---
 
 ## Install
 
@@ -120,6 +124,7 @@ Options:
   -p, --port INTEGER  Port number.
   --help              Show this message and exit.
 ```
+
 ## Gallery
 
 ### Python AST
@@ -136,7 +141,7 @@ Options:
 
 ## Development
 
-### Lint
+### Ruff
 
 ```shell
 ruff check src

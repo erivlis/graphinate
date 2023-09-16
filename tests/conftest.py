@@ -1,21 +1,20 @@
 import random
 
+import graphinate
 import pytest
 
-import graphinate
 
-
-@pytest.fixture
+@pytest.fixture()
 def country_count():
     return random.randint(1, 10)
 
 
-@pytest.fixture
+@pytest.fixture()
 def city_count():
     return random.randint(20, 40)
 
 
-@pytest.fixture
+@pytest.fixture()
 def map_graph_model(country_count, city_count):
     # arrange
     country_count = random.randint(1, 10)
@@ -52,7 +51,7 @@ def map_graph_model(country_count, city_count):
     return country_count, city_count, graph_model
 
 
-@pytest.fixture
+@pytest.fixture()
 def graphql_query():
     return """
     query Graph {
@@ -84,7 +83,7 @@ def graphql_query():
         weight
       }
     }
-    
+
     fragment ElementDetails on GraphElement {
       label
       type

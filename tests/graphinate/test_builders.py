@@ -1,7 +1,6 @@
-import pytest
-
 import graphinate
 import graphinate.builders
+import pytest
 
 
 @pytest.mark.parametrize('execution_number', range(10))

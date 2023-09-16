@@ -10,7 +10,7 @@ import graphinate
 from _client import github_commits, github_files, github_repositories, github_user
 
 
-def repo_graph_model():
+def repo_graph_model():  # noqa: C901
     graph_model = graphinate.GraphModel(name='GitHub Repository Graph')
 
     @graph_model.edge

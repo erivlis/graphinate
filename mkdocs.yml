@@ -26,7 +26,7 @@ theme:
     - search.share
     - search.suggest
     - toc.follow
-    - toc.integrate
+#    - toc.integrate
   font: false
   palette:
     # Palette toggle for dark mode
@@ -52,9 +52,13 @@ markdown_extensions:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+
 
 nav:
   - Home: index.md
@@ -64,6 +68,10 @@ nav:
   - Gallery: gallery.md
   - Usage: usage.md
   - Examples: examples.md
+  # defer to gen-files + literate-nav
+  - Reference: reference/
+  - Acknowledgements: acknowledgements.md
+
 #  - Acknowledgements: acknowledgements.md
 
 
@@ -79,7 +87,21 @@ extra:
 
 plugins:
 - search
-#- mkdocstrings:
-#    handlers:
-#      python:
-#        paths: [../src]  # search packages in the src folder
+- gen-files:
+    scripts:
+    - docs/gen_ref_pages.py
+- literate-nav:
+    nav_file: SUMMARY.md
+- mkdocstrings:
+    default_handler: python
+    handlers:
+      python:
+        paths: [src]
+        options:
+          allow_inspection: true
+          show_source: false
+          heading_level: 3
+#          show_root_heading: false
+          show_category_heading: true
+          show_symbol_type_heading: true
+          show_symbol_type_toc: true

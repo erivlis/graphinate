@@ -1,10 +1,9 @@
 from urllib.parse import urljoin, urlparse
 
+import graphinate
 import requests
 from bs4 import BeautifulSoup
 from loguru import logger
-
-import graphinate
 
 DEFAULT_MAX_DEPTH = 0
 

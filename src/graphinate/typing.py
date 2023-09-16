@@ -1,9 +1,22 @@
+"""
+Typing module
+
+Attributes:
+    Node (Node): Node payload Type
+    Edge (Edge): Edge payload Type
+    Element (Element): Element Type
+    Extractor (Extractor): Source of data for an Element
+"""
+
+
 from collections.abc import Iterable, Mapping
 from typing import Any, Callable, NamedTuple, Protocol, TypeVar, Union
 
 Node = Union[type(NamedTuple), tuple[str, Any]]
 Edge = Union[type(NamedTuple), tuple[str, str, Any]]
 Element = Union[Node, Edge]
+
+
 Extractor = Union[str, Callable[[Any], str]]
 
 NodeTypeAbsoluteId = TypeVar("NodeTypeAbsoluteId", bound=tuple[str, str])

@@ -9,5 +9,5 @@ async def favicon(request):
     return FileResponse(path)
 
 
-def favicon_route():
+def favicon_route() -> Route:
     return Route('/favicon.ico', endpoint=favicon, include_in_schema=False)

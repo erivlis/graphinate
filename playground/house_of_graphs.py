@@ -1,5 +1,6 @@
+from collections.abc import Iterable, Mapping
 from pprint import pprint
-from typing import Iterable, Mapping, Union
+from typing import Union
 
 import networkx as nx
 
@@ -11,7 +12,7 @@ def parse(adjacency_list: str) -> Iterable[tuple[int, list[int]]]:
 
 
 def adjacency_mapping(adjacency_list: str) -> Mapping[int, list[int]]:
-    return {k: v for k, v in parse(adjacency_list)}
+    return dict(parse(adjacency_list))
 
 
 def edges_iter(adjacency_source: Union[str, Mapping[int, list[int]]]) -> Iterable[tuple[int, int]]:
@@ -20,7 +21,7 @@ def edges_iter(adjacency_source: Union[str, Mapping[int, list[int]]]) -> Iterabl
     elif isinstance(adjacency_source, Mapping):
         adjacency_list = adjacency_source.items()
     else:
-        raise ValueError("'adjacency_source' should be a 'str' or a Mapping[int, list[int]]")
+        raise TypeError("'adjacency_source' should be a 'str' or a Mapping[int, list[int]]")  # noqa: TRY003
 
     for s, tl in adjacency_list:
         for t in tl:

@@ -27,25 +27,35 @@ def _process_obj(obj: Any,
     return obj
 
 
-def dictify_mapping(obj: Mapping[Any, Any],
-                    key_converter: Optional[Callable[[Any], str]] = None,
-                    value_converter: Optional[Callable[[Any], Any]] = None) -> dict:
-    return {(key_converter(k) if key_converter else k): dictify(v, key_converter, value_converter)
-            for k, v in obj.items()}
+def dictify_key_value_pairs(items: Iterable[tuple[Any, Any]],
+                            key_converter: Optional[Callable[[Any], str]] = None,
+                            value_converter: Optional[Callable[[Any], Any]] = None):
+    return {(key_converter(k) if callable(key_converter) else k): dictify(v, key_converter, value_converter)
+            for k, v in items}
 
 
-def dictify_iterable(obj: Iterable,
+def dictify_iterable(items: Iterable,
                      key_converter: Optional[Callable[[Any], str]] = None,
                      value_converter: Optional[Callable[[Any], Any]] = None) -> list:
-    return [dictify(v, key_converter, value_converter) for v in obj]
+    return [dictify(value, key_converter, value_converter) for value in items]
+
+
+def dictify_mapping(items: Mapping[Any, Any],
+                    key_converter: Optional[Callable[[Any], str]] = None,
+                    value_converter: Optional[Callable[[Any], Any]] = None) -> dict:
+    return dictify_key_value_pairs(items.items(), key_converter, value_converter)
+    # return  {(key_converter(k) if callable(key_converter) else k): dictify(v, key_converter, value_converter)
+    #          for k, v in obj.items()}
 
 
 def dictify_class(obj,
                   key_converter: Optional[Callable[[Any], str]] = None,
                   value_converter: Optional[Callable[[Any], Any]] = None):
     if dataclasses.is_dataclass(obj):
-        return {key_converter(k) if key_converter else k: dictify(v, key_converter, value_converter)
-                for k, v in inspect.getmembers(obj) if not k.startswith("_")}
+        items = ((k, v) for k, v in inspect.getmembers(obj) if not k.startswith("_"))
+        return dictify_key_value_pairs(items, key_converter, value_converter)
+        # return {(key_converter(k) if callable(key_converter) else k): dictify(v, key_converter, value_converter)
+        #         for (k, v) in inspect.getmembers(obj) if not k.startswith("_")}
 
     return str(obj)
 

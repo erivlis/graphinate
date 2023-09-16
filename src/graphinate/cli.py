@@ -10,14 +10,14 @@ from .server import DEFAULT_PORT, run_graphql
 from .tools.importer import import_from_string
 
 
-def _get_kwargs(ctx):
+def _get_kwargs(ctx) -> dict:
     return dict([item.strip('--').split('=') for item in ctx.args if item.startswith("--")])
 
 
 class GraphModelType(click.ParamType):
     name = "MODEL"
 
-    def convert(self, value, param, ctx):
+    def convert(self, value, param, ctx) -> GraphModel:
         if isinstance(value, GraphModel):
             return value
 

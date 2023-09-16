@@ -1,3 +1,7 @@
+"""
+Build classes that can generate graph data structures from a GraphModel
+"""
+
 import base64
 import decimal
 import functools
@@ -22,7 +26,7 @@ import strawberry
 from loguru import logger
 
 from . import color
-from .modeling import UNIVERSE_NODE, GraphModel
+from .modeling import GraphModel, UNIVERSE_NODE
 from .tools import mutators
 from .typing import NodeTypeAbsoluteId
 
@@ -79,6 +83,11 @@ def decode_edge_id(graphql_edge_id: strawberry.ID, encoding: str = 'utf-8'):
 
 
 class GraphType(Enum):
+    """Graph Types `1`_
+
+    .. _1:
+        https://networkx.org/documentation/stable/reference/classes/index.html
+    """
     Graph = nx.Graph
     DiGraph = nx.DiGraph
     MultiDiGraph = nx.MultiDiGraph
@@ -86,6 +95,8 @@ class GraphType(Enum):
 
 
 class Builder(ABC):
+    """Builder abstract base class"""
+
     default_node_attributes: Mapping = MappingProxyType({
         'type': 'node',
         'label': node_label_converter,
@@ -106,10 +117,12 @@ class Builder(ABC):
         self.graph_type = graph_type
 
     def build(self, **kwargs):
+        """build a graph"""
         self._cached_build_kwargs = kwargs
 
 
 class NetworkxBuilder(Builder):
+    """Build a NetworkX Graph"""
 
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
         super().__init__(model, graph_type)
@@ -120,7 +133,7 @@ class NetworkxBuilder(Builder):
                                             edge_types=Counter())
 
     def _populate_node_type(self, node_type: Union[Hashable, UNIVERSE_NODE] = UNIVERSE_NODE, **kwargs):
-        for parent_node_type, child_node_types in self.model.node_children(node_type).items():
+        for parent_node_type, child_node_types in self.model.node_children_types(node_type).items():
             for child_node_type in child_node_types:
                 node_type_absolute_id = (parent_node_type, child_node_type)
                 self._populate_nodes(node_type_absolute_id, **kwargs)
@@ -276,6 +289,7 @@ class NetworkxBuilder(Builder):
 
 
 class D3Builder(NetworkxBuilder):
+    """Build a D3 Graph"""
 
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
         super().__init__(model, graph_type)
@@ -291,6 +305,8 @@ class D3Builder(NetworkxBuilder):
 
 
 class GraphQLBuilder(NetworkxBuilder):
+    """Builds a GraphQL Schema"""
+
     # region Strawberry Types
 
     InfNumber = strawberry.scalar(
@@ -467,7 +483,7 @@ class GraphQLBuilder(NetworkxBuilder):
     @classmethod
     @functools.lru_cache
     def _children_types(cls, model: GraphModel, node_type: str):
-        return model.node_children(node_type).get(node_type, [])
+        return model.node_children_types(node_type).get(node_type, [])
 
     @property
     @functools.lru_cache
@@ -672,111 +688,25 @@ class GraphQLBuilder(NetworkxBuilder):
         return self.schema()
 
 
-class D3GraphQLBuilder(D3Builder):
-
-    def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
-        super().__init__(model, graph_type)
-
-    def _schema(self, d3_graph) -> strawberry.Schema:
-        @strawberry.type
-        class Count:
-            name: str
-            count: int
-
-        @strawberry.type
-        class Detail:
-            name: str
-            value: str
-
-        @strawberry.interface
-        class GraphElement:
-            type: str
-            label: str
-            value: list[strawberry.scalars.JSON]
-            color: Optional[str] = None
-            created: datetime
-            updated: Optional[datetime]
-
-        @strawberry.type
-        class GraphData:
-            name: str
-            node_types: list[Count]
-            edge_types: Optional[list[Count]]
-            details: list[Detail]
-            created: datetime
-
-        @strawberry.type
-        class GraphNode(GraphElement):
-            id: strawberry.ID
-            magnitude: int
-            lineage: list[str]
-            # neighbors: Optional[List['GraphNode']]
-
-        @strawberry.type
-        class GraphEdge(GraphElement):
-            source: strawberry.ID
-            target: strawberry.ID
-            weight: float
-
-        @strawberry.type
-        class Graph:
-            data: GraphData
-            nodes: list[GraphNode]
-            edges: list[GraphEdge]
-
-        fields = ('nodes', 'links', 'graph')
-
-        graph_data = d3_graph['graph']
-
-        data = GraphData(name=graph_data['name'],
-                         node_types=[Count(name=k, count=v) for k, v in graph_data['node_types'].items()],
-                         edge_types=[Count(name=k, count=v) for k, v in graph_data['edge_types'].items()],
-                         details=[Detail(name=k, value=v) for k, v in d3_graph.items() if k not in fields],
-                         created=graph_data['created'])
-
-        nodes = [GraphNode(id=encode_id(node['id']),
-                           type=node.get('type', 'Node'),
-                           label=node.get('label', node_label_converter(node['id'])),
-                           value=[json.dumps(v, default=str) for v in node.get('value', [node['id']])],
-                           magnitude=node.get('magnitude', 1),
-                           lineage=node.get('lineage', []),
-                           color=color.color_hex(node.get('color')),
-                           created=node.get('created'),
-                           updated=node.get('updated'))
-                 for node in d3_graph['nodes']]
-
-        edges = [GraphEdge(source=encode_id(edge['source']),
-                           target=encode_id(edge['target']),
-                           type=edge.get('type', ''),
-                           label=edge.get('label', edge_label_converter((edge['source'], edge['target']))),
-                           value=json.dumps(edge.get('value'), default=str),
-                           weight=edge.get('weight', 1.0),
-                           color=color.color_hex(edge.get('color')),
-                           created=edge.get('created'),
-                           updated=edge.get('updated'))
-                 for edge in d3_graph['links']]
-
-        graph = Graph(data=data, nodes=nodes, edges=edges)
-
-        def get_graph():
-            return graph
-
-        @strawberry.type
-        class Query:
-            graph: Graph = strawberry.field(resolver=get_graph)
-
-        return strawberry.Schema(query=Query)
-
-    def build(self, **kwargs) -> strawberry.Schema:
-        d3_graph: dict = super().build(**kwargs)
-        return self._schema(d3_graph)
-
-
 def build(builder_cls: type[Builder],
           graph_model: GraphModel,
           graph_type: GraphType = GraphType.Graph,
           default_node_attributes: Optional[Mapping] = None,
           **kwargs):
+    """
+    Build a graph from a graph model
+
+    Parameters:
+        builder_cls: builder class type
+        graph_model: a GraphModel instance
+        graph_type: type on output graph
+        default_node_attributes: default node attributes
+        kwargs: node id values
+
+    Returns:
+         Graph data structure
+    """
+
     builder = builder_cls(graph_model, graph_type)
     materialized_graph = builder.build(default_node_attributes=default_node_attributes, **kwargs)
     return materialized_graph

@@ -1,6 +1,6 @@
 from . import builders
-from .builders import GraphType
-from .materializers import materialize
+from .builders import GraphType, build
+from .materializers import graphql, materialize, plot
 from .modeling import UNIVERSE_NODE, GraphModel
 
 
