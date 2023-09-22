@@ -3,16 +3,23 @@
 Graphinate is designed to be used as library first and foremost. In addition, it has several interfaces for ease of
 use: CLI and a GraphQL API (using [**_Strawberry GraphQL_**](https://strawberry.rocks/)).
 
-## GraphModel
+## Install
 
-Graphinate defines the _**GraphModel**_ Class which can be used to declaratively register Edge and/or Node data
-supplier functions by using decorators.
+Graphinate is available on PyPI:
 
-## Materialize
+```shell
+pip install graphinate
+```
 
-Graphinate supplies quick materialize function to output the GraphModel.
+To install with server support
 
-## Sample Code
+```shell
+pip install graphinate[server]
+```
+
+Graphinate officially supports Python 3.9+.
+
+## Example
 
 ```python
 import graphinate

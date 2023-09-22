@@ -1,24 +1,30 @@
 # Graphinate. Data to Graphs.
-![_dece7b7f-1a1a-402a-816f-dd9243ac266a](https://github.com/erivlis/graphinate/assets/9897520/f57c437f-5ceb-42f1-a242-2309ef1f188c)
+
+<p style="text-align:center;">
+<img height="240" src="https://github.com/erivlis/graphinate/assets/9897520/f57c437f-5ceb-42f1-a242-2309ef1f188c" alt="Graphinate. Data to Graphs.">
+</p>
+
+<p style="text-align:center;">
+<img alt="PyPI" src="https://img.shields.io/pypi/v/graphinate">
+<img alt="PyPI - Status" src="https://img.shields.io/pypi/status/graphinate">
+<img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/graphinate">
+<img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dd/graphinate">
+<img alt="GitHub" src="https://img.shields.io/github/license/erivlis/graphinate">
+<img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/erivlis/graphinate">
+<img alt="GitHub last commit (by committer)" src="https://img.shields.io/github/last-commit/erivlis/graphinate">
+<br>
+<a href="https://github.com/erivlis/graphinate/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/erivlis/graphinate.svg"></a>
+<a href="https://github.com/erivlis/graphinate/actions/workflows/test.yml"><img alt="Tests" src="https://github.com/erivlis/graphinate/actions/workflows/test.yml/badge.svg?branch=master"></a>
+<a href="https://github.com/erivlis/graphinate/actions/workflows/publish.yml"><img alt="Publish" src="https://github.com/erivlis/graphinate/actions/workflows/publish.yml/badge.svg"></a>
+</p>
 
 > [!WARNING]
+>
 > **UNDER DEVELOPMENT**
 >
 > **This library is alpha-quality**
 
-![PyPI](https://img.shields.io/pypi/v/graphinate)
-![PyPI - Status](https://img.shields.io/pypi/status/graphinate)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/graphinate)
-![PyPI - Downloads](https://img.shields.io/pypi/dd/graphinate)
-
-![GitHub](https://img.shields.io/github/license/erivlis/graphinate)
-![GitHub repo size](https://img.shields.io/github/repo-size/erivlis/graphinate)
-![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/erivlis/graphinate)
-[![Contributors](https://img.shields.io/github/contributors/erivlis/graphinate.svg)](https://github.com/erivlis/graphinate/graphs/contributors)
-
-[![Tests](https://github.com/erivlis/graphinate/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/erivlis/graphinate/actions/workflows/test.yml)
-[![Publish](https://github.com/erivlis/graphinate/actions/workflows/publish.yml/badge.svg)](https://github.com/erivlis/graphinate/actions/workflows/publish.yml)
-
+---
 
 ## Introduction
 
@@ -37,7 +43,9 @@ Graphinate utilizes and builds upon the excellent [**_NetworkX_**](https://netwo
 
 ---
 
-## Install
+## Quick Start
+
+### Install
 
 Graphinate is available on PyPI:
 
@@ -53,7 +61,7 @@ pip install graphinate[server]
 
 Graphinate officially supports Python 3.9+.
 
-## Quick Start
+### Example
 
 ```python
 import graphinate
@@ -149,6 +157,14 @@ ruff check src
 ```
 
 ### Docs
+
+#### test
+
+```shell
+python -m mkdocs serve
+```
+
+#### build
 
 ```shell
 python -m mkdocs build
