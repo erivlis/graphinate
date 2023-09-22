@@ -1,4 +1,5 @@
 # Graphinate. Data to Graphs.
+![_dece7b7f-1a1a-402a-816f-dd9243ac266a](https://github.com/erivlis/graphinate/assets/9897520/f57c437f-5ceb-42f1-a242-2309ef1f188c)
 
 > [!WARNING]
 > **UNDER DEVELOPMENT**
