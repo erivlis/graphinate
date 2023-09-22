@@ -44,8 +44,6 @@ def dictify_mapping(items: Mapping[Any, Any],
                     key_converter: Optional[Callable[[Any], str]] = None,
                     value_converter: Optional[Callable[[Any], Any]] = None) -> dict:
     return dictify_key_value_pairs(items.items(), key_converter, value_converter)
-    # return  {(key_converter(k) if callable(key_converter) else k): dictify(v, key_converter, value_converter)
-    #          for k, v in obj.items()}
 
 
 def dictify_class(obj,
@@ -54,8 +52,6 @@ def dictify_class(obj,
     if dataclasses.is_dataclass(obj):
         items = ((k, v) for k, v in inspect.getmembers(obj) if not k.startswith("_"))
         return dictify_key_value_pairs(items, key_converter, value_converter)
-        # return {(key_converter(k) if callable(key_converter) else k): dictify(v, key_converter, value_converter)
-        #         for (k, v) in inspect.getmembers(obj) if not k.startswith("_")}
 
     return str(obj)
 

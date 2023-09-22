@@ -488,7 +488,6 @@ class GraphQLBuilder(NetworkxBuilder):
     @property
     @functools.lru_cache
     def _graphql_types(self) -> dict[str, type['GraphQLBuilder.GraphNode']]:
-        # node_types = self.model.node_types
         node_types = list(self._graph.graph['node_types'].keys())
 
         # Create classes for nodes according to their type
@@ -584,7 +583,7 @@ class GraphQLBuilder(NetworkxBuilder):
                 def filter_node(node):
                     output = True
                     if node_type:
-                        output = output and node.type.lower() == node_type
+                        output = node.type.lower() == node_type
 
                     if node_id:
                         output = output and node.id == node_id

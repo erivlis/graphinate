@@ -37,6 +37,7 @@ model_option = click.option('-m', '--model',
 @click.group()
 @click.pass_context
 def cli(ctx):
+    # CLI Group
     pass
 
 

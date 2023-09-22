@@ -5,6 +5,35 @@ import graphinate.tools.gui
 import networkx as nx
 
 
+def cylinder_edges(circumference: int, length: int):
+    for k in range(length):
+        start = k * circumference
+        stop = (k + 1) * circumference - 1
+        if k > 0:
+            yield start, start - circumference
+            yield stop, stop - circumference
+        for i in range(start, stop):
+            yield i, i + 1
+            if k > 0:
+                yield i, i - circumference
+        yield stop, start
+
+
+def spiral_edges(n, k):
+    for i in range(n):
+        yield i, i + 1
+        if i - k >= 0:
+            yield i, i - k
+    yield n, n - k
+
+
+def spiral_torus_edges(n, k):
+    yield from spiral_edges(n - 1, k)
+    yield n - 1, 0
+    for i in range(k):
+        yield i, n - k + i
+
+
 def atlas():
     ladder_size = 16
     ladder = nx.ladder_graph(ladder_size)
@@ -17,35 +46,9 @@ def atlas():
     ladder_mobius.add_edge(ladder_size, ladder_size - 1)
     ladder_mobius.add_edge(0, ladder_size * 2 - 1)
 
-    def cylinder_edges(circumference: int, length: int):
-        for k in range(length):
-            start = k * circumference
-            stop = (k + 1) * circumference - 1
-            if k > 0:
-                yield start, start - circumference
-                yield stop, stop - circumference
-            for i in range(start, stop):
-                yield i, i + 1
-                if k > 0:
-                    yield i, i - circumference
-            yield stop, start
-
     cylinder = nx.Graph(cylinder_edges(6, 8))
 
-    def spiral_edges(n, k):
-        for i in range(n):
-            yield i, i + 1
-            if i - k >= 0:
-                yield i, i - k
-        yield n, n - k
-
     spiral = nx.Graph(e for e in spiral_edges(128, 8))
-
-    def spiral_torus_edges(n, k):
-        yield from spiral_edges(n - 1, k)
-        yield n - 1, 0
-        for i in range(k):
-            yield i, n - k + i
 
     spiral_torus = nx.Graph(spiral_torus_edges(128, 8))
 

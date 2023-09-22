@@ -16,10 +16,6 @@ def city_count():
 
 @pytest.fixture()
 def map_graph_model(country_count, city_count):
-    # arrange
-    country_count = random.randint(1, 10)
-    city_count = random.randint(20, 40)
-
     country_ids = {str(c): None for c in range(1, country_count + 1)}
     city_ids = {str(c): random.choice(list(country_ids.keys())) for c in range(1, city_count + 1)}
 

@@ -1,6 +1,7 @@
+import pytest
+
 import graphinate
 import graphinate.builders
-import pytest
 
 
 @pytest.mark.parametrize('execution_number', range(10))
@@ -16,9 +17,6 @@ def test_networkx_builder(execution_number, map_graph_model):
     assert graph.order() == country_count + city_count
     assert graph.graph['node_types']['country'] == country_count
     assert graph.graph['node_types']['city'] == city_count
-
-    # from graphinate.plot import show
-    # show(graph)
 
 
 @pytest.mark.parametrize('execution_number', range(10))
