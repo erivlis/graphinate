@@ -8,7 +8,6 @@ from loguru import logger
 DEFAULT_MAX_DEPTH = 0
 
 
-
 def page_links_graph_model(max_depth: int = DEFAULT_MAX_DEPTH):
     def _links(url: str, depth=0, **kwargs):
         reqs = requests.get(url)

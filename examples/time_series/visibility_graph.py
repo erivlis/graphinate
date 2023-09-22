@@ -1,5 +1,4 @@
 import itertools
-import random
 from collections.abc import Iterable
 from typing import Optional
 

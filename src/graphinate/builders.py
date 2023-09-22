@@ -26,7 +26,7 @@ import strawberry
 from loguru import logger
 
 from . import color
-from .modeling import GraphModel, UNIVERSE_NODE
+from .modeling import UNIVERSE_NODE, GraphModel
 from .tools import mutators
 from .typing import NodeTypeAbsoluteId
 
