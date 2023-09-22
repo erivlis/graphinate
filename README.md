@@ -39,7 +39,9 @@ In addition, there are several modes of output to enable examination of the Grap
 
 Graphinate utilizes and builds upon the excellent [**_NetworkX_**](https://networkx.org/).
 
-[//]: # (- TUI &#40;using [**_Textual_**]&#40;https://textual.textualize.io/&#41;&#41; **⚠️Not available yet⚠️**)
+- Website (including documentation): https://erivlis.github.io/graphinate
+- Source: https://github.com/erivlis/graphinate
+- Package: https://pypi.org/project/graphinate
 
 ---
 

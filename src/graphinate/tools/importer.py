@@ -7,6 +7,11 @@ class ImportFromStringError(Exception):
 
 
 def import_from_string(import_str: Any) -> Any:
+    """Import an object from a string reference {module-name}:{variable-name}
+    For example given a var `model=GraphModel()` defined in app.py file,
+    then the reference would be app:model
+    """
+
     if not isinstance(import_str, str):
         return import_str
 

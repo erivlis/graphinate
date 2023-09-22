@@ -37,8 +37,8 @@ dependencies = [
 
 
 [project.urls]
-"Homepage" = "https://github.com/erivlis/graphinate"
-"Documentation" = "https://github.com/erivlis/graphinate#README.md"
+"Homepage" = "https://erivlis.github.io/graphinate"
+"Documentation" = "https://erivlis.github.io/graphinate"
 "Bug Tracker" = "https://github.com/erivlis/graphinate/issues"
 "Source" = "https://github.com/erivlis/graphinate"
 

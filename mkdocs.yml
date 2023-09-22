@@ -31,21 +31,24 @@ theme:
   palette:
     # Palette toggle for dark mode
     - scheme: slate
-      primary: deep purple
-#      accent: deep purple
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-night
         name: Switch to light mode
     # Palette toggle for light mode
     - scheme: default
-      primary: deep purple
-#      accent: deep purple
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-sunny
         name: Switch to dark mode
 
   logo: assets/images/network_graph.png
   favicon: assets/images/network_graph.png
+extra_css:
+  - assets/stylesheets/extra.css
+
 
 markdown_extensions:
   - pymdownx.highlight:
