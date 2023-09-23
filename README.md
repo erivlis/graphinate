@@ -16,6 +16,15 @@
 <a href="https://github.com/erivlis/graphinate/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/erivlis/graphinate.svg"></a>
 <a href="https://github.com/erivlis/graphinate/actions/workflows/test.yml"><img alt="Tests" src="https://github.com/erivlis/graphinate/actions/workflows/test.yml/badge.svg?branch=master"></a>
 <a href="https://github.com/erivlis/graphinate/actions/workflows/publish.yml"><img alt="Publish" src="https://github.com/erivlis/graphinate/actions/workflows/publish.yml/badge.svg"></a>
+<br>
+<a href="https://sonarcloud.io/summary/new_code?id=erivlis_graphinate"><img alt="Quality Gate Status" src="https://sonarcloud.io/api/project_badges/measure?project=erivlis_graphinate&metric=alert_status"></a>
+<a href="https://sonarcloud.io/summary/new_code?id=erivlis_graphinate"><img alt="Security Rating" src="https://sonarcloud.io/api/project_badges/measure?project=erivlis_graphinate&metric=security_rating"></a>
+<a href="https://sonarcloud.io/summary/new_code?id=erivlis_graphinate"><img alt="Maintainability Rating" src="https://sonarcloud.io/api/project_badges/measure?project=erivlis_graphinate&metric=sqale_rating"></a>
+<a href="https://sonarcloud.io/summary/new_code?id=erivlis_graphinate"><img alt="Reliability Rating" src="https://sonarcloud.io/api/project_badges/measure?project=erivlis_graphinate&metric=reliability_rating"></a>
+<br>
+<a href="https://sonarcloud.io/summary/new_code?id=erivlis_graphinate"><img alt="Lines of Code" src="https://sonarcloud.io/api/project_badges/measure?project=erivlis_graphinate&metric=ncloc"></a>
+<a href="https://sonarcloud.io/summary/new_code?id=erivlis_graphinate"><img alt="Vulnerabilities" src="https://sonarcloud.io/api/project_badges/measure?project=erivlis_graphinate&metric=vulnerabilities"></a>
+<a href="https://sonarcloud.io/summary/new_code?id=erivlis_graphinate"><img alt="Bugs" src="https://sonarcloud.io/api/project_badges/measure?project=erivlis_graphinate&metric=bugs"></a>
 </p>
 
 > [!WARNING]
