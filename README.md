@@ -30,8 +30,6 @@
 > [!WARNING]
 >
 > **UNDER DEVELOPMENT**
->
-> **This library is alpha-quality**
 
 ---
 
