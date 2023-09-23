@@ -25,6 +25,7 @@
       <a href="https://github.com/erivlis/graphinate/actions/workflows/test.yml"><img alt="Tests" src="https://github.com/erivlis/graphinate/actions/workflows/test.yml/badge.svg?branch=master"></a>
       <a href="https://github.com/erivlis/graphinate/actions/workflows/publish.yml"><img alt="Publish" src="https://github.com/erivlis/graphinate/actions/workflows/publish.yml/badge.svg"></a>
       <a href="https://github.com/erivlis/graphinate/actions/workflows/publish-docs.yaml"><img alt="Publish Docs" src="https://github.com/erivlis/graphinate/actions/workflows/publish-docs.yaml/badge.svg"></a>
+      <a href="https://codecov.io/gh/erivlis/graphinate"><img alt="Coverage" src="https://codecov.io/gh/erivlis/graphinate/graph/badge.svg?token=POODT8M9NV"/></a>
     </td>
   </tr>
   <tr>
