@@ -87,6 +87,7 @@ class GraphModel:
        Used to declaratively register Edge and/or Node data supplier functions by using
        decorators.
     """
+
     def __init__(self, name: str):
         """Create a model for graph
 
@@ -101,9 +102,12 @@ class GraphModel:
         self._networkx_graph = None
 
     def __add__(self, other: 'GraphModel'):
-        self._node_models.update(other._node_models)
-        self._node_children.update(other._node_children)
-        self._edge_generators.update(other._edge_generators)
+        graph_model = GraphModel(name=f"{self.name} + {other.name}")
+        for model in (self, other):
+            graph_model._node_models.update(model._node_models.copy())
+            graph_model._node_children.update(model._node_children.copy())
+            graph_model._edge_generators.update(model._edge_generators.copy())
+        return graph_model
 
     @property
     def node_models(self) -> dict[NodeTypeAbsoluteId, NodeModel]:
@@ -254,7 +258,7 @@ class GraphModel:
                 value=value,
                 label=label or str
             )
-            def node():
+            def node():  # pragma: no cover
                 return
                 yield
 

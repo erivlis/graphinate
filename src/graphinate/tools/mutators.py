@@ -18,7 +18,7 @@ def _process_obj(obj: Any,
         return mapping_handler(obj, *args, **kwargs)
     if callable(iterable_handler) and is_strict_iterable(obj):
         return iterable_handler(obj, *args, **kwargs)
-    if callable(class_handler) and inspect.isclass(obj):
+    if callable(class_handler) and dataclasses.is_dataclass(obj):
         return class_handler(obj, *args, **kwargs)
 
     if (value_converter := kwargs.get('value_converter')) and callable(value_converter):
@@ -49,11 +49,8 @@ def dictify_mapping(items: Mapping[Any, Any],
 def dictify_class(obj,
                   key_converter: Optional[Callable[[Any], str]] = None,
                   value_converter: Optional[Callable[[Any], Any]] = None):
-    if dataclasses.is_dataclass(obj):
-        items = ((k, v) for k, v in inspect.getmembers(obj) if not k.startswith("_"))
-        return dictify_key_value_pairs(items, key_converter, value_converter)
-
-    return str(obj)
+    items = ((k, v) for k, v in inspect.getmembers(obj) if not k.startswith("_"))
+    return dictify_key_value_pairs(items, key_converter, value_converter)
 
 
 def dictify(obj,

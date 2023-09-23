@@ -1,5 +1,5 @@
 import functools
-from collections.abc import Iterable, Mapping
+from collections.abc import Mapping, Sequence
 from typing import Union
 
 import matplotlib as mpl
@@ -27,7 +27,7 @@ def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = 
     return node_colors
 
 
-def color_hex(color: Iterable[int]) -> str:
+def color_hex(color: Union[str, Sequence[Union[float, int]]]) -> Union[str, Sequence[Union[float, int]]]:
     """Get HEX color code
 
     Parameters:
@@ -35,15 +35,18 @@ def color_hex(color: Iterable[int]) -> str:
     Return:
          Color HEX code
     """
-    if isinstance(color, (tuple, list, Iterable)):
+    if isinstance(color, (tuple, list)):
         rgb = color[:3]
 
-        if all(0 <= c <= 1 for c in rgb):
+        if all(isinstance(c, float) and 0 <= c <= 1 for c in rgb):
             rgb = tuple(int(c * 255) for c in rgb)
-        elif all(0 <= c <= 100 for c in rgb):
-            rgb = tuple(int(c * 2.55) for c in rgb)
-        elif all(0 <= c <= 255 for c in rgb):
-            rgb = tuple(int(c) for c in rgb)
+        elif all(isinstance(c, int) and 0 <= c <= 255 for c in rgb):
+            rgb = tuple(rgb)
+        else:
+            msg = "Input values should either be a float between 0 and 1 or an int between 0 and 255"
+            raise ValueError(msg)
+
         return '#{:02x}{:02x}{:02x}'.format(*rgb)
 
-    return color
+    else:
+        return color

@@ -7,7 +7,7 @@ DEPTH = 0
 
 
 def followers_graph_model(max_depth: int = DEPTH):
-    graph_model = graphinate.GraphModel(name='Github Followers Graph')
+    graph_model = graphinate.model(name='Github Followers Graph')
 
     def _followers(user_id: Optional[str] = None, depth: int = 0, **kwargs):
         user = github_user(user_id)

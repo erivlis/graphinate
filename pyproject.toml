@@ -1,6 +1,6 @@
 [project]
 name = "Graphinate"
-version = "0.1.1"
+version = "0.2.0"
 authors = [
     { name = "Eran Rivlis", email = "eran@rivlis.info" },
 ]
@@ -58,6 +58,7 @@ docs = [
     "mkdocs-section-index"
 ]
 test = [
+    "faker",
     "pytest >= 7.3.2",
     "pytest-cov >= 4.1.0",
     "pytest-randomly >= 3.15.0"
@@ -86,6 +87,21 @@ allow-direct-references = true
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[tool.coverage.report]
+exclude_also = [
+    "...",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+    ]
 
 
 [tool.black]

@@ -29,7 +29,7 @@ def _ast_edge(parsed_ast: AST):
 
 
 def ast_graph_model():
-    graph_model = graphinate.GraphModel(name='AST Graph')
+    graph_model = graphinate.model(name='AST Graph')
 
     root_ast_node = ast.parse(inspect.getsource(graphinate.builders.D3Builder))
 

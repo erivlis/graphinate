@@ -11,7 +11,7 @@ from _client import github_commits, github_files, github_repositories, github_us
 
 
 def repo_graph_model():  # noqa: C901
-    graph_model = graphinate.GraphModel(name='GitHub Repository Graph')
+    graph_model = graphinate.model(name='GitHub Repository Graph')
 
     @graph_model.edge
     def github(user_id: Optional[str] = None,

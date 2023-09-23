@@ -28,7 +28,7 @@ def page_links_graph_model(max_depth: int = DEFAULT_MAX_DEPTH):
             if depth < max_depth:
                 yield from _links(child_url, depth=depth + 1, **kwargs)
 
-    graph_model = graphinate.GraphModel(name='Web')
+    graph_model = graphinate.model(name='Web')
 
     @graph_model.edge()
     def link(url, **kwargs):

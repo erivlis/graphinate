@@ -27,7 +27,7 @@ import graphinate
 N: int = 8
 
 # Define a GraphModel
-graph_model = graphinate.GraphModel(name="Octagonal Graph")
+graph_model = graphinate.model(name="Octagonal Graph")
 
 
 # Register in the Graph Model the edges supplier function

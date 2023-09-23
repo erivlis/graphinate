@@ -6,7 +6,7 @@ N: int = 8
 
 def get_graph_model(number_of_sides: int = N):
     # Define GraphModel
-    graph_model = graphinate.GraphModel(name="Octagonal Graph")
+    graph_model = graphinate.model(name="Octagonal Graph")
 
     # Register edges supplier function
     @graph_model.edge()

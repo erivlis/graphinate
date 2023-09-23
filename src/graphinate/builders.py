@@ -24,6 +24,8 @@ import inflect
 import networkx as nx
 import strawberry
 from loguru import logger
+from strawberry.extensions import ParserCache, QueryDepthLimiter, ValidationCache
+from strawberry.extensions.tracing import OpenTelemetryExtension
 
 from . import color
 from .modeling import UNIVERSE_NODE, GraphModel
@@ -330,12 +332,13 @@ class GraphQLBuilder(NetworkxBuilder):
         created: Optional[datetime]
         updated: Optional[datetime]
 
-    @strawberry.interface(description="Represents a Graph Node")
+    @strawberry.interface(description="Represents a Graph Node", )
     class GraphNode(GraphElement):
         node_id: strawberry.ID
         magnitude: int
         lineage: str
         neighbors: Optional[list['GraphQLBuilder.GraphNode']]
+        edges: Optional[list['GraphQLBuilder.GraphEdge']]
 
     @strawberry.type(description="Represents a Graph Edge")
     class GraphEdge(GraphElement):
@@ -517,9 +520,20 @@ class GraphQLBuilder(NetworkxBuilder):
 
             return neighbors
 
+        def edges_resolver():
+            graph: nx.Graph = self._graph
+            graph_edge = self._graph_edge
+
+            def node_edges(self) -> list[GraphQLBuilder.GraphEdge]:
+                node = decode_id(self.id)
+                return [graph_edge((source, target), data) for source, target, data in graph.edges(node, data=True)]
+
+            return node_edges
+
         # node_types = self.model.node_types
         for node_type in node_types:
             graphql_types[node_type].neighbors = strawberry.field(resolver=neighbors_resolver())
+            graphql_types[node_type].edges = strawberry.field(resolver=edges_resolver())
             # children_types = set(self._children_types(node_type))
             # graphql_types[node_type].children = strawberry.field(resolver=neighbors_resolver(children_types))
 
@@ -575,10 +589,11 @@ class GraphQLBuilder(NetworkxBuilder):
                 graph = get_graph()
 
                 if graphql_type:
-                    nodes = (GraphQLBuilder._graph_node(graphql_type, n, d) for n, d in graph.nodes(data=True))
+                    nodes = (GraphQLBuilder._graph_node(graphql_type, n, d)
+                             for n, d in graph.nodes(data=True))
                 else:
-                    nodes = (GraphQLBuilder._graph_node(graphql_types.get(d['type']), n, d) for n, d in
-                             graph.nodes(data=True))
+                    nodes = (GraphQLBuilder._graph_node(graphql_types.get(d['type']), n, d)
+                             for n, d in graph.nodes(data=True))
 
                 def filter_node(node):
                     output = True
@@ -680,7 +695,13 @@ class GraphQLBuilder(NetworkxBuilder):
         # define and return Schema
         return strawberry.Schema(query=self._graphql_query(),
                                  mutation=self._graphql_mutation(),
-                                 types=self._graphql_types.values())
+                                 types=self._graphql_types.values(),
+                                 extensions=[
+                                     ParserCache(maxsize=100),
+                                     QueryDepthLimiter(max_depth=10),
+                                     ValidationCache(maxsize=100)
+                                 ]
+                                 )
 
     def build(self, **kwargs) -> strawberry.Schema:
         super().build(**kwargs)

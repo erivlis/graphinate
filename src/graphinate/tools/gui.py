@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk as ttk
 
 
-def _modal_window(title: str) -> tk.Tk:
+def _modal_window(title: str) -> tk.Tk:  # pragma: no cover
     # Creating parent Tkinter window
     win = tk.Tk()
     # win.geometry("200x125")
@@ -13,7 +13,7 @@ def _modal_window(title: str) -> tk.Tk:
     return win
 
 
-def modal_radiobutton_chooser(window_title: str, options: dict, default=None):
+def modal_radiobutton_chooser(window_title: str, options: dict, default=None):  # pragma: no cover
     # Creating parent Tkinter window
     win = _modal_window(window_title)
 
@@ -64,7 +64,7 @@ def modal_radiobutton_chooser(window_title: str, options: dict, default=None):
     return choice, options.get(choice, default)
 
 
-def modal_listbox_chooser(window_title: str, options: dict, default=None):
+def modal_listbox_chooser(window_title: str, options: dict, default=None):  # pragma: no cover
     win = _modal_window(window_title)
 
     choices = list(options.keys())

@@ -1,5 +1,7 @@
+import operator
 import random
 
+import faker
 import graphinate
 import pytest
 
@@ -19,9 +21,18 @@ def map_graph_model(country_count, city_count):
     country_ids = {str(c): None for c in range(1, country_count + 1)}
     city_ids = {str(c): random.choice(list(country_ids.keys())) for c in range(1, city_count + 1)}
 
-    graph_model = graphinate.GraphModel(name='Map')
+    graph_model = graphinate.model(name='Map')
 
-    @graph_model.node()
+    faker.Faker.seed(0)
+    fake = faker.Faker()
+
+    def country_node_label(value):
+        return fake.country()
+
+    def city_node_label(value):
+        return fake.city()
+
+    @graph_model.node(label=country_node_label)
     def country(country_id=None, **kwargs):
 
         if country_id and country_id in country_ids:
@@ -29,7 +40,7 @@ def map_graph_model(country_count, city_count):
         else:
             yield from country_ids
 
-    @graph_model.node(parent_type='country')
+    @graph_model.node(parent_type='country', label=city_node_label)
     def city(country_id=None, city_id=None, **kwargs):
 
         if country_id is None and city_id is None:
@@ -43,6 +54,13 @@ def map_graph_model(country_count, city_count):
 
         if country_id is not None and city_id is None:
             yield from (k for k, v in city_ids.items() if v == country_id)
+
+    @graph_model.node(_type=operator.itemgetter('sex'),
+                      parent_type='city',
+                      key=operator.itemgetter('username'),
+                      label=operator.itemgetter('name'))
+    def person(country_id=None, city_id=None, person_id=None, **kwargs):
+        yield fake.profile()
 
     return country_count, city_count, graph_model
 
@@ -71,7 +89,12 @@ def graphql_query():
         averageDegree
         hash
       }
-      nodes {id ...ElementDetails}
+      nodes {
+        id
+        ...ElementDetails
+        neighbors {id type label}
+        edges {id type label}
+      }
       edges {
         source {id ...ElementDetails}
         target {id ...ElementDetails}

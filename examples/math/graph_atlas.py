@@ -767,7 +767,7 @@ def atlas():
 
 
 def models(iterable):
-    graph_model = graphinate.GraphModel('Graph Atlas')
+    graph_model = graphinate.model('Graph Atlas')
 
     graph_atlas = nx.disjoint_union_all(g for _, g in iterable)
 
