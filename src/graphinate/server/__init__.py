@@ -1,3 +1,4 @@
+import contextlib
 import webbrowser
 
 import strawberry
@@ -13,14 +14,18 @@ DEFAULT_PORT: int = 8072
 def run_graphql(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT):
     graphql_schema.extensions.append(OpenTelemetryExtension)
 
-    def open_url():
-        for app_name in ('voyager', 'graphiql', 'viewer'):
-            webbrowser.open(f'http://localhost:{port}/{app_name}')
+    @contextlib.asynccontextmanager
+    async def lifespan(app: Starlette):
+        def open_url():  # pragma: no cover
+            for app_name in ('voyager', 'graphiql', 'viewer'):
+                webbrowser.open(f'http://localhost:{port}/{app_name}')
+            yield
 
     graphql_app = GraphQL(graphql_schema)
     app = Starlette(
-        routes=routes(),
-        on_startup=[open_url])
+        lifespan=lifespan,
+        routes=routes()
+    )
     app.add_route("/graphql", graphql_app)
     app.add_websocket_route("/graphql", graphql_app)
 

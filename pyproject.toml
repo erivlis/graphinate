@@ -60,9 +60,9 @@ docs = [
 test = [
     "faker",
     "pytest >= 7.3.2",
+    "pytest-asyncio",
     "pytest-cov >= 4.1.0",
     "pytest-randomly >= 3.15.0"
-    # "pytest-asyncio"
     # "pytest-rerunfailures",
     # "pytest-xdist",
 ]
