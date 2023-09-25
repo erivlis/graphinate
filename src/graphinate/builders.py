@@ -1,7 +1,6 @@
 """
 Build classes that can generate graph data structures from a GraphModel
 """
-
 import base64
 import decimal
 import functools
@@ -25,7 +24,6 @@ import networkx as nx
 import strawberry
 from loguru import logger
 from strawberry.extensions import ParserCache, QueryDepthLimiter, ValidationCache
-from strawberry.extensions.tracing import OpenTelemetryExtension
 
 from . import color
 from .modeling import UNIVERSE_NODE, GraphModel
@@ -133,6 +131,14 @@ class NetworkxBuilder(Builder):
         self._graph = self.graph_type.value(name=self.model.name,
                                             node_types=Counter(),
                                             edge_types=Counter())
+
+    def _graph_edges(self, data, default=None):
+        params = {'data': data, 'default': default}
+
+        if isinstance(self._graph, nx.MultiGraph):
+            params['keys'] = True
+
+        return self._graph.edges(**params)
 
     def _populate_node_type(self, node_type: Union[Hashable, UNIVERSE_NODE] = UNIVERSE_NODE, **kwargs):
         for parent_node_type, child_node_types in self.model.node_children_types(node_type).items():
@@ -243,20 +249,20 @@ class NetworkxBuilder(Builder):
 
         for name, default in defaults.items():
             if callable(default):
-                values = {(s, t): default((s, t)) for s, t, a in self._graph.edges(data=name, default=None) if
-                          a is None}
+                values = {tuple(e): default(tuple(e)) for *e, a in self._graph_edges(data=name, default=None)
+                          if a is None}
             elif isinstance(default, dict):
                 values = default
             elif default:
-                values = {(s, t): a for s, t, a in self._graph.edges(data=name, default=default) if a == default}
+                values = {tuple(e): a for *e, a in self._graph_edges(data=name, default=default) if a == default}
             else:
-                values = {(s, t): (s, t) for s, t, a in self._graph.edges(data=name, default=default) if a is default}
+                values = {tuple(e): tuple(e) for *e, a in self._graph_edges(data=name, default=default) if a is default}
 
             if values:
                 nx.set_edge_attributes(self._graph, values=values, name=name)
 
         if default_type := defaults.get('type'):
-            type_count = sum(1 for s, t, d in self._graph.edges(data='type') if d == default_type)
+            type_count = sum(1 for *_, d in self._graph_edges(data='type') if d == default_type)
             if type_count:
                 self._graph.graph['edge_types'].update({default_type: type_count})
 

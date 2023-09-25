@@ -1,5 +1,12 @@
 import graphinate.builders
+import networkx as nx
 import pytest
+
+
+@pytest.mark.parametrize('case', [0, None, "", False])
+def test_label_converter__value__falsy(case):
+    actual = graphinate.builders.label_converter(case, delimiter=graphinate.builders.DEFAULT_NODE_DELIMITER)
+    assert actual == case
 
 
 def test_encoding():
@@ -11,8 +18,105 @@ def test_encoding():
     assert actual_edge == expected_edge
 
 
+def test_networkx_builder__empty_model():
+    # arrange
+    name = ""
+    graph_model = graphinate.model(name=name)
+
+    # act
+    builder = graphinate.builders.NetworkxBuilder(graph_model)
+    graph = builder.build()
+
+    # assert
+    assert isinstance(graph, nx.Graph)
+    assert graph.graph['name'] == name
+
+
+@pytest.mark.parametrize('graph_type', list(graphinate.GraphType))
+def test_networkx_builder__graph_type(graph_type):
+    # arrange
+    name = str(graph_type)
+    graph_model = graphinate.model(name=name)
+
+    @graph_model.edge()
+    def edge():
+        for i in range(5):
+            yield {'source': i, 'target': i + 1}
+            if graph_type in (graphinate.GraphType.DiGraph, graphinate.GraphType.MultiDiGraph):
+                yield {'source': i + 1, 'target': i}
+            if graph_type in (graphinate.GraphType.MultiGraph, graphinate.GraphType.MultiDiGraph):
+                yield {'source': i, 'target': i + 1}
+
+    # act
+    builder = graphinate.builders.NetworkxBuilder(graph_model, graph_type=graph_type)
+    graph = builder.build()
+
+    # assert
+    assert isinstance(graph, nx.Graph)
+    assert graph.graph['name'] == name
+
+
+def test_networkx_builder_repeating_edges():
+    # arrange
+    name = 'Repeating Nodes'
+    graph_model = graphinate.GraphModel(name=name)
+
+    @graph_model.edge()
+    def edge():
+        for i in range(5):
+            e = {'source': i, 'target': i + 1}
+            yield e
+            yield e
+
+    # act
+    builder = graphinate.builders.NetworkxBuilder(graph_model)
+    graph = builder.build()
+
+    # assert
+    assert isinstance(graph, nx.Graph)
+    assert graph.graph['name'] == name
+
+
+def test_networkx_builder_simple_tuple():
+    # arrange
+    name = 'Simple Tuple'
+    graph_model = graphinate.GraphModel(name=name)
+
+    @graph_model.edge()
+    def edge():
+        for i in range(5):
+            yield {'source': (i,), 'target': (i + 1,)}
+
+    # act
+    builder = graphinate.builders.NetworkxBuilder(graph_model)
+    graph = builder.build()
+
+    # assert
+    assert isinstance(graph, nx.Graph)
+    assert graph.graph['name'] == name
+
+
+def test_networkx_builder__defaults():
+    # arrange
+    name = 'Simple Tuple'
+    graph_model = graphinate.GraphModel(name=name)
+
+    @graph_model.edge()
+    def edge():
+        for i in range(5):
+            yield {'source': (i,), 'target': (i + 1,)}
+
+    # act
+    builder = graphinate.builders.NetworkxBuilder(graph_model)
+    graph = builder.build()
+
+    # assert
+    assert isinstance(graph, nx.Graph)
+    assert graph.graph['name'] == name
+
+
 @pytest.mark.parametrize('execution_number', range(5))
-def test_networkx_builder(execution_number, map_graph_model):
+def test_networkx_builder__map_graph_model(execution_number, map_graph_model):
     # arrange
     country_count, city_count, graph_model = map_graph_model
     person_count = city_count
@@ -28,7 +132,7 @@ def test_networkx_builder(execution_number, map_graph_model):
 
 
 @pytest.mark.parametrize('execution_number', range(5))
-def test_d3_builder(execution_number, map_graph_model):
+def test_d3_builder__map_graph_model(execution_number, map_graph_model):
     # arrange
     country_count, city_count, graph_model = map_graph_model
     person_count = city_count
@@ -46,7 +150,7 @@ def test_d3_builder(execution_number, map_graph_model):
 
 
 @pytest.mark.parametrize('execution_number', range(5))
-def test_graphql_builder(execution_number, map_graph_model, graphql_query):
+def test_graphql_builder__map_graph_model(execution_number, map_graph_model, graphql_query):
     # arrange
     country_count, city_count, graph_model = map_graph_model
     person_count = city_count
@@ -93,7 +197,11 @@ def test_graphql_builder_measures():
         name
         value
       }
-        node_connectivity: measure(measure: node_connectivity) {
+      node_connectivity: measure(measure: node_connectivity) {
+        name
+        value
+      }
+      threshold_graph: measure(measure: is_threshold_graph) {
         name
         value
       }
@@ -119,7 +227,12 @@ def test_graphql_builder_measures():
         "node_connectivity": {
             "name": "node_connectivity",
             "value": 2
+        },
+        "threshold_graph": {
+            "name": "is_threshold_graph",
+            "value": 0
         }
+
     }
 
     # Register edges supplier function

@@ -19,7 +19,9 @@ def run_graphql(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT):
         def open_url():  # pragma: no cover
             for app_name in ('voyager', 'graphiql', 'viewer'):
                 webbrowser.open(f'http://localhost:{port}/{app_name}')
-            yield
+
+        open_url()
+        yield
 
     graphql_app = GraphQL(graphql_schema)
     app = Starlette(
