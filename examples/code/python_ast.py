@@ -1,6 +1,8 @@
 import ast
+import hashlib
 import inspect
 import operator
+import pickle
 from _ast import AST
 from collections.abc import Iterable
 
@@ -45,11 +47,24 @@ def ast_graph_model():
 
         return label
 
-    @graph_model.node(_type=node_type, label=node_label, uniqueness=True)
+    def key(value):
+        # noinspection InsecureHash
+        return hashlib.md5(pickle.dumps(value)).hexdigest()
+
+    def endpoint(value, endpoint_name):
+        return key(value[endpoint_name])
+
+    def source(value):
+        return endpoint(value, 'source')
+
+    def target(value):
+        return endpoint(value, 'target')
+
+    @graph_model.node(_type=node_type, key=key, label=node_label, uniqueness=True)
     def ast_node(**kwargs):
         yield from _ast_nodes([root_ast_node])
 
-    @graph_model.edge(_type='edge', label=operator.itemgetter('type'))
+    @graph_model.edge(_type='edge', source=source, target=target, label=operator.itemgetter('type'))
     def ast_edge(**kwargs):
         yield from _ast_edge(root_ast_node)
 
@@ -58,4 +73,8 @@ def ast_graph_model():
 
 if __name__ == '__main__':
     ast_model = ast_graph_model()
-    graphinate.materialize(ast_model)
+    graphinate.materialize(
+        ast_model,
+        builder=graphinate.builders.GraphQLBuilder,
+        actualizer=graphinate.materializers.graphql
+    )

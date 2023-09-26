@@ -187,11 +187,12 @@ ruff check src
 
 ### Test
 
+#### Standard (cobertura) XML Coverage Report 
 ```shell
  python -m pytest ./tests --cov=./src --cov-branch --doctest-modules --cov-report=xml --junitxml=test_results.xml
 ```
 
-#### Coverage Report
+#### HTML Coverage Report
 
 ```shell
  python -m pytest tests --cov=src --cov-branch --doctest-modules --cov-report=html --junitxml=test_results.xml

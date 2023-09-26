@@ -56,12 +56,34 @@ def test_networkx_builder__graph_type(graph_type):
     assert graph.graph['name'] == name
 
 
-def test_networkx_builder_repeating_edges():
+def test_networkx_builder_repeating_nodes():
     # arrange
     name = 'Repeating Nodes'
     graph_model = graphinate.GraphModel(name=name)
 
-    @graph_model.edge()
+    @graph_model.node()
+    def node():
+        for i in range(5):
+            yield i
+            yield i
+
+    # act
+    builder = graphinate.builders.NetworkxBuilder(graph_model)
+    graph: nx.Graph = builder.build()
+
+    # assert
+    assert isinstance(graph, nx.Graph)
+    assert graph.graph['name'] == name
+    assert all(graph.nodes[n]['magnitude'] == 2 for n in graph)
+
+
+@pytest.mark.parametrize('weight', [1.0, 1.5])
+def test_networkx_builder_repeating_edges(weight):
+    # arrange
+    name = 'Repeating Edges'
+    graph_model = graphinate.GraphModel(name=name)
+
+    @graph_model.edge(weight=weight)
     def edge():
         for i in range(5):
             e = {'source': i, 'target': i + 1}
@@ -75,6 +97,7 @@ def test_networkx_builder_repeating_edges():
     # assert
     assert isinstance(graph, nx.Graph)
     assert graph.graph['name'] == name
+    assert all(m == weight * 2 for *_, m in graph.edges.data('weight'))
 
 
 def test_networkx_builder_simple_tuple():
@@ -175,12 +198,9 @@ def test_graphql_builder__map_graph_model(execution_number, map_graph_model, gra
     assert len(actual_graph['nodes']) == country_count + city_count + person_count
 
 
-def test_graphql_builder_measures():
+def test_graphql_builder_measures(octagonal_graph_model):
     # arrange
-
-    graph_model = graphinate.model(name="Octagonal Graph")
-    number_of_sides = 8
-    graphql_query = """{
+    measures_graphql_query = """{
       empty: measure(measure: is_empty) {
         name
         value
@@ -206,7 +226,6 @@ def test_graphql_builder_measures():
         value
       }
     }"""
-
     expected_response = {
         "empty": {
             "name": "is_empty",
@@ -235,15 +254,45 @@ def test_graphql_builder_measures():
 
     }
 
-    # Register edges supplier function
-    @graph_model.edge()
-    def edge():
-        for i in range(number_of_sides):
-            yield {'source': i, 'target': i + 1}
-        yield {'source': number_of_sides, 'target': 0}
+    # act
+    builder = graphinate.builders.GraphQLBuilder(octagonal_graph_model)
+
+    import strawberry
+    schema: strawberry.Schema = builder.build(
+        default_node_attributes=graphinate.builders.Builder.default_node_attributes
+    )
+    execution_result = schema.execute_sync(measures_graphql_query)
+    actual_response = execution_result.data
+
+    # assert
+    assert actual_response == expected_response
+
+
+def test_graphql_builder_query_specific_elements(octagonal_graph_model):
+    # arrange
+    graphql_query = """
+    query Graph {
+      nodes(nodeId: "H4sIAFs7E2UC/2tgmcrKAAHeDK1T9ADQP1FHEAAAAA==") {type label}
+      edges(edgeId: "H4sIAFs7E2UC/2tgmZrIAAE9Oh4mxZ6ObsXmrkahzvpGJem5yUXejo4eqS7ehiGWji6BAYZuHq6OIGBrOwW38iywcmfDcH9jfbjytil6AHhudC5sAAAA") {type label}
+    }
+    """
+    expected_response = {
+        "nodes": [
+            {
+                "type": "node",
+                "label": "0"
+            }
+        ],
+        "edges": [
+            {
+                "type": "edge",
+                "label": "{'source': 0, 'target': 1}"
+            }
+        ]
+    }
 
     # act
-    builder = graphinate.builders.GraphQLBuilder(graph_model)
+    builder = graphinate.builders.GraphQLBuilder(octagonal_graph_model)
 
     import strawberry
     schema: strawberry.Schema = builder.build(
@@ -254,3 +303,33 @@ def test_graphql_builder_measures():
 
     # assert
     assert actual_response == expected_response
+
+
+def test_graphql_builder__ast_model__graph_query(ast_graph_model, graphql_query):
+    # act
+    builder = graphinate.builders.GraphQLBuilder(ast_graph_model)
+    import strawberry
+    schema: strawberry.Schema = builder.build()
+    execution_result = schema.execute_sync(graphql_query)
+    actual_graph = execution_result.data
+
+    # assert
+    assert actual_graph
+    assert actual_graph['graph']
+    assert actual_graph['nodes']
+    assert actual_graph['edges']
+    assert actual_graph['graph']['name'] == 'AST Graph'
+    node_types_counts = {c['name']: c['value'] for c in actual_graph['graph']['nodeTypeCounts']}
+    assert node_types_counts
+
+
+def test_graphql_builder__ast_model__refresh_mutation(ast_graph_model):
+    # act
+    builder = graphinate.builders.GraphQLBuilder(ast_graph_model)
+    import strawberry
+    schema: strawberry.Schema = builder.build()
+    execution_result = schema.execute_sync("mutation {refresh}")
+    actual = execution_result.data
+
+    # assert
+    assert actual

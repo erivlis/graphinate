@@ -25,7 +25,12 @@ if __name__ == '__main__':
 
     if use_materialize:
         # Materialize the GraphModel
-        graphinate.materialize(model)
+        graphinate.materialize(
+            model,
+            builder=graphinate.builders.GraphQLBuilder,
+            actualizer=graphinate.materializers.graphql
+        )
+
     else:
         # Or
 
