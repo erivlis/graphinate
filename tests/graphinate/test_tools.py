@@ -43,7 +43,7 @@ def test_dictify__value_to_str(case, expected):
     assert actual == expected
 
 
-def test_import_from_string(monkeypatch):
+def test_import_from_string():
     sys.path.append('examples/math')
     actual = import_from_string("polygonal_graph:model")
     assert isinstance(actual, graphinate.GraphModel)

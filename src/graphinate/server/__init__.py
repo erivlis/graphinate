@@ -15,8 +15,8 @@ def run_graphql(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT):
     graphql_schema.extensions.append(OpenTelemetryExtension)
 
     @contextlib.asynccontextmanager
-    async def lifespan(app: Starlette):
-        def open_url():  # pragma: no cover
+    async def lifespan(app: Starlette):  # pragma: no cover
+        def open_url():
             for app_name in ('voyager', 'graphiql', 'viewer'):
                 webbrowser.open(f'http://localhost:{port}/{app_name}')
 

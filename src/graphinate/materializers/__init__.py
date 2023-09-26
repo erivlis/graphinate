@@ -33,8 +33,10 @@ def materialize(model: modeling.GraphModel,
         result = modal_radiobutton_chooser(title,
                                            options={m.name: m.value for m in Materializers},
                                            default=(None, None))
-        if result[0]:
-            builder, actualizer = result[1]
+        builder, actualizer = result[1]
+
+    if builder is None and actualizer is None:
+        raise ValueError("Missing Arguments: builder, actualizer")
 
     materialized_graph = builders.build(builder,
                                         model,
