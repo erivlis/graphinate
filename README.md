@@ -1,11 +1,8 @@
 # [Graphinate. Data to Graphs.](https://erivlis.github.io/graphinate/)
 
-<p style="text-align:center;">
-  <img height="240" src="https://github.com/erivlis/graphinate/assets/9897520/11038b61-ae26-4b1d-b3ff-37a620312ced" alt="Graphinate. Data to Graphs.">
-</p>
-
 <table>
   <tr style="vertical-align: middle;">
+    <td rowspan="3"><img height="240" src="https://github.com/erivlis/graphinate/assets/9897520/11038b61-ae26-4b1d-b3ff-37a620312ced" alt="Graphinate. Data to Graphs."></td>
     <td>Package</td>
     <td>
       <img alt="PyPI - version" src="https://img.shields.io/pypi/v/graphinate">
