@@ -114,9 +114,9 @@ graphinate.materialize(graph_model)
 ```
 
 > [!NOTE]
-> ### `graphinate.GraphModel` class
-> This class is used to declaratively register _Edge_ and/or _Node_ data
-> supplier functions by using decorators.
+> ### `graphinate.model` function
+> This function creates `GraphModel` class that is used to declaratively register _Edge_ and/or _Node_ data
+> supplier functions by using the `GraphModel.node()` and `GraphModel.edge()` decorators.
 > ### `graphinate.materialize` function
 > This function can be used to easily generate an output from a `GraphModel` instance.
 > By default it will prompt the user to choose the output format, using a popup dialog.

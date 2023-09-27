@@ -42,24 +42,45 @@ Options:
   --help              Show this message and exit.
 ```
 
-## Libarary
+## Library
 
-### Modeling
+### Top level Functions
 
-#### :material-code-tags: `graphinate.GraphModel`
+#### :material-function: `graphinate.model`
 
-Graphinate defines the _**GraphModel**_ Class which can be used to declaratively register Edge and/or Node data
-supplier functions using the _GraphModel.node()_ and _GraphMode.edge()_ decorators.
-
-
-### Functions
+Top level function that creates a _**GraphModel**_
 
 #### :material-function: `graphinate.materialize`
 
 This function can be used to easily generate an output from a `GraphModel` instance.
 By default, it will prompt the user to choose the output format, using a popup dialog.
 
+### Modeling
+
+#### :material-code-tags: `graphinate.GraphModel`
+
+Graphinate defines the `GraphModel` Class which can be used to declaratively register Edge and/or Node data
+supplier functions using the `GraphModel.node()` and `GraphMode.edge()` decorators.
+
+#### :material-code-tags: `graphinate.NodeModel`
+
+> TBD
+
 ### Builders
+
+#### :material-code-tags: `graphinate.builders.NetworkxBuilder`
+
+Used to generate a NetworkX Graph instance.
+
+#### :material-code-tags: `graphinate.builders.D3Builder`
+
+Used to generate a D3 Graph instance (i.e. a Dict).
+
+#### :material-code-tags: `graphinate.builders.GraphQLBuilder`
+
+Used to generate a Strawberry GraphQL Schema instance
+
+### Actualizers
 
 > TBD
 
