@@ -83,10 +83,18 @@ def decode_edge_id(graphql_edge_id: strawberry.ID, encoding: str = 'utf-8'):
 
 
 class GraphType(Enum):
-    """Graph Types `1`_
+    """Graph Types
 
-    .. _1:
-        https://networkx.org/documentation/stable/reference/classes/index.html
+    The choice of graph class depends on the structure of the graph you want to represent.
+
+    | **Graph Type** | **Type**   | **Self-loops allowed** | **Parallel edges allowed** |
+    |----------------|------------|:----------------------:|:--------------------------:|
+    | Graph          | undirected | Yes                    | No                         |
+    | DiGraph        | directed   | Yes                    | No                         |
+    | MultiGraph     | undirected | Yes                    | Yes                        |
+    | MultiDiGraph   | directed   | Yes                    | Yes                        |
+
+    See more here: [NetworkX Reference](https://networkx.org/documentation/stable/reference/classes)
     """
     Graph = nx.Graph
     DiGraph = nx.DiGraph
@@ -116,8 +124,15 @@ class Builder(ABC):
         self.model = model
         self.graph_type = graph_type
 
-    def build(self, **kwargs):
-        """build a graph"""
+    def build(self, **kwargs) -> Any:
+        """Build a graph
+
+        Args:
+            **kwargs:
+
+        Returns:
+            Any
+        """
         self._cached_build_kwargs = kwargs
 
 
@@ -280,7 +295,15 @@ class NetworkxBuilder(Builder):
 
         self._graph.graph['created'] = datetime.utcnow()
 
-    def build(self, **kwargs):
+    def build(self, **kwargs) -> nx.Graph:
+        """
+
+        Args:
+            **kwargs:
+
+        Returns:
+            NetworkX Graph
+        """
         super().build(**kwargs)
         default_node_attributes = dict(**self.default_node_attributes)
         if 'default_node_attributes' in kwargs:
@@ -303,6 +326,14 @@ class D3Builder(NetworkxBuilder):
         super().__init__(model, graph_type)
 
     def build(self, **kwargs) -> dict:
+        """
+
+        Args:
+            **kwargs:
+
+        Returns:
+            D3 Graph
+        """
         super().build(**kwargs)
         return self.from_networkx(self._graph)
 
@@ -723,6 +754,14 @@ class GraphQLBuilder(NetworkxBuilder):
         )
 
     def build(self, **kwargs) -> strawberry.Schema:
+        """
+
+        Args:
+            **kwargs:
+
+        Returns:
+            Strawberry GraphQL Schema
+        """
         super().build(**kwargs)
         return self.schema()
 
@@ -731,16 +770,16 @@ def build(builder_cls: type[Builder],
           graph_model: GraphModel,
           graph_type: GraphType = GraphType.Graph,
           default_node_attributes: Optional[Mapping] = None,
-          **kwargs):
+          **kwargs) -> Any:
     """
     Build a graph from a graph model
 
     Parameters:
         builder_cls: builder class type
         graph_model: a GraphModel instance
-        graph_type: type on output graph
+        graph_type: type of the generated graph
         default_node_attributes: default node attributes
-        kwargs: node id values
+        **kwargs: node id values
 
     Returns:
          Graph data structure

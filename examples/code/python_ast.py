@@ -21,8 +21,13 @@ def _ast_edge(parsed_ast: AST):
     for child_ast in ast.iter_child_nodes(parsed_ast):
         if not isinstance(child_ast, ast.Load):
             edge = {'source': parsed_ast, 'target': child_ast}
-            edge_types = (field_name for field_name, value in ast.iter_fields(parsed_ast) if
-                          child_ast == value or (child_ast in value if isinstance(value, list) else False))
+            edge_types = (
+                field_name
+                for field_name, value
+                in ast.iter_fields(parsed_ast)
+                if child_ast == value
+                or (child_ast in value if isinstance(value, list) else False)
+            )
             edge_type = next(edge_types, None)
             if edge_type:
                 edge['type'] = edge_type
@@ -43,7 +48,8 @@ def ast_graph_model():
 
         for field_name in ('name', 'id'):
             if field_name in ast_node._fields:
-                label = f"{label}\n{field_name}: {operator.attrgetter(field_name)(ast_node)}"
+                value = operator.attrgetter(field_name)(ast_node)
+                label = f"{label}\n{field_name}: {value}"
 
         return label
 
@@ -60,11 +66,17 @@ def ast_graph_model():
     def target(value):
         return endpoint(value, 'target')
 
-    @graph_model.node(_type=node_type, key=key, label=node_label, uniqueness=True)
+    @graph_model.node(_type=node_type,
+                      key=key,
+                      label=node_label,
+                      uniqueness=True)
     def ast_node(**kwargs):
         yield from _ast_nodes([root_ast_node])
 
-    @graph_model.edge(_type='edge', source=source, target=target, label=operator.itemgetter('type'))
+    @graph_model.edge(_type='edge',
+                      source=source,
+                      target=target,
+                      label=operator.itemgetter('type'))
     def ast_edge(**kwargs):
         yield from _ast_edge(root_ast_node)
 

@@ -12,6 +12,15 @@ DEFAULT_PORT: int = 8072
 
 
 def run_graphql(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT):
+    """
+
+    Args:
+        graphql_schema:
+        port:
+
+    Returns:
+
+    """
     graphql_schema.extensions.append(OpenTelemetryExtension)
 
     @contextlib.asynccontextmanager

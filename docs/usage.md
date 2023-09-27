@@ -4,7 +4,7 @@
 
 ### Commands
 
-```
+``` shell
 Usage: python -m graphinate [OPTIONS] COMMAND [ARGS]...
 
 Options:
@@ -17,7 +17,7 @@ Commands:
 
 #### Save
 
-```
+``` shell
 Usage: python -m graphinate save [OPTIONS]
 
 Options:
@@ -30,7 +30,7 @@ Options:
 
 #### Server
 
-```
+``` shell
 Usage: python -m graphinate server [OPTIONS]
 
 Options:

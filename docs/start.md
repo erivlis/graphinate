@@ -1,11 +1,11 @@
 # Quick Start
 
-Graphinate is designed to be used as library first and foremost. In addition, it has several interfaces for ease of
+**Graphinate** is designed to be used as library first and foremost. In addition, it has several interfaces for ease of
 use: CLI and a GraphQL API (using [**_Strawberry GraphQL_**](https://strawberry.rocks/)).
 
 ## Install
 
-Graphinate is available on PyPI:
+**Graphinate** is available on PyPI:
 
 ```shell
 pip install graphinate
@@ -17,11 +17,11 @@ To install with server support
 pip install graphinate[server]
 ```
 
-Graphinate officially supports Python 3.9+.
+**Graphinate** officially supports Python 3.9+.
 
-## Example
+## Demo
 
-```python
+```python title="Octagonal Graph"
 import graphinate
 
 N: int = 8

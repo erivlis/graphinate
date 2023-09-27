@@ -44,14 +44,17 @@ theme:
         icon: material/weather-sunny
         name: Switch to dark mode
 
-  logo: assets/images/network_graph.png
-  favicon: assets/images/network_graph.png
+  logo: assets/images/logo-128.png
+  favicon: assets/images/logo-128.png
 extra_css:
   - assets/stylesheets/extra.css
 
 
 markdown_extensions:
+  - admonition
+  - pymdownx.details
   - pymdownx.highlight:
+#      auto_title: true
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
@@ -73,8 +76,6 @@ nav:
   # defer to gen-files + literate-nav
   - Reference: reference/
   - Acknowledgements: acknowledgements.md
-
-#  - Acknowledgements: acknowledgements.md
 
 
 extra:

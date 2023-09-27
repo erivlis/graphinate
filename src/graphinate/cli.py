@@ -37,14 +37,25 @@ model_option = click.option('-m', '--model',
 @click.group()
 @click.pass_context
 def cli(ctx):
-    # CLI Group
-    pass
+    """CLI Group"""
 
 
 @cli.command()
 @model_option
 @click.pass_context
 def save(ctx, model):
+    """save command
+
+    Parameters
+    ----------
+    ctx
+    model
+
+    Returns
+    -------
+
+    """
+
     with open(f"{model.name}.json", mode='w') as fp:
         materialize(model=model,
                     builder=builders.D3Builder,
@@ -57,6 +68,18 @@ def save(ctx, model):
 @click.option('-p', '--port', type=int, default=DEFAULT_PORT, help='Port number.')
 @click.pass_context
 def server(ctx, model, port):
+    """server command
+
+    Parameters
+    ----------
+    ctx
+    model
+    port
+
+    Returns
+    -------
+
+    """
     materialize(model=model,
                 builder=builders.GraphQLBuilder,
                 actualizer=functools.partial(run_graphql, port=port),

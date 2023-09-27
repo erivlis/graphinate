@@ -89,13 +89,11 @@ class GraphModel:
     """
 
     def __init__(self, name: str):
-        """Create a model for graph
-
-
+        """Create a graph model
         Parameters:
             name: the archetype name for Graphs generated based on the GraphModel.
         """
-        self.name = name
+        self.name: str = name
         self._node_models: dict[NodeTypeAbsoluteId, NodeModel] = {}
         self._node_children: dict[str, list[str]] = defaultdict(list)
         self._edge_generators: dict[str, list[Edges]] = defaultdict(list)
@@ -249,6 +247,19 @@ class GraphModel:
                 key: Optional[Extractor] = None,
                 value: Optional[Extractor] = None,
                 label: Optional[Extractor] = None):
+        """Rectify the model.
+           Add a default NodeModel in case there's only a and edge supplier/s and no node supplier/s.
+
+           Parameters:
+               _type
+               parent_type
+               key
+               value
+               label
+
+           Returns:
+               None
+        """
         if self._edge_generators and not self._node_models:
             @self.node(
                 _type=_type or 'node',

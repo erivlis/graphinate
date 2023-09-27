@@ -55,14 +55,14 @@
 
 ### What is Graphinate?
 
-Graphinate is a python library that aims to simplify the generation of Graph Data Structures from Data Sources.
+**Graphinate** is a python library that aims to simplify the generation of Graph Data Structures from Data Sources.
 
 It can help create an efficient retrieval pipeline from a given data source, while also enabling the developer to easily
 map data payloads and hierarchies to a Graph.
 
 In addition, there are several modes of output to enable examination of the Graph, and it's content.
 
-Graphinate utilizes and builds upon the excellent [**_NetworkX_**](https://networkx.org/).
+**Graphinate** utilizes and builds upon the excellent [**_NetworkX_**](https://networkx.org/).
 
 ### Links
 
@@ -76,7 +76,7 @@ Graphinate utilizes and builds upon the excellent [**_NetworkX_**](https://netwo
 
 ### Install
 
-Graphinate is available on PyPI:
+**Graphinate** is available on PyPI:
 
 ```shell
 pip install graphinate
@@ -88,7 +88,7 @@ To install with server support
 pip install graphinate[server]
 ```
 
-Graphinate officially supports Python 3.9+.
+**Graphinate** officially supports Python >= 3.9.
 
 ### Example
 

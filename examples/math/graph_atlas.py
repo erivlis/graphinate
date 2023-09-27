@@ -757,9 +757,17 @@ def atlas():
     }
 
     def edges_iter(adjacency_list: dict[int, [int]]):
-        yield from itertools.chain.from_iterable(((k, t) for t in v) for k, v in adjacency_list.items())
+        yield from itertools.chain.from_iterable(
+            ((k, t) for t in v)
+            for k, v
+            in adjacency_list.items()
+        )
 
-    edges = ((name, edges_iter(adjacency_list)) for name, adjacency_list in adjacency_mapping.items())
+    edges = (
+        (name, edges_iter(adjacency_list))
+        for name, adjacency_list
+        in adjacency_mapping.items()
+    )
 
     graphs.update({n: nx.Graph(list(e)) for n, e in edges})
 

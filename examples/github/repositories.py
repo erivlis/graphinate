@@ -23,10 +23,15 @@ def repo_graph_model():  # noqa: C901
         for repo in github_repositories(user_id, repository_id):
             yield {'source': (user.login,), 'target': (user.login, repo.name)}
             for commit in github_commits(repo, commit_id):
-                yield {'source': (user.login, repo.name), 'target': (user.login, repo.name, commit.sha)}
+                yield {
+                    'source': (user.login, repo.name),
+                    'target': (user.login, repo.name, commit.sha)
+                }
                 for file in github_files(commit, file_id):
-                    yield {'source': (user.login, repo.name, commit.sha),
-                           'target': (user.login, repo.name, commit.sha, file.filename)}
+                    yield {
+                        'source': (user.login, repo.name, commit.sha),
+                        'target': (user.login, repo.name, commit.sha, file.filename)
+                    }
 
     user_node = graph_model.node(key=operator.attrgetter('login'),
                                  value=operator.attrgetter('raw_data'),
@@ -81,7 +86,10 @@ def repo_graph_model():  # noqa: C901
         for repo in github_repositories(user_id, repository_id):
             for commit in github_commits(repo, commit_id):
                 yield from ((k, list(g)) for k, g in
-                            itertools.groupby(sorted(github_files(commit), key=group_key), group_key))
+                            itertools.groupby(
+                                sorted(github_files(commit),
+                                       key=group_key), group_key
+                            ))
 
     @file_node
     def file(user_id: Optional[str] = None,

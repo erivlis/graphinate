@@ -5,6 +5,16 @@ from ..color import node_color_mapping
 
 
 def draw(graph: nx.Graph, with_node_labels=True, with_edge_labels=False):
+    """
+
+    Args:
+        graph:
+        with_node_labels:
+        with_edge_labels:
+
+    Returns:
+        None
+    """
     pos = nx.planar_layout(graph) if nx.is_planar(graph) else None
     pos = nx.spring_layout(graph, pos=pos) if pos else nx.spring_layout(graph)
 
@@ -39,6 +49,16 @@ def draw(graph: nx.Graph, with_node_labels=True, with_edge_labels=False):
 
 
 def plot(graph: nx.Graph, with_node_labels=True, with_edge_labels=False):
+    """
+
+    Args:
+        graph:
+        with_node_labels:
+        with_edge_labels:
+
+    Returns:
+        None
+    """
     draw(graph, with_node_labels, with_edge_labels)
 
     ax = pyplot.gca()

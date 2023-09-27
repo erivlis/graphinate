@@ -32,7 +32,7 @@ def color_hex(color: Union[str, Sequence[Union[float, int]]]) -> Union[str, Sequ
 
     Parameters:
         color: input color
-    Return:
+    Returns:
          Color HEX code
     """
     if isinstance(color, (tuple, list)):

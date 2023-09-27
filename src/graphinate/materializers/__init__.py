@@ -15,6 +15,9 @@ graphql = server.run_graphql
 
 
 class Materializers(Enum):
+    """
+    Materializers Enum
+    """
     NetworkX = (builders.NetworkxBuilder, plot)
     NetworkX_with_edge_labels = (builders.NetworkxBuilder, functools.partial(plot, with_edge_labels=True))
     D3Graph = (builders.D3Builder, lambda d: print(json.dumps(d, indent=2, default=str)))
@@ -28,6 +31,20 @@ def materialize(model: modeling.GraphModel,
                 builder: Optional[type[builders.Builder]] = None,
                 actualizer: Optional[Callable] = None,
                 **kwargs):
+    """
+
+    Args:
+        model:
+        title:
+        graph_type:
+        default_node_attributes:
+        builder:
+        actualizer:
+        **kwargs:
+
+    Returns:
+        None
+    """
     title = title or model.name
     if ENABLE_GUI and builder is None and actualizer is None:
         result = modal_radiobutton_chooser(title,
