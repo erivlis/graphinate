@@ -1,7 +1,6 @@
+import graphinate.builders
 import networkx as nx
 import pytest
-
-import graphinate.builders
 
 
 @pytest.mark.parametrize('case', [0, None, "", False])
@@ -120,25 +119,6 @@ def test_networkx_builder_simple_tuple():
     assert graph.graph['name'] == name
 
 
-def test_networkx_builder__defaults():
-    # arrange
-    name = 'Simple Tuple'
-    graph_model = graphinate.GraphModel(name=name)
-
-    @graph_model.edge()
-    def edge():
-        for i in range(5):
-            yield {'source': (i,), 'target': (i + 1,)}
-
-    # act
-    builder = graphinate.builders.NetworkxBuilder(graph_model)
-    graph = builder.build()
-
-    # assert
-    assert isinstance(graph, nx.Graph)
-    assert graph.graph['name'] == name
-
-
 @pytest.mark.parametrize('execution_number', range(5))
 def test_networkx_builder__map_graph_model(execution_number, map_graph_model):
     # arrange
@@ -160,6 +140,7 @@ def test_d3_builder__map_graph_model(execution_number, map_graph_model):
     # arrange
     country_count, city_count, graph_model = map_graph_model
     person_count = city_count
+
     # act
     builder = graphinate.builders.D3Builder(graph_model)
     actual_graph = builder.build()
@@ -168,14 +149,15 @@ def test_d3_builder__map_graph_model(execution_number, map_graph_model):
     assert actual_graph['directed'] is False
     assert actual_graph['multigraph'] is False
     assert actual_graph['graph']['name'] == 'Map'
-    assert actual_graph['graph']['node_types']['city'] == city_count
     assert actual_graph['graph']['node_types']['country'] == country_count
+    assert actual_graph['graph']['node_types']['city'] == city_count
     assert len(actual_graph['nodes']) == country_count + city_count + person_count
 
 
 def test_d3_builder__map_graph_model__both_specific_ids(map_graph_model):
     # arrange
     country_count, city_count, graph_model = map_graph_model
+
     # act
     builder = graphinate.builders.D3Builder(graph_model)
     actual_graph = builder.build(country_id="1", city_id="1")
@@ -215,9 +197,8 @@ def test_graphql_builder__map_graph_model(execution_number, map_graph_model, gra
     assert len(actual_graph['nodes']) == country_count + city_count + person_count
 
 
-def test_graphql_builder_measures(octagonal_graph_model):
-    # arrange
-    measures_graphql_query = """{
+graphql_operations_cases = [
+    ("""{
       empty: measure(measure: is_empty) {
         name
         value
@@ -242,8 +223,7 @@ def test_graphql_builder_measures(octagonal_graph_model):
         name
         value
       }
-    }"""
-    expected_response = {
+    }""", {
         "empty": {
             "name": "is_empty",
             "value": 0
@@ -269,31 +249,13 @@ def test_graphql_builder_measures(octagonal_graph_model):
             "value": 0
         }
 
-    }
-
-    # act
-    builder = graphinate.builders.GraphQLBuilder(octagonal_graph_model)
-
-    import strawberry
-    schema: strawberry.Schema = builder.build(
-        default_node_attributes=graphinate.builders.Builder.default_node_attributes
-    )
-    execution_result = schema.execute_sync(measures_graphql_query)
-    actual_response = execution_result.data
-
-    # assert
-    assert actual_response == expected_response
-
-
-def test_graphql_builder_query_specific_elements(octagonal_graph_model):
-    # arrange
-    graphql_query = """
+    }),
+    ("""
     query Graph {
       nodes(nodeId: "H4sIAFs7E2UC/2tgmcrKAAHeDK1T9ADQP1FHEAAAAA==") {type label}
       edges(edgeId: "H4sIAFs7E2UC/2tgmZrIAAE9Oh4mxZ6ObsXmrkahzvpGJem5yUXejo4eqS7ehiGWji6BAYZuHq6OIGBrOwW38iywcmfDcH9jfbjytil6AHhudC5sAAAA") {type label}
     }
-    """
-    expected_response = {
+    """, {
         "nodes": [
             {
                 "type": "node",
@@ -306,31 +268,13 @@ def test_graphql_builder_query_specific_elements(octagonal_graph_model):
                 "label": "{'source': 0, 'target': 1}"
             }
         ]
-    }
-
-    # act
-    builder = graphinate.builders.GraphQLBuilder(octagonal_graph_model)
-
-    import strawberry
-    schema: strawberry.Schema = builder.build(
-        default_node_attributes=graphinate.builders.Builder.default_node_attributes
-    )
-    execution_result = schema.execute_sync(graphql_query)
-    actual_response = execution_result.data
-
-    # assert
-    assert actual_response == expected_response
-
-
-def test_graphql_builder_query_specific_elements(octagonal_graph_model):
-    # arrange
-    graphql_query = """
+    }),
+    ("""
     query Graph {
       nodes(nodeId: "H4sIAFs7E2UC/2tgmcrKAAHeDK1T9ADQP1FHEAAAAA==") {type label}
       edges(edgeId: "H4sIAFs7E2UC/2tgmZrIAAE9Oh4mxZ6ObsXmrkahzvpGJem5yUXejo4eqS7ehiGWji6BAYZuHq6OIGBrOwW38iywcmfDcH9jfbjytil6AHhudC5sAAAA") {type label}
     }
-    """
-    expected_response = {
+    """, {
         "nodes": [
             {
                 "type": "node",
@@ -343,8 +287,13 @@ def test_graphql_builder_query_specific_elements(octagonal_graph_model):
                 "label": "{'source': 0, 'target': 1}"
             }
         ]
-    }
+    }),
+    ("mutation {refresh}", {'refresh': True})
+]
 
+
+@pytest.mark.parametrize(('graphql_query', 'expected_response'), graphql_operations_cases)
+def test_graphql_builder_query(octagonal_graph_model, graphql_query, expected_response):
     # act
     builder = graphinate.builders.GraphQLBuilder(octagonal_graph_model)
 
@@ -375,15 +324,3 @@ def test_graphql_builder__ast_model__graph_query(ast_graph_model, graphql_query)
     assert actual_graph['graph']['name'] == 'AST Graph'
     node_types_counts = {c['name']: c['value'] for c in actual_graph['graph']['nodeTypeCounts']}
     assert node_types_counts
-
-
-def test_graphql_builder__ast_model__refresh_mutation(ast_graph_model):
-    # act
-    builder = graphinate.builders.GraphQLBuilder(ast_graph_model)
-    import strawberry
-    schema: strawberry.Schema = builder.build()
-    execution_result = schema.execute_sync("mutation {refresh}")
-    actual = execution_result.data
-
-    # assert
-    assert actual
