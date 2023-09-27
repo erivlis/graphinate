@@ -1,7 +1,7 @@
 # [Graphinate. Data to Graphs.](https://erivlis.github.io/graphinate/)
 
 <p style="text-align:center;">
-<img height="240" src="https://github.com/erivlis/graphinate/assets/9897520/f57c437f-5ceb-42f1-a242-2309ef1f188c" alt="Graphinate. Data to Graphs.">
+  <img height="240" src="https://github.com/erivlis/graphinate/assets/9897520/11038b61-ae26-4b1d-b3ff-37a620312ced" alt="Graphinate. Data to Graphs.">
 </p>
 
 <table>
