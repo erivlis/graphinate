@@ -4,7 +4,9 @@ from matplotlib import pyplot
 from ..color import node_color_mapping
 
 
-def draw(graph: nx.Graph, with_node_labels=True, with_edge_labels=False):
+def draw(graph: nx.Graph,
+         with_node_labels: bool = True,
+         with_edge_labels: bool = False):
     """
 
     Args:
@@ -48,7 +50,9 @@ def draw(graph: nx.Graph, with_node_labels=True, with_edge_labels=False):
                                      font_size=6)
 
 
-def plot(graph: nx.Graph, with_node_labels=True, with_edge_labels=False):
+def plot(graph: nx.Graph,
+         with_node_labels: bool = True,
+         with_edge_labels: bool = False):
     """
 
     Args:

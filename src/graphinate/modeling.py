@@ -14,10 +14,28 @@ class GraphModelError(Exception):
 
 
 def element(element_type: Optional[str], field_names: Optional[Iterable[str]] = None) -> Callable[[...], Element]:
+    """Create a Graph Element
+
+    Args:
+        element_type:
+        field_names:
+
+    Returns:
+        Element Supplier Function
+    """
     return namedtuple(element_type, field_names) if element_type and field_names else tuple
 
 
 def extractor(obj: Any, key: Optional[Extractor] = None) -> Optional[str]:
+    """Extract data item from Element
+
+    Args:
+        obj:
+        key:
+
+    Returns:
+        Element data item
+    """
     if key is None:
         return obj
 
@@ -35,13 +53,13 @@ def elements(iterable: Iterable[Any],
              **getters: Extractor) -> Iterable[Element]:
     """Abstract Generator of Graph elements (nodes or edges)
 
-    Parameters:
+    Args:
         iterable: source of payload
         element_type: Optional[Extractor] source of type of the element. Defaults to Element Type name.
         getters: Extractor node field sources
 
     Returns:
-        Iterable of elements.
+        Iterable of Elements.
     """
 
     if callable(element_type):
@@ -60,13 +78,16 @@ def elements(iterable: Iterable[Any],
 class NodeModel:
     """Represents a Node Model
 
-    Attributes:
+    Args:
         type: the type of the Node
         parent_type: the type of the node's parent
         uniqueness: is the Node universally unique
         parameters: parameters
         generator: Nodes generator method
         label: label source
+
+    Properties:
+        absolute_id: return the NodeModel absolute_id.
     """
 
     type: str
@@ -248,7 +269,7 @@ class GraphModel:
                 value: Optional[Extractor] = None,
                 label: Optional[Extractor] = None):
         """Rectify the model.
-           Add a default NodeModel in case there's only a and edge supplier/s and no node supplier/s.
+           Add a default NodeModel in case of having just edge supplier/s and no node supplier/s.
 
            Parameters:
                _type

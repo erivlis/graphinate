@@ -57,6 +57,7 @@ markdown_extensions:
 #      auto_title: true
       anchor_linenums: true
       line_spans: __span
+      use_pygments: true
       pygments_lang_class: true
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
@@ -70,9 +71,9 @@ nav:
   - Home: index.md
   - Introduction: intro.md
   - Quick Start: start.md
-  - Gallery: gallery.md
-  - Usage: usage.md
+  - Usage: usage/
   - Examples: examples.md
+  - Gallery: gallery.md
   # defer to gen-files + literate-nav
   - Reference: reference/
   - Acknowledgements: acknowledgements.md

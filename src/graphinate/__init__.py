@@ -1,7 +1,8 @@
-from . import builders
-from .builders import GraphType, build
-from .materializers import graphql, materialize, plot
-from .modeling import UNIVERSE_NODE, GraphModel
+from graphinate import builders
+from graphinate.builders import GraphType, build
+from graphinate.materializers import materialize, plot
+from graphinate.modeling import UNIVERSE_NODE, GraphModel
+from graphinate.server import graphql
 
 
 def model(name: str):

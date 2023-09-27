@@ -7,7 +7,6 @@ from _ast import AST
 from collections.abc import Iterable
 
 import graphinate
-import graphinate.builders
 
 
 def _ast_nodes(parsed_asts: Iterable[AST]):
@@ -88,5 +87,5 @@ if __name__ == '__main__':
     graphinate.materialize(
         ast_model,
         builder=graphinate.builders.GraphQLBuilder,
-        actualizer=graphinate.materializers.graphql
+        actualizer=graphinate.graphql
     )

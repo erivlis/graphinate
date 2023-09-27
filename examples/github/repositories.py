@@ -1,6 +1,3 @@
-"""
-pip install PyGithub
-"""
 import itertools
 import operator
 import pathlib

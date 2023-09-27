@@ -1,9 +1,8 @@
-"""
-Typing module
+"""Typing Module
 
-Attributes:
-    Node (Node): Node payload Type
-    Edge (Edge): Edge payload Type
+  Attributes:
+    Node (Node): Node Type
+    Edge (Edge): Edge Type
     Element (Element): Element Type
     Extractor (Extractor): Source of data for an Element
 """
@@ -12,7 +11,9 @@ from collections.abc import Iterable
 from typing import Any, Callable, NamedTuple, Protocol, TypeVar, Union
 
 Node = Union[type(NamedTuple), tuple[str, Any]]
+
 Edge = Union[type(NamedTuple), tuple[str, str, Any]]
+
 Element = Union[Node, Edge]
 
 Extractor = Union[str, Callable[[Any], str]]

@@ -17,7 +17,9 @@ def page_links_graph_model(max_depth: int = DEFAULT_MAX_DEPTH):
         for link in soup.find_all('a', href=True):
             child_url = link.get('href')
 
-            if child_url.startswith('//'):
+            if child_url.startswith('javascript:'):
+                continue
+            elif child_url.startswith('//'):
                 child_url = f"https:{child_url}"
             elif not bool(urlparse(child_url).netloc):
                 child_url = urljoin(url, child_url)
@@ -41,7 +43,8 @@ if __name__ == '__main__':
     model = page_links_graph_model(1)
 
     params = {
-        'url': 'https://github.com/erivlis/graphinate'
+        # 'url': 'https://github.com/erivlis/graphinate'
+        'url': 'https://erivlis.github.io/graphinate/'
     }
 
     graphinate.materialize(

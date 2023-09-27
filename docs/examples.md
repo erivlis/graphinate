@@ -9,6 +9,14 @@
 
 ## GitHub
 
+??? example "Requirements"
+    ``` text title="examples/github/requirements.txt" linenums="1"
+    --8<-- "examples/github/requirements.txt"
+    ```
+??? example "Client"
+    ``` python title="examples/github/_client.py" linenums="1"
+    --8<-- "examples/github/_client.py"
+    ```
 ??? example "Repositories"
     ``` python title="examples/github/repositories.py" linenums="1"
     --8<-- "examples/github/repositories.py"
@@ -33,6 +41,10 @@
 
 ## Web
 
+??? example "Requirements"
+    ``` text title="examples/web/requirements.txt" linenums="1"
+    --8<-- "examples/web/requirements.txt"
+    ```
 ??? example "Web Graph"
     ``` python title="examples/web/page_links.py" linenums="1"
     --8<-- "examples/web/page_links.py"

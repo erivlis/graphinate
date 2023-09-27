@@ -32,12 +32,12 @@ formally.”
 
 ## How?
 
-### A Graph as Data Structure
+### A Graph as a Data Structure
 
 A Graph is a very useful data structure. It is perhaps the simplest data structure, that is a bit more than just a
 simple collection of "things". As such, it can be used to model all data sources that have structure.
 
-### Defining a Graph
+### Define a Graph
 
 One can define a Graph in two general ways:
 

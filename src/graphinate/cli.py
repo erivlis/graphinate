@@ -3,11 +3,9 @@ import json
 
 import click
 
-from . import builders
-from .materializers import materialize
-from .modeling import GraphModel
-from .server import DEFAULT_PORT, run_graphql
-from .tools.importer import import_from_string
+from graphinate import GraphModel, builders, graphql, materialize
+from graphinate.server import DEFAULT_PORT
+from graphinate.tools.importer import import_from_string
 
 
 def _get_kwargs(ctx) -> dict:
@@ -82,5 +80,5 @@ def server(ctx, model, port):
     """
     materialize(model=model,
                 builder=builders.GraphQLBuilder,
-                actualizer=functools.partial(run_graphql, port=port),
+                actualizer=functools.partial(graphql, port=port),
                 **_get_kwargs(ctx))

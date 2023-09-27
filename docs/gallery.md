@@ -11,3 +11,7 @@
 ## Python AST - 3D Force-Directed Animation
 
 ![AST 3D Force animation](https://github.com/erivlis/graphinate/assets/9897520/2e9a53b1-5686-4683-a0e4-fbffa850a27b)
+
+## Web Page Links
+
+![Web Page Links](https://github.com/erivlis/graphinate/assets/9897520/ea5b00a2-75d1-4d0e-86af-272f20973149)

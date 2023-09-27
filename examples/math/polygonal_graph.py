@@ -28,7 +28,7 @@ if __name__ == '__main__':
         graphinate.materialize(
             model,
             builder=graphinate.builders.GraphQLBuilder,
-            actualizer=graphinate.materializers.graphql
+            actualizer=graphinate.graphql
         )
 
     else:
