@@ -18,10 +18,9 @@ def test_save_model(octagonal_graph_model, runner):
 
 
 def test_save_model_reference(runner):
-    with runner.isolated_filesystem():
-        sys.path.append('examples/math')
-        result = runner.invoke(cli, ['save', '-m', "polygonal_graph:model"])
-        assert result.exit_code == 0
+    sys.path.append('examples/math')
+    result = runner.invoke(cli, ['save', '-m', "polygonal_graph:model"])
+    assert result.exit_code == 0
 
 
 def test_save_malformed_model_reference(runner):

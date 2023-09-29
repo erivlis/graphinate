@@ -197,7 +197,7 @@ ruff check src
 #### HTML Coverage Report
 
 ```shell
- python -m pytest tests --cov=src --cov-branch --doctest-modules --cov-report=html --junitxml=test_results.xml
+python -m pytest tests -n auto --cov=src --cov-branch --doctest-modules --cov-report=html --junitxml=test_results.xml
 ```
 
 ### Docs
