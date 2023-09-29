@@ -1,8 +1,7 @@
-import pytest
-from starlette.responses import FileResponse
-
 import graphinate.server.starlette.views
+import pytest
 from graphinate.server.web import get_static_path
+from starlette.responses import FileResponse
 
 
 def test_get_static_path():

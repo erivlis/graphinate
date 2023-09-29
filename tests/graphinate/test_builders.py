@@ -2,8 +2,6 @@ import graphinate.builders
 import networkx as nx
 import pytest
 
-import graphinate.modeling
-
 
 @pytest.mark.parametrize('case', [0, None, "", False])
 def test_label_converter__value__falsy(case):
@@ -23,7 +21,7 @@ def test_encoding():
 def test_networkx_builder__empty_model():
     # arrange
     name = ""
-    graph_model = graphinate.modeling.model(name=name)
+    graph_model = graphinate.model(name=name)
 
     # act
     builder = graphinate.builders.NetworkxBuilder(graph_model)
@@ -38,7 +36,7 @@ def test_networkx_builder__empty_model():
 def test_networkx_builder__graph_type(graph_type):
     # arrange
     name = str(graph_type)
-    graph_model = graphinate.modeling.model(name=name)
+    graph_model = graphinate.model(name=name)
 
     @graph_model.edge()
     def edge():

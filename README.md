@@ -90,13 +90,12 @@ pip install graphinate[server]
 ### Example
 
 ```python
-import graphinate.modeling
 import graphinate
 
 N: int = 8
 
 # Define GraphModel
-graph_model = graphinate.modeling.model(name="Octagonal Graph")
+graph_model = graphinate.model(name="Octagonal Graph")
 
 
 # Register edges supplier function

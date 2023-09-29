@@ -24,5 +24,6 @@ def test_color_hex(color, expected_color_hex):
 
 
 def test_color_hex_error():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError,
+                       match="Input values should either be a float between 0 and 1 or an int between 0 and 255"):
         _ = color_hex(["a", "b", "c"])

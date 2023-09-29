@@ -1,9 +1,8 @@
 import dataclasses
 import sys
 
-import pytest
-
 import graphinate.tools.mutators
+import pytest
 from graphinate.tools.importer import ImportFromStringError, import_from_string
 
 
