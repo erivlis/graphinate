@@ -8,8 +8,9 @@ from _ast import AST
 from collections.abc import Iterable
 
 import faker
-import graphinate
 import pytest
+
+import graphinate
 
 
 @pytest.fixture()
@@ -135,7 +136,7 @@ def map_graph_model(country_count, city_count):
 
 @pytest.fixture()
 def octagonal_graph_model():
-    graph_model = graphinate.model(name="Octagonal Graph")
+    graph_model = graphinate.modeling.model(name="Octagonal Graph")
     number_of_sides = 8
 
     # Register edges supplier function

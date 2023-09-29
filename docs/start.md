@@ -22,12 +22,13 @@ pip install graphinate[server]
 ## Demo
 
 ```python title="Octagonal Graph"
+import graphinate.modeling
 import graphinate
 
 N: int = 8
 
 # Define a GraphModel
-graph_model = graphinate.model(name="Octagonal Graph")
+graph_model = graphinate.modeling.model(name="Octagonal Graph")
 
 
 # Register in the Graph Model the edges supplier function

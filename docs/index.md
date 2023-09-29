@@ -1,11 +1,10 @@
 # Graphinate. Data to Graphs.
 
-<p style="text-align:center;">
-  <img height="240" src="https://github.com/erivlis/graphinate/assets/9897520/11038b61-ae26-4b1d-b3ff-37a620312ced" alt="Graphinate. Data to Graphs.">
-</p>
-
 <table>
   <tr style="vertical-align: middle;">
+    <td rowspan="3">
+      <img height="240" src="https://github.com/erivlis/graphinate/assets/9897520/11038b61-ae26-4b1d-b3ff-37a620312ced" alt="Graphinate. Data to Graphs.">
+    </td>
     <td>Package</td>
     <td>
       <img alt="PyPI - version" src="https://img.shields.io/pypi/v/graphinate">
@@ -25,7 +24,6 @@
       <a href="https://github.com/erivlis/graphinate/actions/workflows/test.yml"><img alt="Tests" src="https://github.com/erivlis/graphinate/actions/workflows/test.yml/badge.svg?branch=master"></a>
       <a href="https://github.com/erivlis/graphinate/actions/workflows/publish.yml"><img alt="Publish" src="https://github.com/erivlis/graphinate/actions/workflows/publish.yml/badge.svg"></a>
       <a href="https://github.com/erivlis/graphinate/actions/workflows/publish-docs.yaml"><img alt="Publish Docs" src="https://github.com/erivlis/graphinate/actions/workflows/publish-docs.yaml/badge.svg"></a>
-      <a href="https://codecov.io/gh/erivlis/graphinate"><img alt="Coverage" src="https://codecov.io/gh/erivlis/graphinate/graph/badge.svg?token=POODT8M9NV"/></a>
     </td>
   </tr>
   <tr>
@@ -39,12 +37,9 @@
       <a href="https://sonarcloud.io/summary/new_code?id=erivlis_graphinate"><img alt="Lines of Code" src="https://sonarcloud.io/api/project_badges/measure?project=erivlis_graphinate&metric=ncloc"></a>
       <a href="https://sonarcloud.io/summary/new_code?id=erivlis_graphinate"><img alt="Vulnerabilities" src="https://sonarcloud.io/api/project_badges/measure?project=erivlis_graphinate&metric=vulnerabilities"></a>
       <a href="https://sonarcloud.io/summary/new_code?id=erivlis_graphinate"><img alt="Bugs" src="https://sonarcloud.io/api/project_badges/measure?project=erivlis_graphinate&metric=bugs"></a>
+      <br>
+      <a href="https://codecov.io/gh/erivlis/graphinate"><img alt="Coverage" src="https://codecov.io/gh/erivlis/graphinate/graph/badge.svg?token=POODT8M9NV"/></a>
+      <a href="https://app.codacy.com/gh/erivlis/graphinate/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade"><img alt="Codacy Badge" src="https://app.codacy.com/project/badge/Grade/54b33c3f7313448f9471d01e2a06f037"></a>
     </td>
   </tr>
 </table>
-
-> [!WARNING]
->
-> **UNDER DEVELOPMENT**
->
-> **This library is alpha-quality**

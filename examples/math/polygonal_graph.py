@@ -1,4 +1,5 @@
 import graphinate
+import graphinate.modeling
 import networkx as nx
 
 N: int = 8

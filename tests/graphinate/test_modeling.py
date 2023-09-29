@@ -1,6 +1,8 @@
 import graphinate
 import pytest
 
+import graphinate.modeling
+
 
 def test_graph_model(map_graph_model):
     # arrange
@@ -13,8 +15,8 @@ def test_graph_model(map_graph_model):
 
 
 def test_graph_model__add__():
-    first_model = graphinate.model(name='First Model')
-    second_model = graphinate.model(name='Second Model')
+    first_model = graphinate.modeling.model(name='First Model')
+    second_model = graphinate.modeling.model(name='Second Model')
 
     actual_model = first_model + second_model
 
@@ -22,7 +24,7 @@ def test_graph_model__add__():
 
 
 def test_graph_model_validate_node_parameters():
-    graph_model = graphinate.model(name='Graph with invalid node supplier')
+    graph_model = graphinate.modeling.model(name='Graph with invalid node supplier')
 
     with pytest.raises(graphinate.modeling.GraphModelError):
         @graph_model.node()

@@ -76,7 +76,7 @@ nav:
   - Gallery: gallery.md
   # defer to gen-files + literate-nav
   - Reference: reference/
-  - Acknowledgements: acknowledgements.md
+  - Acknowledgements: acknowledge.md
 
 
 extra:

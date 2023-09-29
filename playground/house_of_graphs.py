@@ -21,7 +21,7 @@ def edges_iter(adjacency_source: Union[str, Mapping[int, list[int]]]) -> Iterabl
     elif isinstance(adjacency_source, Mapping):
         adjacency_list = adjacency_source.items()
     else:
-        raise TypeError("'adjacency_source' should be a 'str' or a Mapping[int, list[int]]")  # noqa: TRY003
+        raise TypeError("'adjacency_source' should be a 'str' or a Mapping[int, list[int]]")
 
     for s, tl in adjacency_list:
         for t in tl:

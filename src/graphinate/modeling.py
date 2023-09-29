@@ -295,4 +295,16 @@ class GraphModel:
                 yield
 
 
-__all__ = ('GraphModel', 'UNIVERSE_NODE')
+def model(name: str):
+    """Create a graph model
+
+    Args:
+        name: model name
+
+    Returns:
+        GraphModel
+    """
+    return GraphModel(name=name)
+
+
+__all__ = ('GraphModel', 'UNIVERSE_NODE', 'model')
