@@ -69,5 +69,5 @@ def test_materialize_none(map_graph_model, monkeypatch):
         modal_radiobutton_chooser.return_value = ('Test', (None, None))
 
         *_, graph_model = map_graph_model
-        with pytest.raises(ValueError, match="Missing Arguments: builder, actualizer"):
+        with pytest.raises(ValueError, match="Missing: builder, actualizer"):
             graphinate.materialize(graph_model)

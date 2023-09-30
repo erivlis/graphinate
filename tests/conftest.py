@@ -62,7 +62,7 @@ def ast_graph_model():
 
     def key(value):
         # noinspection InsecureHash
-        return hashlib.md5(pickle.dumps(value)).hexdigest()
+        return hashlib.shake_128(pickle.dumps(value)).hexdigest(20)
 
     def endpoint(value, endpoint_name):
         return key(value[endpoint_name])

@@ -62,7 +62,7 @@ def elements(iterable: Iterable[Any],
         Iterable of Elements.
     """
 
-    if callable(element_type):
+    if element_type and callable(element_type):
         for item in iterable:
             create_element = element(element_type(item), getters.keys())
             kwargs = {k: extractor(item, v) for k, v in getters.items()}

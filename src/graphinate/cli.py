@@ -35,25 +35,24 @@ model_option = click.option('-m', '--model',
 @click.group()
 @click.pass_context
 def cli(ctx):
-    """CLI Group"""
+    message = """
+     ██████╗ ██████╗  █████╗ ██████╗ ██╗  ██╗██╗███╗   ██╗ █████╗ ████████╗███████╗
+    ██╔════╝ ██╔══██╗██╔══██╗██╔══██╗██║  ██║██║████╗  ██║██╔══██╗╚══██╔══╝██╔════╝
+    ██║  ███╗██████╔╝███████║██████╔╝███████║██║██╔██╗ ██║███████║   ██║   █████╗
+    ██║   ██║██╔══██╗██╔══██║██╔═══╝ ██╔══██║██║██║╚██╗██║██╔══██║   ██║   ██╔══╝
+    ╚██████╔╝██║  ██║██║  ██║██║     ██║  ██║██║██║ ╚████║██║  ██║   ██║   ███████╗
+     ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝   ╚══════╝"""
+
+
+
+
+    click.echo(message)
 
 
 @cli.command()
 @model_option
 @click.pass_context
 def save(ctx, model):
-    """save command
-
-    Parameters
-    ----------
-    ctx
-    model
-
-    Returns
-    -------
-
-    """
-
     with open(f"{model.name}.json", mode='w') as fp:
         materialize(model=model,
                     builder=builders.D3Builder,
@@ -66,18 +65,15 @@ def save(ctx, model):
 @click.option('-p', '--port', type=int, default=DEFAULT_PORT, help='Port number.')
 @click.pass_context
 def server(ctx, model, port):
-    """server command
+    message = """ ██████╗ ██████╗  █████╗ ██████╗ ██╗  ██╗██╗███╗   ██╗ █████╗ ████████╗███████╗
+██╔════╝ ██╔══██╗██╔══██╗██╔══██╗██║  ██║██║████╗  ██║██╔══██╗╚══██╔══╝██╔════╝
+██║  ███╗██████╔╝███████║██████╔╝███████║██║██╔██╗ ██║███████║   ██║   █████╗
+██║   ██║██╔══██╗██╔══██║██╔═══╝ ██╔══██║██║██║╚██╗██║██╔══██║   ██║   ██╔══╝
+╚██████╔╝██║  ██║██║  ██║██║     ██║  ██║██║██║ ╚████║██║  ██║   ██║   ███████╗
+ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝   ╚══════╝"""
 
-    Parameters
-    ----------
-    ctx
-    model
-    port
+    click.echo(message)
 
-    Returns
-    -------
-
-    """
     materialize(model=model,
                 builder=builders.GraphQLBuilder,
                 actualizer=functools.partial(graphql, port=port),

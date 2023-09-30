@@ -14,11 +14,11 @@ def _process_obj(obj: Any,
                  class_handler: Optional[Callable] = None,
                  *args,
                  **kwargs):
-    if callable(mapping_handler) and isinstance(obj, Mapping):
+    if mapping_handler and callable(mapping_handler) and isinstance(obj, Mapping):
         return mapping_handler(obj, *args, **kwargs)
-    if callable(iterable_handler) and is_strict_iterable(obj):
+    if iterable_handler and callable(iterable_handler) and is_strict_iterable(obj):
         return iterable_handler(obj, *args, **kwargs)
-    if callable(class_handler) and dataclasses.is_dataclass(obj):
+    if class_handler and callable(class_handler) and dataclasses.is_dataclass(obj):
         return class_handler(obj, *args, **kwargs)
 
     if (value_converter := kwargs.get('value_converter')) and callable(value_converter):
@@ -30,7 +30,9 @@ def _process_obj(obj: Any,
 def dictify_key_value_pairs(items: Iterable[tuple[Any, Any]],
                             key_converter: Optional[Callable[[Any], str]] = None,
                             value_converter: Optional[Callable[[Any], Any]] = None):
-    return {(key_converter(k) if callable(key_converter) else k): dictify(v, key_converter, value_converter)
+    return {(key_converter(k) if key_converter and callable(key_converter) else k): dictify(v,
+                                                                                            key_converter,
+                                                                                            value_converter)
             for k, v in items}
 
 

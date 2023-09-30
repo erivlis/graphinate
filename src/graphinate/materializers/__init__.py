@@ -57,15 +57,19 @@ def materialize(model: modeling.GraphModel,
         builder, actualizer = result[1]
 
     if builder is None and actualizer is None:
-        raise ValueError("Missing Arguments: builder, actualizer")
+        raise ValueError("Missing: builder, actualizer")
 
-    graph = builders.build(builder,
-                           model,
-                           graph_type,
-                           default_node_attributes=default_node_attributes,
-                           **kwargs)
+    if builder:
+        graph = builders.build(builder,
+                               model,
+                               graph_type,
+                               default_node_attributes=default_node_attributes,
+                               **kwargs)
 
-    actualizer(graph)
+        if actualizer and callable(actualizer):
+            actualizer(graph)
+        else:
+            print(graph)
 
 
 __all__ = ('materialize', 'plot')
