@@ -48,7 +48,6 @@
       <br>
       <a href="https://app.codacy.com/gh/erivlis/graphinate/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade"><img alt="Codacy Badge" src="https://app.codacy.com/project/badge/Grade/54b33c3f7313448f9471d01e2a06f037"></a>
       <a href="https://scrutinizer-ci.com/g/erivlis/graphinate"><img alt="Scrutinizer" src="https://scrutinizer-ci.com/g/erivlis/graphinate/badges/quality-score.png?b=main"></a>
-      <!--a href="https://snyk.io/test/github/erivlis/graphinate"><img alt="Snyk" src="https://snyk.io/test/github/erivlis/Graphinate/badge.svg"></a -->
     </td>
   </tr>
 </table>

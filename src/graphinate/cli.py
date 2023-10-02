@@ -1,15 +1,53 @@
 import functools
+import importlib
 import json
+from typing import Any
 
 import click
 
 from graphinate import GraphModel, builders, graphql, materialize
 from graphinate.server import DEFAULT_PORT
-from graphinate.tools.importer import import_from_string
 
 
 def _get_kwargs(ctx) -> dict:
     return dict([item.strip('--').split('=') for item in ctx.args if item.startswith("--")])
+
+
+def import_from_string(import_str: Any) -> Any:
+    """Import an object from a string reference {module-name}:{variable-name}
+    For example, if `model=GraphModel()` is defined in app.py file, then the
+    reference would be app:model.
+    """
+
+    if not isinstance(import_str, str):
+        return import_str
+
+    module_str, _, attrs_str = import_str.partition(":")
+    if not module_str or not attrs_str:
+        message = f"Import string '{import_str}' must be in format '<module>:<attribute>'."
+        raise ImportFromStringError(message)
+
+    try:
+        module = importlib.import_module(module_str)
+    except ModuleNotFoundError as exc:
+        if exc.name != module_str:
+            raise exc from None
+        message = f"Could not import module '{module_str}'."
+        raise ImportFromStringError(message) from exc
+
+    instance = module
+    try:
+        for attr_str in attrs_str.split("."):
+            instance = getattr(instance, attr_str)
+    except AttributeError as exc:
+        message = f"Attribute '{attrs_str}' not found in module '{module_str}'."
+        raise ImportFromStringError(message) from exc
+
+    return instance
+
+
+class ImportFromStringError(Exception):
+    pass
 
 
 class GraphModelType(click.ParamType):
@@ -35,18 +73,7 @@ model_option = click.option('-m', '--model',
 @click.group()
 @click.pass_context
 def cli(ctx):
-    message = """
-     ██████╗ ██████╗  █████╗ ██████╗ ██╗  ██╗██╗███╗   ██╗ █████╗ ████████╗███████╗
-    ██╔════╝ ██╔══██╗██╔══██╗██╔══██╗██║  ██║██║████╗  ██║██╔══██╗╚══██╔══╝██╔════╝
-    ██║  ███╗██████╔╝███████║██████╔╝███████║██║██╔██╗ ██║███████║   ██║   █████╗
-    ██║   ██║██╔══██╗██╔══██║██╔═══╝ ██╔══██║██║██║╚██╗██║██╔══██║   ██║   ██╔══╝
-    ╚██████╔╝██║  ██║██║  ██║██║     ██║  ██║██║██║ ╚████║██║  ██║   ██║   ███████╗
-     ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝   ╚══════╝"""
-
-
-
-
-    click.echo(message)
+    pass
 
 
 @cli.command()
@@ -65,15 +92,14 @@ def save(ctx, model):
 @click.option('-p', '--port', type=int, default=DEFAULT_PORT, help='Port number.')
 @click.pass_context
 def server(ctx, model, port):
-    message = """ ██████╗ ██████╗  █████╗ ██████╗ ██╗  ██╗██╗███╗   ██╗ █████╗ ████████╗███████╗
-██╔════╝ ██╔══██╗██╔══██╗██╔══██╗██║  ██║██║████╗  ██║██╔══██╗╚══██╔══╝██╔════╝
-██║  ███╗██████╔╝███████║██████╔╝███████║██║██╔██╗ ██║███████║   ██║   █████╗
-██║   ██║██╔══██╗██╔══██║██╔═══╝ ██╔══██║██║██║╚██╗██║██╔══██║   ██║   ██╔══╝
-╚██████╔╝██║  ██║██║  ██║██║     ██║  ██║██║██║ ╚████║██║  ██║   ██║   ███████╗
- ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝   ╚══════╝"""
-
+    message = """
+     ██████╗ ██████╗  █████╗ ██████╗ ██╗  ██╗██╗███╗   ██╗ █████╗ ████████╗███████╗
+    ██╔════╝ ██╔══██╗██╔══██╗██╔══██╗██║  ██║██║████╗  ██║██╔══██╗╚══██╔══╝██╔════╝
+    ██║  ███╗██████╔╝███████║██████╔╝███████║██║██╔██╗ ██║███████║   ██║   █████╗
+    ██║   ██║██╔══██╗██╔══██║██╔═══╝ ██╔══██║██║██║╚██╗██║██╔══██║   ██║   ██╔══╝
+    ╚██████╔╝██║  ██║██║  ██║██║     ██║  ██║██║██║ ╚████║██║  ██║   ██║   ███████╗
+     ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝   ╚══════╝"""
     click.echo(message)
-
     materialize(model=model,
                 builder=builders.GraphQLBuilder,
                 actualizer=functools.partial(graphql, port=port),

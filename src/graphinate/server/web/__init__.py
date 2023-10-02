@@ -1,7 +1,12 @@
+import inspect
 import pathlib
 from collections.abc import Mapping
 
-from ...tools.fs import current_file
+
+def current_file() -> pathlib.Path:
+    """Returns current file name"""
+    return pathlib.Path(inspect.getfile(inspect.currentframe().f_back))
+
 
 paths_mapping: Mapping[str, pathlib.Path] = {p.name: p for p in current_file().parent.iterdir() if p.is_dir()}
 

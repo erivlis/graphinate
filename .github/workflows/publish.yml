@@ -7,19 +7,14 @@
 # documentation.
 
 name: Publish
-
 on:
   release:
     types: [published]
-
 permissions:
   contents: read
-
 jobs:
   deploy:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
