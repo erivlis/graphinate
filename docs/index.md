@@ -1,7 +1,7 @@
 # Graphinate. Data to Graphs.
 
-<table>
-  <tr style="vertical-align: middle;">
+<table style="border-width: 0;">
+  <tr style="vertical-align: middle; border-width: 0;">
     <td rowspan="4"><img height="240" src="https://github.com/erivlis/graphinate/assets/9897520/11038b61-ae26-4b1d-b3ff-37a620312ced" alt="Graphinate. Data to Graphs."></td>
     <td>Package</td>
     <td>

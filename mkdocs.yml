@@ -18,15 +18,20 @@ theme:
     - content.code.copy
     - content.code.select
 #    - navigation.tabs
-    - navigation.path
+#    - navigation.path
+#    - navigation.sections
+    - navigation.footer
     - navigation.indexes
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.prune
     - navigation.top
     - navigation.tracking
     - search.highlight
     - search.share
     - search.suggest
     - toc.follow
-#    - toc.integrate
+    - toc.integrate
   font: false
   palette:
     # Palette toggle for dark mode
@@ -65,6 +70,8 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - toc:
+      permalink: true
 
 
 nav:
@@ -80,32 +87,37 @@ nav:
 
 
 extra:
+  generator: false
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/erivlis/graphinate
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/graphinate
+    - icon: fontawesome/brands/mastodon
+      link: https://mastodon.social/@erivlis
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/erivlis
 
 
 plugins:
-- search
-- gen-files:
-    scripts:
-    - docs/gen_ref_pages.py
-- literate-nav:
-    nav_file: SUMMARY.md
-- mkdocstrings:
-    default_handler: python
-    handlers:
-      python:
-        paths: [src]
-        options:
-          allow_inspection: true
-          show_source: false
-          heading_level: 3
-#          show_root_heading: false
-          show_category_heading: true
-          show_symbol_type_heading: true
-          show_symbol_type_toc: true
+  - search
+  - gen-files:
+      scripts:
+      - docs/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - git-revision-date-localized:
+      enable_creation_date: true
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [src]
+          options:
+            allow_inspection: true
+            show_source: false
+            heading_level: 3
+  #          show_root_heading: false
+            show_category_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true

@@ -2,38 +2,41 @@
 
 ## Top level Functions
 
+* [`model`](/reference/graphinate/#graphinate.model) -
+  Create a [`GraphModel`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel)
 
-* `model` - Create a `GraphModel`
+* [`build`](/reference/graphinate/#graphinate.build) -
+  Generate a Graph from a [`GraphModel`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel)
 
-* `build` - Generate a Graph from a `GraphModel`
+* [`plot`](/reference/graphinate/#graphinate.plot) - Generate a matplotlib plot
 
-* `plot` - Generate a matplotlib plot
+* [`graphql`](/reference/graphinate/#graphinate.graphql) - Run a GraphQL Server
 
-* `graphql` - Run a GraphQL Server
-
-* `materialize` - Generate an output from a `GraphModel` instance.
-
-      By default, the user will be prompted to choose the output format, using a popup GUI dialog.
-
+* [`materialize`](/reference/graphinate/#graphinate.materialize) -
+  Generate an output from a [`GraphModel`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel) instance.
+  By default, the user will be prompted to choose the output format, using a popup GUI dialog.
 
 ## SDK
 
 ### Modeling
 
-* `graphinate.GraphModel`
+* [`graphinate.GraphModel`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel)
 
-      Graphinate defines the `GraphModel` Class which can be used to declaratively register Edge and/or Node data
-      supplier functions using the `GraphModel.node()` and `GraphMode.edge()` decorators.
+      *Graphinate* defines the `GraphModel` Class which can be used to declaratively register Edge and/or Node data
+      supplier functions using the [`GraphModel.node()`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel.node) and [`GraphMode.edge()`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel.edge) decorators.
 
-* `graphinate.NodeModel` - TBD
+* [`graphinate.NodeModel`](/reference/graphinate/modeling/#graphinate.modeling.NodeModel) - TBD
 
 ### Builders
 
-* `graphinate.builders.NetworkxBuilder` - Used to generate a NetworkX Graph instance.
+* [`graphinate.builders.NetworkxBuilder`](/reference/graphinate/builders/#graphinate.builders.NetworkxBuilder) -
+  Generates a NetworkX Graph instance.
 
-* `graphinate.builders.D3Builder` - Used to generate a D3 Graph instance (i.e. a Dict).
+* [`graphinate.builders.D3Builder`](/reference/graphinate/builders/#graphinate.builders.D3Builder) - Generates a D3
+  Graph instance (i.e. a Dict).
 
-* `graphinate.builders.GraphQLBuilder` - Used to generate a Strawberry GraphQL Schema instance
+* [`graphinate.builders.GraphQLBuilder`](/reference/graphinate/builders/#graphinate.builders.GraphQLBuilder) - Generates
+  a Strawberry GraphQL Schema instance
 
 ### Actualizers
 
