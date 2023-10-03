@@ -105,8 +105,8 @@ if __name__ == '__main__':
     repo_model = repo_graph_model()
 
     params = {
-        # 'user_id': 'erivlis',
-        # 'repository_id': 'graphinate',
+        'user_id': 'erivlis',
+        'repository_id': 'graphinate',
         # 'user_id': 'andybrewer',
         # 'repository_id': 'operation-go',
         # 'commit_id': None,
