@@ -247,14 +247,8 @@ python -m mkdocs build
 
 <a href="https://www.jetbrains.com/pycharm/"><img height="60" style="background: linear-gradient(-45deg, #FCF84A, #3DEA62, #21D789);" src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm.png" alt="PyCharm logo."></a>
 
------
-
-###### Stats
-
-<img alt="GitHub Stats" src="https://github-readme-stats.vercel.app/api?username=erivlis&theme=purple-gray">
-<img alt="Langs" src="https://github-readme-stats.vercel.app/api/top-langs/?username=erivlis&theme=purple-gray">
-<img alt="Star Chart" src="https://starchart.cc/erivlis/graphinate.svg">
-
-
 ------
+
 <img alt="Star Chart" src="https://forthebadge.com/images/badges/works-on-my-machine.svg">
+
+Copyright © 2023 Eran Rivlis

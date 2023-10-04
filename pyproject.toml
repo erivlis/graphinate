@@ -53,9 +53,10 @@ dev = [
 docs = [
     "mkdocs-material",
     "mkdocstrings-python",
+    "mkdocs-git-revision-date-localized-plugin",
     "mkdocs-gen-files",
     "mkdocs-literate-nav",
-    "mkdocs-section-index"
+    "mkdocs-section-index",
 ]
 test = [
     "faker >= 19.6.2",

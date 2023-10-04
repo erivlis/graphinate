@@ -102,6 +102,9 @@ class GraphType(Enum):
     MultiGraph = nx.MultiGraph
 
 
+GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema]
+
+
 class Builder(ABC):
     """Builder abstract base class"""
 
@@ -120,11 +123,11 @@ class Builder(ABC):
     })
 
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
-        self._cached_build_kwargs = {}
+        self._cached_build_kwargs: dict[str, Any] = {}
         self.model = model
         self.graph_type = graph_type
 
-    def build(self, **kwargs) -> Any:
+    def build(self, **kwargs) -> GraphRepresentation:
         """Build a graph
 
         Args:
@@ -134,6 +137,7 @@ class Builder(ABC):
             Any
         """
         self._cached_build_kwargs = kwargs
+        return {}
 
 
 class NetworkxBuilder(Builder):
@@ -295,7 +299,7 @@ class NetworkxBuilder(Builder):
 
         self._graph.graph['created'] = datetime.utcnow()
 
-    def build(self, **kwargs) -> nx.Graph:
+    def build(self, **kwargs) -> GraphRepresentation:
         """
 
         Args:
@@ -325,7 +329,7 @@ class D3Builder(NetworkxBuilder):
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
         super().__init__(model, graph_type)
 
-    def build(self, **kwargs) -> dict:
+    def build(self, **kwargs) -> GraphRepresentation:
         """
 
         Args:
@@ -753,7 +757,7 @@ class GraphQLBuilder(NetworkxBuilder):
             ]
         )
 
-    def build(self, **kwargs) -> strawberry.Schema:
+    def build(self, **kwargs) -> GraphRepresentation:
         """
 
         Args:

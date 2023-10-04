@@ -12,4 +12,4 @@ paths_mapping: Mapping[str, pathlib.Path] = {p.name: p for p in current_file().p
 
 
 def get_static_path(relative_path: str) -> pathlib.Path:
-    return paths_mapping.get('static') / relative_path
+    return paths_mapping['static'] / relative_path

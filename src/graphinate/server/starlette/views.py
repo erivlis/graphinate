@@ -5,7 +5,7 @@ from ..web import get_static_path
 
 
 async def favicon(request):
-    path = get_static_path('images/network_graph.png').absolute().as_posix()
+    path = get_static_path('images/logo-128.png').absolute().as_posix()
     return FileResponse(path)
 
 

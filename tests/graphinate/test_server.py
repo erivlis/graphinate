@@ -16,5 +16,5 @@ async def test_favicon():
 
     assert isinstance(actual, FileResponse)
     assert actual.media_type == 'image/png'
-    assert 'src/graphinate/server/web/static/images/network_graph.png' in actual.path
+    assert 'src/graphinate/server/web/static/images/logo-128.png' in actual.path
 

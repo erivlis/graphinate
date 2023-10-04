@@ -2,11 +2,11 @@ import inspect
 from collections import defaultdict, namedtuple
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Optional, TypeVar, Union
 
 from .typing import Edge, Edges, Element, Extractor, Items, Node, Nodes, NodeTypeAbsoluteId
 
-UNIVERSE_NODE = None
+UNIVERSE_NODE = TypeVar('UNIVERSE_NODE', bound=None)
 
 
 class GraphModelError(Exception):
@@ -14,14 +14,14 @@ class GraphModelError(Exception):
 
 
 def element(element_type: Optional[str], field_names: Optional[Iterable[str]] = None) -> Callable[[...], Element]:
-    """Create a Graph Element
+    """Graph Element Supplier Callable
 
     Args:
         element_type:
         field_names:
 
     Returns:
-        Element Supplier Function
+        Element Supplier Callable
     """
     return namedtuple(element_type, field_names) if element_type and field_names else tuple
 

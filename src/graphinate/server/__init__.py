@@ -32,7 +32,7 @@ def graphql(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT):
         open_url()
         yield
 
-    graphql_app = GraphQL(graphql_schema)
+    graphql_app: GraphQL = GraphQL(graphql_schema)
     app = Starlette(
         lifespan=lifespan,
         routes=routes()

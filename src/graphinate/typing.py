@@ -10,9 +10,9 @@
 from collections.abc import Iterable
 from typing import Any, Callable, NamedTuple, Protocol, TypeVar, Union
 
-Node = Union[type(NamedTuple), tuple[str, Any]]
+Node = Union[type[NamedTuple], tuple[str, Any]]
 
-Edge = Union[type(NamedTuple), tuple[str, str, Any]]
+Edge = Union[type[NamedTuple], tuple[str, str, Any]]
 
 Element = Union[Node, Edge]
 
