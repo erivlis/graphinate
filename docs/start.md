@@ -1,7 +1,7 @@
 # Quick Start
 
-**Graphinate** is designed to be used as library first and foremost. In addition, it has several interfaces for ease of
-use: CLI and a GraphQL API (using [**_Strawberry GraphQL_**](https://strawberry.rocks/)).
+**Graphinate** is designed to be used as a library first and foremost.
+In addition, it has several interfaces for ease of use: CLI and a GraphQL API (using [**_Strawberry GraphQL_**](https://strawberry.rocks/)).
 
 ## Install
 
@@ -30,7 +30,7 @@ N: int = 8
 graph_model = graphinate.model(name="Octagonal Graph")
 
 
-# Register in the Graph Model the edges supplier function
+# Register in the Graph Model the edges' supplier function
 @graph_model.edge()
 def edge():
     for i in range(N):

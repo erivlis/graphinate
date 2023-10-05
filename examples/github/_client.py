@@ -3,6 +3,7 @@ import os
 from collections.abc import Iterable
 from typing import Optional, Union
 
+# see requirements.txt
 from github import Auth, Github
 from github.AuthenticatedUser import AuthenticatedUser
 from github.Commit import Commit

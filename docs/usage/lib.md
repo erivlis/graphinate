@@ -14,7 +14,7 @@
 
 * [`materialize`](/reference/graphinate/#graphinate.materialize) -
   Generate an output from a [`GraphModel`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel) instance.
-  By default, the user will be prompted to choose the output format, using a popup GUI dialog.
+  By default, the user will be prompted to choose the output format, using a popup GUI dialog box.
 
 ## SDK
 
@@ -22,8 +22,9 @@
 
 * [`graphinate.GraphModel`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel)
 
-      *Graphinate* defines the `GraphModel` Class which can be used to declaratively register Edge and/or Node data
-      supplier functions using the [`GraphModel.node()`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel.node) and [`GraphMode.edge()`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel.edge) decorators.
+      The `GraphModel` Class which is used to declaratively register, Edge and/or Node data supplier functions.
+      Using the [`GraphModel.node()`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel.node)
+      and [`GraphMode.edge()`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel.edge) decorators.
 
 * [`graphinate.NodeModel`](/reference/graphinate/modeling/#graphinate.modeling.NodeModel) - TBD
 

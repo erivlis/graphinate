@@ -46,15 +46,14 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "ruff",
-    # "pip-tools",
-    # "pipdeptree"
-
+    "pipdeptree"
 ]
 docs = [
     "mkdocs-material",
     "mkdocstrings-python",
     "mkdocs-git-revision-date-localized-plugin",
     "mkdocs-gen-files",
+    "mkdocs-glightbox",
     "mkdocs-literate-nav",
     "mkdocs-section-index",
 ]
@@ -88,6 +87,7 @@ allow-direct-references = true
 pythonpath = ["src"]
 testpaths = ["tests"]
 
+
 [tool.coverage.report]
 exclude_also = [
     "...",
@@ -100,7 +100,7 @@ exclude_also = [
     "if __name__ == .__main__.:",
     "if TYPE_CHECKING:",
     "class .*\\bProtocol\\):",
-    "@(abc\\.)?abstractmethod",
+    "@(abc\\.)?abstractmethod"
     ]
 
 
@@ -151,10 +151,8 @@ exclude = [
     "dist",
     "venv",
 ]
-
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
 line-length = 120
 
 

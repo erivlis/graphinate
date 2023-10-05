@@ -4,7 +4,7 @@ import pathlib
 from typing import Optional
 
 import graphinate
-from _client import github_commits, github_files, github_repositories, github_user
+from _client import github_commits, github_files, github_repositories, github_user  # see _client.py
 
 
 def repo_graph_model():  # noqa: C901

@@ -121,7 +121,7 @@ graphinate.materialize(graph_model)
 > supplier functions by using the `GraphModel.node()` and `GraphModel.edge()` decorators.
 > ### `graphinate.materialize` function
 > This function can be used to easily generate an output from a `GraphModel` instance.
-> By default it will prompt the user to choose the output format, using a popup dialog.
+> By default, it will prompt the user to choose the output format, using a popup GUI dialog box.
 
 ## CLI
 
@@ -177,7 +177,9 @@ Options:
 
 ### Python AST - 3D Force-Directed Animation
 
-![AST 3D Force animation](https://github.com/erivlis/graphinate/assets/9897520/2e9a53b1-5686-4683-a0e4-fbffa850a27b)
+<video width="400"  controls>
+  <source src="https://github.com/erivlis/graphinate/assets/9897520/2e9a53b1-5686-4683-a0e4-fbffa850a27b" type="video/mp4">
+</video>
 
 ### Web Page Links
 
@@ -196,7 +198,7 @@ ruff check src
 #### Standard (cobertura) XML Coverage Report
 
 ```shell
- python -m pytest ./tests --cov=./src --cov-branch --doctest-modules --cov-report=xml --junitxml=test_results.xml
+ python -m pytest tests -n auto --cov=src --cov-branch --doctest-modules --cov-report=xml --junitxml=test_results.xml
 ```
 
 #### HTML Coverage Report

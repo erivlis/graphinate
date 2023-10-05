@@ -34,8 +34,10 @@ formally.”
 
 ### A Graph as a Data Structure
 
-A Graph is a very useful data structure. It is perhaps the simplest data structure, that is a bit more than just a
-simple collection of "things". As such, it can be used to model all data sources that have structure.
+A Graph is a quite useful data structure.
+It is perhaps the simplest data structure, that is a bit more than just a
+simple collection of "things".
+As such, it can be used to model all data sources that have structure.
 
 ### Define a Graph
 
@@ -44,10 +46,10 @@ One can define a Graph in two general ways:
 #### Edge first
 
 The most straight forward way to Generate a Graph is to supply a list of edges. The simplest definition of an edge is a
-tuple of 2 values. Each value represent a node (or vertex) in the graph. Additional attributes may be added to the edge
+tuple of two values. Each value represents a node (or vertex) in the graph. Additional attributes may be added to the edge
 definition to convey additional characteristics.
 
-In this case one defines the **edges explicitly** and the **nodes implicitly**.
+In this case, one defines the **edges explicitly** and the **nodes implicitly**.
 
 Such graph is focused more on the _relationships_ or the _structure_ of the Graph than on the nodes themselves.
 
@@ -60,7 +62,7 @@ Alternatively, one can first add nodes (vertices) to a graph without defining ed
 to the node definitions to convey additional characteristics. After that, edge definitions are added to generate the
 relationships between the nodes.
 
-In this case **both nodes and the edges** are defines **explicitly**.
+In this case, **both nodes and the edges** are defined **explicitly**.
 
 Such a graph has focus, first on the nodes, and then on the relationship between them.
 

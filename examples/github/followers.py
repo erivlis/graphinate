@@ -1,7 +1,7 @@
 from typing import Optional
 
 import graphinate
-from _client import github_user
+from _client import github_user  # see _client.py
 
 DEPTH = 0
 

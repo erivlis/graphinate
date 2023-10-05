@@ -4,7 +4,7 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any, Callable, Optional, TypeVar, Union
 
-from .typing import Edge, Edges, Element, Extractor, Items, Node, Nodes, NodeTypeAbsoluteId
+from .typing import Edge, Edges, Element, Extractor, Items, Node, NodeTypeAbsoluteId, Nodes
 
 UNIVERSE_NODE = TypeVar('UNIVERSE_NODE', bound=None)
 
@@ -107,13 +107,12 @@ class GraphModel:
 
        Used to declaratively register Edge and/or Node data supplier functions by using
        decorators.
+
+   Parameters:
+       name: the archetype name for Graphs generated based on the GraphModel.
     """
 
     def __init__(self, name: str):
-        """Create a graph model
-        Parameters:
-            name: the archetype name for Graphs generated based on the GraphModel.
-        """
         self.name: str = name
         self._node_models: dict[NodeTypeAbsoluteId, NodeModel] = {}
         self._node_children: dict[str, list[str]] = defaultdict(list)

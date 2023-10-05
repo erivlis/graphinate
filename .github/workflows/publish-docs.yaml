@@ -22,5 +22,5 @@ jobs:
             mkdocs-material-
       - run: > 
           pip install mkdocs-material mkdocstrings-python mkdocs-git-revision-date-localized-plugin mkdocs-gen-files
-          mkdocs-literate-nav mkdocs-section-index
+          mkdocs-glightbox mkdocs-literate-nav mkdocs-section-index
       - run: mkdocs gh-deploy --force
