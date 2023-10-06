@@ -4,7 +4,7 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any, Callable, Optional, TypeVar, Union
 
-from .typing import Edge, Edges, Element, Extractor, Items, Node, NodeTypeAbsoluteId, Nodes
+from .typing import Edge, Edges, Element, Extractor, Items, Node, Nodes, NodeTypeAbsoluteId
 
 UNIVERSE_NODE = TypeVar('UNIVERSE_NODE', bound=None)
 

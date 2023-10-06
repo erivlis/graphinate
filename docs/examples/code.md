@@ -1,5 +1,7 @@
 # Code
 
+## Python AST
+
 === "Python AST"
 
     ``` python title="examples/code/python_ast.py" linenums="1"
@@ -15,3 +17,19 @@
     <video width="400"  controls>
       <source src="https://github.com/erivlis/graphinate/assets/9897520/2e9a53b1-5686-4683-a0e4-fbffa850a27b" type="video/mp4">
     </video>
+
+---
+
+## Python Dependencies
+
+=== "Python Dependencies"
+
+    ``` python title="examples/code/python_dependencies.py" linenums="1"
+     --8<-- "examples/code/python_dependencies.py"
+    ```
+
+=== "Requirements"
+
+    ``` text title="examples/code/requirements.txt" linenums="1"
+    --8<-- "examples/code/requirements.txt"
+    ```
