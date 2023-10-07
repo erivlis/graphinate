@@ -27,12 +27,12 @@ classifiers = [
 ]
 keywords = ['graph', 'declarative']
 dependencies = [
-    "click>=8",
-    "inflect>=7",
-    "loguru>=0.7",
-    "matplotlib>=3.7",
-    "networkx>=3",
-    "strawberry-graphql[asgi,opentelemetry]"
+    "click==8.1.7",
+    "inflect==7.0.0",
+    "loguru==0.7.2",
+    "matplotlib==3.8.0",
+    "networkx==3.1",
+    "strawberry-graphql[asgi,opentelemetry]==0.209.6"
 ]
 
 
@@ -58,19 +58,19 @@ docs = [
     "mkdocs-section-index",
 ]
 test = [
-    "faker >= 19.6.2",
-    "pytest >= 7.3.2",
-    "pytest-asyncio",
-    "pytest-cov >= 4.1.0",
-    "pytest-randomly >= 3.15.0",
-    "pytest-xdist >= 3.3.1"
+    "faker>=19.6.2",
+    "pytest>=7.4.2",
+    "pytest-asyncio>=0.21.1",
+    "pytest-cov>=4.1.0",
+    "pytest-randomly>=3.15.0",
+    "pytest-xdist>=3.3.1"
 ]
 plot = [
-    "scipy"
+    "scipy>=1.11.3"
 ]
 server = [
     "starlette-prometheus",
-    "uvicorn[standard]"
+    "uvicorn[standard]>=0.23.2"
 ]
 
 
