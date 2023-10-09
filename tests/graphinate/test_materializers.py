@@ -5,6 +5,8 @@ import graphinate
 import pytest
 from matplotlib import pyplot as plt
 
+MODAL_RADIOBUTTON_CHOOSER = 'graphinate.materializers.modal_radiobutton_chooser'
+
 
 def test_materialize(map_graph_model, capsys):
     expected_snippet = '"graph": {\n    "name": "Map",'
@@ -21,7 +23,7 @@ def test_materialize_d3graph(map_graph_model, monkeypatch, capsys):
 
     expected_snippet = '"graph": {\n    "name": "Map",'
 
-    with patch('graphinate.materializers.modal_radiobutton_chooser') as modal_radiobutton_chooser:
+    with patch(MODAL_RADIOBUTTON_CHOOSER) as modal_radiobutton_chooser:
         modal_radiobutton_chooser.return_value = ('Test', graphinate.materializers.Materializers.D3Graph.value)
 
         *_, graph_model = map_graph_model
@@ -32,7 +34,7 @@ def test_materialize_d3graph(map_graph_model, monkeypatch, capsys):
 
 
 def test_materialize_graphql(map_graph_model, monkeypatch):
-    with patch('graphinate.materializers.modal_radiobutton_chooser') as modal_radiobutton_chooser:
+    with patch(MODAL_RADIOBUTTON_CHOOSER) as modal_radiobutton_chooser:
         import uvicorn
         monkeypatch.setattr(uvicorn, "run", lambda *args, **kwargs: None)
         modal_radiobutton_chooser.return_value = ('Test', graphinate.materializers.Materializers.GraphQL.value)
@@ -63,7 +65,7 @@ def test_materialize_networkx(map_graph_model, materializer, monkeypatch):
 
 
 def test_materialize_none(map_graph_model, monkeypatch):
-    with patch('graphinate.materializers.modal_radiobutton_chooser') as modal_radiobutton_chooser:
+    with patch(MODAL_RADIOBUTTON_CHOOSER) as modal_radiobutton_chooser:
         import uvicorn
         monkeypatch.setattr(uvicorn, "run", lambda *args, **kwargs: None)
         modal_radiobutton_chooser.return_value = ('Test', (None, None))

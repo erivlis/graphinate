@@ -5,6 +5,8 @@ import pytest
 from click.testing import CliRunner
 from graphinate.cli import ImportFromStringError, cli, import_from_string
 
+EXAMPLES_MATH = 'examples/math'
+
 
 @pytest.fixture()
 def runner():
@@ -31,7 +33,7 @@ def test_save_malformed_model_reference(runner):
 
 
 def test_import_from_string():
-    sys.path.append('examples/math')
+    sys.path.append(EXAMPLES_MATH)
     actual = import_from_string("polygonal_graph:model")
     assert isinstance(actual, graphinate.GraphModel)
     assert actual.name == "Octagonal Graph"
@@ -46,7 +48,7 @@ import_from_string_error_cases = [
 
 @pytest.mark.parametrize(('case', 'message'), import_from_string_error_cases)
 def test_import_from_string__error(case, message):
-    sys.path.append('examples/math')
+    sys.path.append(EXAMPLES_MATH)
     with pytest.raises(ImportFromStringError, match=message):
         _ = import_from_string(case)
 

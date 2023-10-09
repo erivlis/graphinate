@@ -156,7 +156,7 @@ def test_d3_builder__map_graph_model(execution_number, map_graph_model):
 
 def test_d3_builder__map_graph_model__both_specific_ids(map_graph_model):
     # arrange
-    country_count, city_count, graph_model = map_graph_model
+    _, _, graph_model = map_graph_model
 
     # act
     builder = graphinate.builders.D3Builder(graph_model)
