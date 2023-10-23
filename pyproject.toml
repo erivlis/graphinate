@@ -33,7 +33,7 @@ dependencies = [
     "loguru==0.7.2",
     "matplotlib==3.8.0",
     "networkx==3.1",
-    "strawberry-graphql[asgi,opentelemetry]==0.209.7"
+    "strawberry-graphql[asgi,opentelemetry]==0.209.8"
 ]
 
 
