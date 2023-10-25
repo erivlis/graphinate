@@ -43,7 +43,7 @@ def materialize(model: modeling.GraphModel,
         default_node_attributes:
         builder: Builder instance
         actualizer: function that will consume the resulting built graph and
-                    actualizes it (e.g. display, serve, print etc.)
+                    actualises it (e.g. display, serve, print etc.)
         **kwargs:
 
     Returns:
