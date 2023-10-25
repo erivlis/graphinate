@@ -32,7 +32,7 @@ dependencies = [
     "inflect==7.0.0",
     "loguru==0.7.2",
     "matplotlib==3.8.0",
-    "networkx==3.1",
+    "networkx==3.2",
     "strawberry-graphql[asgi,opentelemetry]==0.209.8"
 ]
 
