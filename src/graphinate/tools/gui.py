@@ -1,20 +1,23 @@
+import platform
 import tkinter as tk
 from tkinter import ttk as ttk
 
 
 def _modal_window(title: str) -> tk.Tk:  # pragma: no cover
-    # Creating parent Tkinter window
+    """Creating a parent Tkinter modal window"""
     win = tk.Tk()
     # win.geometry("200x125")
     win.title(title)
-    win.wm_attributes('-toolwindow', 'True')
+
+    if platform.system().lower() == 'windows':
+        win.wm_attributes('-toolwindow', 'True')
+
     win.wm_attributes('-topmost', 'True')
     win.resizable(False, False)
     return win
 
 
 def modal_radiobutton_chooser(window_title: str, options: dict, default=None):  # pragma: no cover
-    # Creating parent Tkinter window
     win = _modal_window(window_title)
 
     # let us create a Tkinter string variable
