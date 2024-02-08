@@ -9,16 +9,17 @@
 It can help create an efficient retrieval pipeline from a given data source, while also enabling the developer to easily
 map data payloads and hierarchies to a Graph.
 
-In addition, there are several modes of output to enable examination of the Graph, and it's content.
+In addition, there are several modes of output to enable examination of the Graph and its content.
 
 **Graphinate** utilizes and builds upon the excellent [**_NetworkX_**](https://networkx.org/).
 
 ### What is a Graph?
 
 “In a mathematician's terminology, a graph is a collection of points and lines connecting some (possibly empty) subset
-of them. The points of a graph are most commonly known as graph vertices, but may also be called "nodes" or simply "
-points." Similarly, the lines connecting the vertices of a graph are most commonly known as graph edges, but may also
-be called "arcs" or "lines."”
+of them.
+The points of a graph are most commonly known as graph *vertices*, but may also be called *nodes* or *points*.
+Similarly, the lines connecting the vertices of a graph are most commonly known as graph *edges*, but may also
+be called *arcs* or *lines*.”
 
 &mdash; [https://mathworld.wolfram.com/Graph.html](https://mathworld.wolfram.com/Graph.html)
 
@@ -39,26 +40,39 @@ It is perhaps the simplest data structure, that is a bit more than just a
 simple collection of "things".
 As such, it can be used to model all data sources that have structure.
 
+### Graph Elements
+
+A Graph consists of two types of elements:
+
+#### Nodes
+
+A Graph Node can be any Python Hashable object. Usually it will be a primitive type such as an integer or a string,
+in particular when the node in itself has no special meaning.
+One can also add attributes to the node to describe additional information.
+This information can include anything. Usually they are used to store scalar dimensions (e.g., area, width, age etc.)
+or stylistic information (e.g., color, size, shape, label etc.).  
+
+#### Edges
+
+A Graph Node is a tuple of two node values. It can also have additional attributes in the same vain as a Graph Node. 
+
 ### Define a Graph
 
 One can define a Graph in two general ways:
 
-#### Edge first
+#### Edge First
 
-The most straight forward way to Generate a Graph is to supply a list of edges. The simplest definition of an edge is a
-tuple of two values. Each value represents a node (or vertex) in the graph. Additional attributes may be added to the edge
+The most straight forward way to generate a Graph is to supply a list of edges. The simplest definition of an edge is a
+tuple of two values. Each value represents a node (or vertex) in the graph. Attributes may be added to the edge
 definition to convey additional characteristics.
 
 In this case, one defines the **edges explicitly** and the **nodes implicitly**.
 
-Such graph is focused more on the _relationships_ or the _structure_ of the Graph than on the nodes themselves.
+Such a graph is focused more on the _relationships_ or the _structure_ of the graph than on the nodes themselves.
 
-!!! Example
-    TBD
+#### Node First
 
-#### Node first
-
-Alternatively, one can first add nodes (vertices) to a graph without defining edges. Additional attributes may be added
+Alternatively, one can first add nodes (vertices) to a graph without defining edges. Attributes may be added
 to the node definitions to convey additional characteristics. After that, edge definitions are added to generate the
 relationships between the nodes.
 
@@ -66,9 +80,10 @@ In this case, **both nodes and the edges** are defined **explicitly**.
 
 Such a graph has focus, first on the nodes, and then on the relationship between them.
 
-!!! Example
-    TBD
-
 ### Graphinate - "Hydrate" a Graph from a Data Source
 
-> TBD
+Graphinate enable generating graphs from data sources.
+It supports both *Edge First* and *Node First* creation scenarios.
+Data sources are represented as an Iterable of items that will be transformed to edges and/or nodes.
+Graphinate uses decorators to instruct how to transform the items Iterable to a graph element.
+It is recommended to use Generators as the items Iterables. 
