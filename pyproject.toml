@@ -59,19 +59,19 @@ docs = [
     "mkdocs-section-index",
 ]
 test = [
-    "faker>=20.0.3",
-    "pytest>=7.4.3",
-    "pytest-asyncio>=0.21.1",
+    "faker>=23.1.0",
+    "pytest>=7.4.4",
+    "pytest-asyncio>=0.23.4",
     "pytest-cov>=4.1.0",
     "pytest-randomly>=3.15.0",
     "pytest-xdist>=3.5.0"
 ]
 plot = [
-    "scipy>=1.11.4"
+    "scipy>=1.12.0"
 ]
 server = [
     "starlette-prometheus",
-    "uvicorn[standard]>=0.24.0"
+    "uvicorn[standard]>=0.27.0"
 ]
 
 
@@ -109,8 +109,10 @@ exclude_also = [
 line-length = 120
 #extend-exclude = ''
 
-
 [tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
 select = [
     "E",
     "F",
@@ -154,15 +156,14 @@ exclude = [
 ]
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-line-length = 120
 
 
-[tool.ruff.flake8-quotes]
+[tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
 inline-quotes = "single"
 multiline-quotes = "single"
 
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
 max-complexity = 15
