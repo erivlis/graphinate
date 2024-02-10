@@ -18,7 +18,7 @@
 
 ## SDK
 
-### Modeling
+### Model
 
 * [`graphinate.GraphModel`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel)
 
@@ -28,7 +28,7 @@
 
 * [`graphinate.NodeModel`](/reference/graphinate/modeling/#graphinate.modeling.NodeModel) - TBD
 
-### Builders
+### Build
 
 * [`graphinate.builders.NetworkxBuilder`](/reference/graphinate/builders/#graphinate.builders.NetworkxBuilder) -
   Generates a NetworkX Graph instance.
@@ -39,10 +39,10 @@
 * [`graphinate.builders.GraphQLBuilder`](/reference/graphinate/builders/#graphinate.builders.GraphQLBuilder) - Generates
   a Strawberry GraphQL Schema instance
 
-### Actualizers
+### Actualize
 
 > TBD
 
-### Materializers
+### Materialize
 
 > TBD
