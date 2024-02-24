@@ -355,8 +355,8 @@ class GraphQLBuilder(NetworkxBuilder):
     InfNumber = strawberry.scalar(
         converters.InfNumber,
         description='Integer, Decimal or Float including Infinity and -Infinity',
-        serialize=converters.infnum_to_str,
-        parse_value=converters.str_to_infnum,
+        serialize=converters.infnum_to_value,
+        parse_value=converters.value_to_infnum,
     )
 
     @strawberry.type
