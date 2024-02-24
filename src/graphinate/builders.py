@@ -27,7 +27,7 @@ from strawberry.extensions import ParserCache, QueryDepthLimiter, ValidationCach
 
 from . import color
 from .modeling import UNIVERSE_NODE, GraphModel
-from .tools import mutators
+from .tools import converters, mutators
 from .typing import NodeTypeAbsoluteId
 
 DEFAULT_NODE_DELIMITER = ' ∋ '
@@ -353,9 +353,10 @@ class GraphQLBuilder(NetworkxBuilder):
     # region Strawberry Types
 
     InfNumber = strawberry.scalar(
-        NewType("InfInt", Union[float, int, decimal.Decimal]),
-        serialize=lambda v: 'Infinity' if v == math.inf else ('-Infinity' if v == -math.inf else v),
-        parse_value=lambda v: math.inf if v == 'Infinity' else (-math.inf if v == '-Infinity' else v),
+        converters.InfNumber,
+        description='Integer, Decimal or Float including Infinity and -Infinity',
+        serialize=converters.infnum_to_str,
+        parse_value=converters.str_to_infnum,
     )
 
     @strawberry.type

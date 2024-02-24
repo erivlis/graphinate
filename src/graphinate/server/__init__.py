@@ -11,6 +11,8 @@ from .starlette import routes
 
 DEFAULT_PORT: int = 8072
 
+GRAPHQL_ROUTE_PATH = "/graphql"
+
 
 def openapi_schema(request):
     schema = SchemaGenerator(
@@ -18,7 +20,7 @@ def openapi_schema(request):
             "openapi": "3.0.0",
             "info": {"title": "Graphinate API", "version": "1.0"},
             "paths": {
-                "/graphql": {
+                GRAPHQL_ROUTE_PATH: {
                     "get": {
                         "responses": {
                             200: {
@@ -95,8 +97,8 @@ def graphql(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT):
         lifespan=lifespan,
         routes=routes()
     )
-    app.add_route("/graphql", graphql_app)
-    app.add_websocket_route("/graphql", graphql_app)
+    app.add_route(GRAPHQL_ROUTE_PATH, graphql_app)
+    app.add_websocket_route(GRAPHQL_ROUTE_PATH, graphql_app)
 
     from starlette_prometheus import PrometheusMiddleware, metrics
     app.add_middleware(PrometheusMiddleware)
