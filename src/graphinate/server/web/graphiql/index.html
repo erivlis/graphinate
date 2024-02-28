@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Strawberry GraphiQL</title>
+    <title>Graphinate - GraphiQL</title>
     <style>
       body {
         height: 100%;
@@ -151,7 +151,7 @@
         });
       }
 
-      ReactDOM.render(
+      ReactDOM.createRenderRoot(
         React.createElement(GraphiQLWithExplorer),
         document.getElementById("graphiql")
       );

@@ -107,9 +107,9 @@ graph_model = graphinate.model(name="Octagonal Graph")
 # Register edges supplier function
 @graph_model.edge()
 def edge():
-    for i in range(N):
+    for i in range(N - 1):
         yield {'source': i, 'target': i + 1}
-    yield {'source': N, 'target': 0}
+    yield {'source': N - 1, 'target': 0}
 
 
 # Materialize the GraphModel

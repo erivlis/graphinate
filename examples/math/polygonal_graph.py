@@ -12,9 +12,9 @@ def get_graph_model(number_of_sides: int = N):
     # Register edges supplier function
     @graph_model.edge()
     def edge():
-        for i in range(number_of_sides):
+        for i in range(number_of_sides - 1):
             yield {'source': i, 'target': i + 1}
-        yield {'source': number_of_sides, 'target': 0}
+        yield {'source': number_of_sides - 1, 'target': 0}
 
     return graph_model
 

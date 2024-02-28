@@ -1,6 +1,7 @@
 <!DOCTYPE html>
+<html lang="">
 <head>
-    <title></title>
+    <title>Graphinate</title>
     <style> body { margin: 0; } </style>
     <script src="https://cdn.jsdelivr.net/npm/3d-force-graph@1.72.3/dist/3d-force-graph.min.js"
             integrity="sha384-oGNXGez54SiNIIRSFWGVG0UJ9MIswOOsd/MbPZVNZFy+ykbIp1A7Ge5liZVo5oQK"
@@ -41,7 +42,7 @@ fragment Details on GraphElement {
               body: JSON.stringify(payload),
               credentials: 'include',
           }).then((response) => response.json());
-    };
+    }
 
     fetchGraphQL({query: graphQuery})
     .then((responseJson) => responseJson.data)
@@ -51,13 +52,14 @@ fragment Details on GraphElement {
       const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
       .graphData(gData)
       .nodeColor('color')
-<!--  .nodeAutoColorBy('type')-->
+// <!--  .nodeAutoColorBy('type')-->
       .nodeLabel(node => `${node.type}: '${node.name}'`)
-<!--      .linkDirectionalArrowLength(3.5)-->
-<!--      .linkDirectionalArrowRelPos(1)-->
-<!--      .linkCurvature(0.0)-->
+// <!--      .linkDirectionalArrowLength(3.5)-->
+// <!--      .linkDirectionalArrowRelPos(1)-->
+// <!--      .linkCurvature(0.0)-->
       .onEngineStop(() => Graph.zoomToFit(400));
       });
 
 </script>
 </body>
+</html>
