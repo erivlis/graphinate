@@ -22,6 +22,7 @@
     <td>
       <img alt="Static Badge" src="https://img.shields.io/badge/PyCharm-21D789.svg?logo=PyCharm&logoColor=black&labelColor=21D789&color=FCF84A">
       <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff" style="max-width:100%;"></a>
+      <a href="https://github.com/astral-sh/uv"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json" alt="Ruff" style="max-width:100%;"></a>
     </td>
   </tr>
   <tr>

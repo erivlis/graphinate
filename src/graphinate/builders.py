@@ -2,7 +2,6 @@
 Build classes that can generate graph data structures from a GraphModel
 """
 import base64
-import decimal
 import functools
 import gzip
 import importlib
@@ -17,7 +16,7 @@ from collections.abc import Hashable, Mapping
 from datetime import datetime
 from enum import Enum
 from types import MappingProxyType
-from typing import Any, Callable, NewType, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 import inflect
 import networkx as nx
@@ -175,9 +174,8 @@ class NetworkxBuilder(Builder):
             if k[:-3] == node_type_absolute_id[1]:
                 break
             ids.append(v)
-        return tuple(ids)
 
-        # return (*(kwargs.values()),) if kwargs else UNIVERSE_NODE
+        return tuple(ids)
 
     def _populate_nodes(self, node_type_absolute_id: NodeTypeAbsoluteId, **kwargs):
         node_model = self.model.node_models[node_type_absolute_id]
@@ -591,7 +589,7 @@ class GraphQLBuilder(NetworkxBuilder):
         # inflect engine to generate Plurals when needed
         inflection = inflect.engine()
 
-        # local reference to instance fields in order to "inject" into dynamically generated class methods
+        # local reference to instance fields used to "inject" into dynamically generated class methods
         def get_graph():
             return self._graph
 

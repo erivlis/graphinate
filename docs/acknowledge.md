@@ -21,6 +21,7 @@
 <a href="https://squidfunk.github.io/mkdocs-material/"><img style="height: 50px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://raw.githubusercontent.com/squidfunk/mkdocs-material/master/.github/assets/logo.svg" alt="Material for MkDocs"></a>
 <a href="https://pytest.org"><img  style="height: 50px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://docs.pytest.org/en/7.4.x/_static/pytest_logo_curves.svg" alt="pytest logo."></a>
 <a href="https://astral.sh/ruff"><img style="height: 50px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://astralcms.wpengine.com/wp-content/uploads/2023/03/Ruff-Logo.svg" alt="Ruff logo."></a>
+<a href="https://astral.sh/uv"><img style="height: 50px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://avatars.githubusercontent.com/u/115962839" alt="uv logo."></a>
 
 ## IDE
 
