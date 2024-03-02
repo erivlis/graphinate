@@ -15,15 +15,15 @@
       <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/erivlis/graphinate">
       <img alt="GitHub last commit (by committer)" src="https://img.shields.io/github/last-commit/erivlis/graphinate">
       <a href="https://github.com/erivlis/graphinate/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/erivlis/graphinate.svg"></a>
- 	    <img alt="GitHub Watchers" src="https://img.shields.io/github/watchers/erivlis/graphinate.svg">
     </td>
   </tr>
   <tr>
     <td>Tools</td>
     <td>
-      <img alt="Static Badge" src="https://img.shields.io/badge/PyCharm-21D789.svg?logo=PyCharm&logoColor=black&labelColor=21D789&color=FCF84A">
+      <a href="https://www.jetbrains.com/pycharm/"><img alt="PyCharm" src="https://img.shields.io/badge/PyCharm-FCF84A.svg?logo=PyCharm&logoColor=black&labelColor=21D789&color=FCF84A"></a>
       <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff" style="max-width:100%;"></a>
-      <a href="https://github.com/astral-sh/uv"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json" alt="Ruff" style="max-width:100%;"></a>
+      <a href="https://github.com/astral-sh/uv"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json" alt="uv" style="max-width:100%;"></a>
+      <a href="https://squidfunk.github.io/mkdocs-material/"><img src="https://img.shields.io/badge/Material_for_MkDocs-526CFE?&logo=MaterialForMkDocs&logoColor=white&labelColor=grey"></a>
     </td>
   </tr>
   <tr>

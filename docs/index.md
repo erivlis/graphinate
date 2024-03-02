@@ -17,15 +17,15 @@
  	    <img alt="GitHub Watchers" src="https://img.shields.io/github/watchers/erivlis/graphinate.svg">
     </td>
   </tr>
-  <tr>
+  <tr  style="vertical-align: middle; border-width: 0;">
     <td>Tools</td>
     <td>
-      <img alt="Static Badge" src="https://img.shields.io/badge/PyCharm-21D789.svg?logo=PyCharm&logoColor=black&labelColor=21D789&color=FCF84A">
+      <a href="https://www.jetbrains.com/pycharm/"><img alt="PyCharm" src="https://img.shields.io/badge/PyCharm-FCF84A.svg?logo=PyCharm&logoColor=black&labelColor=21D789&color=FCF84A"></a>
       <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff" style="max-width:100%;"></a>
-      <a href="https://github.com/astral-sh/uv"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json" alt="Ruff" style="max-width:100%;"></a>
+      <a href="https://github.com/astral-sh/uv"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json" alt="uv" style="max-width:100%;"></a>
     </td>
   </tr>
-  <tr>
+  <tr style="vertical-align: middle; border-width: 0;">
     <td>CI/CD</td>
     <td>
       <a href="https://github.com/erivlis/graphinate/actions/workflows/test.yml"><img alt="Tests" src="https://github.com/erivlis/graphinate/actions/workflows/test.yml/badge.svg?branch=master"></a>
@@ -33,7 +33,7 @@
       <a href="https://github.com/erivlis/graphinate/actions/workflows/publish-docs.yaml"><img alt="Publish Docs" src="https://github.com/erivlis/graphinate/actions/workflows/publish-docs.yaml/badge.svg"></a>
     </td>
   </tr>
-  <tr>
+  <tr style="vertical-align: middle; border-width: 0;">
     <td>Scans</td>
     <td>
       <a href="https://codecov.io/gh/erivlis/graphinate"><img alt="Coverage" src="https://codecov.io/gh/erivlis/graphinate/graph/badge.svg?token=POODT8M9NV"/></a>
