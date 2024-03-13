@@ -32,6 +32,8 @@ from .typing import NodeTypeAbsoluteId
 DEFAULT_NODE_DELIMITER = ' ∋ '
 DEFAULT_EDGE_DELIMITER = ' ↔ '
 
+GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema]
+
 
 def label_converter(value, delimiter: str):
     if value:
@@ -99,9 +101,6 @@ class GraphType(Enum):
     DiGraph = nx.DiGraph
     MultiDiGraph = nx.MultiDiGraph
     MultiGraph = nx.MultiGraph
-
-
-GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema]
 
 
 class Builder(ABC):

@@ -33,7 +33,7 @@ dependencies = [
     "loguru==0.7.2",
     "matplotlib==3.8.3",
     "networkx==3.2.1",
-    "strawberry-graphql[asgi,opentelemetry]==0.219.2"
+    "strawberry-graphql[asgi,opentelemetry]==0.220.0"
 ]
 
 
@@ -60,15 +60,11 @@ docs = [
 ]
 test = [
     "faker>=23.2.1",
-    "pytest>=7.4.4",
-    "pytest-asyncio>=0.23.4",
+    "pytest>=8.1.1",
+    "pytest-asyncio>=0.23.5",
     "pytest-cov>=4.1.0",
     "pytest-randomly>=3.15.0",
     "pytest-xdist>=3.5.0"
-]
-dbs = [
-    "pydgraph>=23.0.2",
-    "neo4j>=5.17.0"
 ]
 plot = [
     "scipy>=1.12.0"
