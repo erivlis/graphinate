@@ -1,9 +1,10 @@
 import functools
 from unittest.mock import patch
 
-import graphinate
 import pytest
 from matplotlib import pyplot as plt
+
+import graphinate
 
 MODAL_RADIOBUTTON_CHOOSER = 'graphinate.materializers.modal_radiobutton_chooser'
 
@@ -33,6 +34,11 @@ def test_materialize_d3graph(map_graph_model, monkeypatch, capsys):
         assert captured.err == ""
 
 
+def valid_materialization(graph_model) -> bool:
+    graphinate.materialize(graph_model)
+    return True
+
+
 def test_materialize_graphql(map_graph_model, monkeypatch):
     with patch(MODAL_RADIOBUTTON_CHOOSER) as modal_radiobutton_chooser:
         import uvicorn
@@ -40,8 +46,8 @@ def test_materialize_graphql(map_graph_model, monkeypatch):
         modal_radiobutton_chooser.return_value = ('Test', graphinate.materializers.Materializers.GraphQL.value)
 
         *_, graph_model = map_graph_model
-        graphinate.materialize(graph_model)
-        assert True
+
+        assert valid_materialization(graph_model)
 
 
 networkx_materializers = [
@@ -49,7 +55,6 @@ networkx_materializers = [
     graphinate.materializers.Materializers.NetworkX_with_edge_labels.value,
     (graphinate.builders.NetworkxBuilder,
      functools.partial(graphinate.materializers.matplotlib.plot, with_node_labels=False))
-
 ]
 
 
@@ -60,8 +65,7 @@ def test_materialize_networkx(map_graph_model, materializer, monkeypatch):
         with patch('graphinate.materializers.modal_radiobutton_chooser') as modal_radiobutton_chooser:
             modal_radiobutton_chooser.return_value = ('Test', materializer)
             *_, graph_model = map_graph_model
-            graphinate.materialize(graph_model)
-            assert True
+            assert valid_materialization(graph_model)
 
 
 def test_materialize_none(map_graph_model, monkeypatch):
