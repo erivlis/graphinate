@@ -26,7 +26,7 @@ from strawberry.extensions import ParserCache, QueryDepthLimiter, ValidationCach
 
 from . import color
 from .modeling import UNIVERSE_NODE, GraphModel
-from .tools import converters, mutators
+from .tools import converters, mutators, utcnow
 from .typing import NodeTypeAbsoluteId
 
 DEFAULT_NODE_DELIMITER = ' ∋ '
@@ -145,9 +145,9 @@ class NetworkxBuilder(Builder):
         super().__init__(model, graph_type)
 
     def _initialize_graph(self):
-        self._graph = self.graph_type.value(name=self.model.name,
-                                            node_types=Counter(),
-                                            edge_types=Counter())
+        self._graph: nx.Graph = self.graph_type.value(name=self.model.name,
+                                                      node_types=Counter(),
+                                                      edge_types=Counter())
 
     def _graph_edges(self, data, default=None):
         params = {'data': data, 'default': default}
@@ -197,7 +197,7 @@ class NetworkxBuilder(Builder):
             if node_id in self._graph:
                 self._graph.nodes[node_id]['value'].append(node.value)
                 self._graph.nodes[node_id]['magnitude'] += 1
-                self._graph.nodes[node_id]['updated'] = datetime.utcnow()
+                self._graph.nodes[node_id]['updated'] = utcnow()
             else:
                 self._graph.add_node(node_id,
                                      label=label,
@@ -205,7 +205,7 @@ class NetworkxBuilder(Builder):
                                      value=[node.value],
                                      magnitude=1,
                                      lineage=list(node_lineage),
-                                     created=datetime.utcnow())
+                                     created=utcnow())
 
                 self._graph.graph['node_types'].update({node_type: 1})
 
@@ -213,7 +213,7 @@ class NetworkxBuilder(Builder):
                 logger.debug("Adding edge from: '{}' to '{}'", parent_node_id, node_id)
                 self._graph.add_edge(parent_node_id,
                                      node_id,
-                                     created=datetime.utcnow())
+                                     created=utcnow())
 
             new_kwargs = kwargs.copy()
             new_kwargs[f"{node_type}_id"] = node.key
@@ -234,12 +234,12 @@ class NetworkxBuilder(Builder):
                                              type=edge_type,
                                              value=[edge.value],
                                              weight=edge_weight,
-                                             created=datetime.utcnow())
+                                             created=utcnow())
                         self._graph.graph['edge_types'].update({edge_type: 1})
                     else:
                         self._graph.edges[edge_id]['value'].append(edge.value)
                         self._graph.edges[edge_id]['weight'] += edge_weight
-                        self._graph.edges[edge_id]['updated'] = datetime.utcnow()
+                        self._graph.edges[edge_id]['updated'] = utcnow()
 
     def _rectify_node_attributes(self, **defaults):
 
@@ -294,7 +294,7 @@ class NetworkxBuilder(Builder):
             counter = self._graph.graph[counter_name]
             self._graph.graph[counter_name] = mutators.dictify(counter)
 
-        self._graph.graph['created'] = datetime.utcnow()
+        self._graph.graph['created'] = utcnow()
 
     def build(self, **kwargs) -> GraphRepresentation:
         """
@@ -393,27 +393,60 @@ class GraphQLBuilder(NetworkxBuilder):
 
     @strawberry.type
     class Graph:
-        graph: strawberry.Private[nx.Graph]
-
-        name: str
-        created: datetime
-        hash: str
-        node_type_counts: list['GraphQLBuilder.Measure']
-        edge_type_counts: list['GraphQLBuilder.Measure']
-        node_count: int
-        edge_count: int
-        order: int
-        size: int
-        # girth: int
-        average_degree: float
+        nx_graph: strawberry.Private[nx.Graph]
 
         @strawberry.field()
         def radius(self) -> 'GraphQLBuilder.InfNumber':
-            return nx.radius(self.graph) if nx.is_connected(self.graph) else math.inf
+            return nx.radius(self.nx_graph) if nx.is_connected(self.nx_graph) else math.inf
 
         @strawberry.field()
         def diameter(self) -> 'GraphQLBuilder.InfNumber':
-            return nx.diameter(self.graph) if nx.is_connected(self.graph) else math.inf
+            return nx.diameter(self.nx_graph) if nx.is_connected(self.nx_graph) else math.inf
+
+        @strawberry.field()
+        def name(self) -> str:
+            return self.nx_graph.graph['name']
+
+        @strawberry.field()
+        def node_type_counts(self) -> list['GraphQLBuilder.Measure']:
+            return [GraphQLBuilder.Measure(name=t, value=c) for t, c in self.nx_graph.graph['node_types'].items()]
+
+        @strawberry.field()
+        def edge_type_counts(self) -> list['GraphQLBuilder.Measure']:
+            return [GraphQLBuilder.Measure(name=t, value=c) for t, c in self.nx_graph.graph['edge_types'].items()]
+
+        @strawberry.field()
+        def node_count(self) -> int:
+            return self.nx_graph.number_of_nodes()
+
+        @strawberry.field()
+        def edge_count(self) -> int:
+            return self.nx_graph.number_of_edges()
+
+        @strawberry.field()
+        def order(self) -> int:
+            return self.nx_graph.order()
+
+        @strawberry.field()
+        def size(self) -> int:
+            return self.nx_graph.size(weight='weight')
+
+        # @strawberry.field()
+        # def girth(self) -> int:
+        #     return min(len(cycle) for cycle in nx.simple_cycles(self.graph))
+
+        @strawberry.field()
+        def average_degree(self) -> float:
+            return self.nx_graph.number_of_nodes() and (
+                    1.0 * sum(d for _, d in self.nx_graph.degree()) / self.nx_graph.number_of_nodes())
+
+        @strawberry.field()
+        def hash(self) -> str:
+            return nx.weisfeiler_lehman_graph_hash(self.nx_graph)
+
+        @strawberry.field()
+        def created(self) -> datetime:
+            return self.nx_graph.graph['created']
 
     @strawberry.enum(description="""
         See NetworkX documentation for explanations:
@@ -599,24 +632,7 @@ class GraphQLBuilder(NetworkxBuilder):
 
         # region - Defining GraphQL Query Class dict - graph field
         def graphql_graph(self) -> GraphQLBuilder.Graph:
-            graph = get_graph()
-            return GraphQLBuilder.Graph(
-                graph=graph,
-                name=graph.graph['name'],
-                node_type_counts=[GraphQLBuilder.Measure(name=t, value=c) for t, c in
-                                  graph.graph['node_types'].items()],
-                edge_type_counts=[GraphQLBuilder.Measure(name=t, value=c) for t, c in
-                                  graph.graph['edge_types'].items()],
-                node_count=graph.number_of_nodes(),
-                edge_count=graph.number_of_edges(),
-                order=graph.order(),
-                size=graph.size(weight='weight'),
-                # girth=min(len(cycle) for cycle in nx.simple_cycles(graph)),
-                average_degree=graph.number_of_nodes() and (
-                        1.0 * sum(d for _, d in graph.degree()) / graph.number_of_nodes()),
-                hash=nx.weisfeiler_lehman_graph_hash(graph),
-                created=graph.graph['created'],
-            )
+            return GraphQLBuilder.Graph(nx_graph=get_graph())
 
         self.add_field_resolver(query_class_dict, 'graph', graphql_graph)
 
