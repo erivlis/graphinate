@@ -1,6 +1,6 @@
 [project]
 name = "Graphinate"
-version = "0.2.18"
+version = "0.2.19"
 authors = [
     { name = "Eran Rivlis", email = "eran@rivlis.info" },
 ]
