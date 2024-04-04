@@ -1,10 +1,9 @@
 import operator
 from collections.abc import Iterable
 
+import graphinate
 import networkx as nx
 import psutil
-
-import graphinate
 
 
 def processes_graph_model():
@@ -15,8 +14,14 @@ def processes_graph_model():
             if psutil.pid_exists(pid):
                 yield psutil.Process(pid)
 
-    processes_list = [{'pid': p.pid, 'name': p.name(), 'parent_pid': p.parent().pid if p.parent() else None} for p in
-                      processes()]
+    processes_list = [
+        {
+            'pid': p.pid,
+            'name': p.name(),
+            'parent_pid': p.parent().pid if p.parent() else None
+        }
+        for p in processes()
+    ]
 
     @graph_model.node(key=operator.itemgetter('pid'), label=operator.itemgetter('name'))
     def process():
