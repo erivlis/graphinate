@@ -28,12 +28,12 @@ classifiers = [
 ]
 keywords = ['graph', 'declarative']
 dependencies = [
-    "click==8.1.7",
-    "inflect==7.2.0",
-    "loguru==0.7.2",
-    "matplotlib==3.8.4",
-    "networkx==3.3",
-    "strawberry-graphql[asgi,opentelemetry]==0.227.2"
+    "click>=8.1.7",
+    "inflect>=7.2.1",
+    "loguru>=0.7.2",
+    "matplotlib>=3.8.4",
+    "networkx>=3.3",
+    "strawberry-graphql[asgi,opentelemetry]>=0.227.3"
 ]
 
 
