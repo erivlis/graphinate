@@ -6,6 +6,13 @@ from pipdeptree._non_host import handle_non_host_target
 
 
 def dependency_graph_model():
+    """
+    Generate a dependency graph model.
+
+    Returns:
+        GraphModel: A graph model representing the dependency graph.
+    """
+
     options = get_options(args=None)
     handle_non_host_target(options)
 

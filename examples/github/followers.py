@@ -1,3 +1,9 @@
+"""
+Defines a function `followers_graph_model` that creates a graph model representing GitHub followers.
+It recursively fetches followers of a given user up to a specified maximum depth.
+The function yields edges between users in the graph.
+"""
+
 from typing import Optional
 
 import graphinate
@@ -7,6 +13,16 @@ DEPTH = 0
 
 
 def followers_graph_model(max_depth: int = DEPTH):
+    """
+    Create a graph model representing GitHub followers.
+
+    Args:
+        max_depth (int): The maximum depth to fetch followers recursively (default is 0).
+
+    Returns:
+        GraphModel: A graph model representing GitHub followers.
+    """
+
     graph_model = graphinate.model(name='Github Followers Graph')
 
     def _followers(user_id: Optional[str] = None, depth: int = 0, **kwargs):

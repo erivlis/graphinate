@@ -1,3 +1,10 @@
+"""
+Define functions to create an abstract syntax tree (AST) graph model using the 'graphinate' library.
+The 'ast_graph_model' function parses the AST of a specified class and creates nodes and edges for the graph model.
+The nodes represent AST nodes with their type and label, while the edges represent relationships between AST nodes.
+"""
+
+
 import ast
 import hashlib
 import inspect
@@ -35,6 +42,13 @@ def _ast_edge(parsed_ast: AST):
 
 
 def ast_graph_model():
+    """
+    Create an abstract syntax tree (AST) graph model.
+
+    Returns:
+        GraphModel: A graph model representing the AST nodes and their relationships.
+    """
+
     graph_model = graphinate.model(name='AST Graph')
 
     root_ast_node = ast.parse(inspect.getsource(graphinate.builders.D3Builder))

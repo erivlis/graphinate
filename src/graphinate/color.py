@@ -10,10 +10,11 @@ import networkx as nx
 def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = "tab20") -> Mapping:
     """
     Parameters:
-        graph: graph_id
-        cmap : str or `~matplotlib.colors.Colormap` - The colormap used to map values to RGBA colors.
+        graph: nx.Graph - The input graph for which node colors need to be mapped.
+        cmap: Union[str, mpl.colors.Colormap], optional - The colormap used to map values to RGBA colors.
+              Default is "tab20".
     Returns:
-        Nodes RGBA Color list.
+        Mapping - A dictionary mapping nodes to their corresponding RGBA colors based on the colormap.
     """
     type_lookup = {t: i for i, t in enumerate(graph.graph['node_types'].keys())}
     color_lookup = {node: type_lookup.get(data.get('type'), 0) for node, data in graph.nodes.data()}

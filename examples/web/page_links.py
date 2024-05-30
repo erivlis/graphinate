@@ -9,6 +9,16 @@ DEFAULT_MAX_DEPTH = 0
 
 
 def page_links_graph_model(max_depth: int = DEFAULT_MAX_DEPTH):
+    """
+    Create a graph model based on page links.
+
+    Args:
+        max_depth (int, optional): The maximum depth to crawl for page links. Defaults to DEFAULT_MAX_DEPTH.
+
+    Returns:
+        GraphModel: A graph model representing the page links.
+    """
+
     def _links(url: str, depth=0, **kwargs):
         reqs = requests.get(url)
         logger.debug('Analyzing Page: {url}')

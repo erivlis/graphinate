@@ -7,6 +7,13 @@ import psutil
 
 
 def processes_graph_model():
+    """
+    Create a graph model representing processes and their parent-child relationships.
+
+    Returns:
+        GraphModel: A graph model representing processes and their parent-child relationships.
+    """
+
     graph_model = graphinate.model("Processes Graph")
 
     def processes() -> Iterable[psutil.Process]:

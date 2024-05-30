@@ -35,6 +35,21 @@ def spiral_torus_edges(n, k):
 
 
 def atlas():
+    """
+    Generate a dictionary of various graph structures and models based on the provided atlas.
+    The function creates different types of graphs and models using NetworkX library.
+    The generated graphs include Tetrahedron, Cube, Octahedron, Dodecahedron, Icosahedron, Tesseract, Truncated Cube,
+    Truncated Tetrahedron, Ladder, Ring, Möbius, Cylinder, Spiral, Spiral Torus, and Circulant[10,[2]].
+    Additionally, the function includes adjacency mappings for specific named graphs like
+    Buckyball - Truncated Icosahedral Graph, D30 - Rhombic Triacontahedral Graph, Small Rhombicosidodecahedral Graph,
+    Small Rhombicuboctahedral Graph, Great Rhombicosidodecahedral Graph, Disdyakis Dodecahedral Graph,
+    Deltoidal Icositetrahedral Graph, Icosidodecahedral Graph, Deltoidal Hexecontahedral Graph, Kocohl74,
+    Utility Graph, Errara Graph, and Dragon Curve Blob 6.
+    The adjacency mappings define the connections between nodes in each named graph.
+    The function returns a dictionary
+    containing the named graphs as keys and their corresponding NetworkX graph objects as values.
+    """
+
     ladder_size = 16
     ladder = nx.ladder_graph(ladder_size)
 
@@ -775,6 +790,21 @@ def atlas():
 
 
 def models(iterable):
+    """
+    Generate a graph model based on the provided iterable of graphs.
+    The function creates a graph model named 'Graph Atlas' using the 'graphinate' library.
+    It then combines all the graphs from the input iterable into a single disjoint union graph using NetworkX library.
+    The function defines edges for the combined graph by iterating over all edges in the disjoint union graph and
+    yielding dictionaries with 'source' and 'target' keys representing the edge connections.
+    Finally, the function yields the created graph model containing the combined graph with defined edges.
+
+    Args:
+        iterable: An iterable containing graphs to be combined into a single graph model.
+
+    Yields:
+        GraphModel: A graph model containing the combined graph with defined edges.
+    """
+
     graph_model = graphinate.model('Graph Atlas')
 
     graph_atlas = nx.disjoint_union_all(g for _, g in iterable)

@@ -5,7 +5,17 @@ import networkx as nx
 N: int = 8
 
 
-def get_graph_model(number_of_sides: int = N):
+def polygonal_graph_model(number_of_sides: int = N):
+    """
+    Create a polygonal graph model.
+
+    Args:
+        number_of_sides (int): Number of sides in the polygon. Defaults to N.
+
+    Returns:
+        GraphModel: A graph model representing a polygonal graph.
+    """
+
     # Define GraphModel
     graph_model = graphinate.model(name="Octagonal Graph")
 
@@ -19,7 +29,7 @@ def get_graph_model(number_of_sides: int = N):
     return graph_model
 
 
-model = get_graph_model()
+model = polygonal_graph_model()
 
 if __name__ == '__main__':
     use_materialize = True

@@ -8,6 +8,13 @@ from _client import github_commits, github_files, github_repositories, github_us
 
 
 def repo_graph_model():  # noqa: C901
+    """
+    Create a graph model for GitHub repositories.
+
+    Returns:
+        GraphModel: A graph model representing GitHub repositories with nodes and edges.
+    """
+
     graph_model = graphinate.model(name='GitHub Repository Graph')
 
     @graph_model.edge
