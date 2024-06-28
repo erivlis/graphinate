@@ -93,7 +93,7 @@ To install with server support
 pip install graphinate[server]
 ```
 
-**Graphinate** officially supports Python >= 3.9.
+**Graphinate** officially supports Python >= 3.10.
 
 ### Example
 
