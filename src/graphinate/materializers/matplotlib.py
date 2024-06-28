@@ -8,11 +8,12 @@ def draw(graph: nx.Graph,
          with_node_labels: bool = True,
          with_edge_labels: bool = False):
     """
+    Draws the given networkx graph with optional node and edge labels.
 
-    Args:
-        graph:
-        with_node_labels:
-        with_edge_labels:
+    Parameters:
+        graph (nx.Graph): The input graph to be drawn.
+        with_node_labels (bool): Whether to display node labels. Default is True.
+        with_edge_labels (bool): Whether to display edge labels. Default is False.
 
     Returns:
         None
@@ -54,11 +55,12 @@ def plot(graph: nx.Graph,
          with_node_labels: bool = True,
          with_edge_labels: bool = False):
     """
+    Plots the given networkx graph with optional node and edge labels.
 
     Args:
-        graph:
-        with_node_labels:
-        with_edge_labels:
+        graph (nx.Graph): The input graph to be plotted.
+        with_node_labels (bool): Whether to display node labels. Default is True.
+        with_edge_labels (bool): Whether to display edge labels. Default is False.
 
     Returns:
         None
