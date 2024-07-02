@@ -2,34 +2,37 @@ import graphinate
 import graphinate.modeling
 import networkx as nx
 
-N: int = 8
+
+def polygonal_graph_edges(edges_count: int):
+    for i in range(1, edges_count):
+        yield {'source': i, 'target': i + 1}
+    yield {'source': edges_count, 'target': 1}
 
 
-def polygonal_graph_model(number_of_sides: int = N):
+def polygonal_graph_model(name: str, number_of_sides: int) -> graphinate.GraphModel:
     """
     Create a polygonal graph model.
 
     Args:
-        number_of_sides (int): Number of sides in the polygon. Defaults to N.
+        name (str): The Graph's name.
+        number_of_sides (int): Number of sides in the polygon.
 
     Returns:
         GraphModel: A graph model representing a polygonal graph.
     """
 
     # Define GraphModel
-    graph_model = graphinate.model(name="Octagonal Graph")
+    graph_model = graphinate.model(name)
 
     # Register edges supplier function
     @graph_model.edge()
     def edge():
-        for i in range(number_of_sides - 1):
-            yield {'source': i, 'target': i + 1}
-        yield {'source': number_of_sides - 1, 'target': 0}
+        yield from polygonal_graph_edges(number_of_sides)
 
     return graph_model
 
 
-model = polygonal_graph_model()
+model = polygonal_graph_model("Octagonal Graph", 8)
 
 if __name__ == '__main__':
     use_materialize = True

@@ -347,7 +347,7 @@ class D3Builder(NetworkxBuilder):
 class GraphQLBuilder(NetworkxBuilder):
     """Builds a GraphQL Schema"""
 
-    # region Strawberry Types
+    # region - Strawberry Types
 
     InfNumber = strawberry.scalar(
         converters.InfNumber,
@@ -504,7 +504,7 @@ class GraphQLBuilder(NetworkxBuilder):
         overall_reciprocity = 'overall_reciprocity'
         wiener_index = 'wiener_index'
 
-    # endregion Strawberry Types
+    # endregion - Strawberry Types
 
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
         super().__init__(model, graph_type)
@@ -705,7 +705,7 @@ class GraphQLBuilder(NetworkxBuilder):
         self.add_field_resolver(query_class_dict, 'edges', graph_edges_resolver())
         # endregion
 
-        # region  - Defining GraphQL Query Class dict - fields for GraphQL types implementing 'GraphNode' interface
+        # region - Defining GraphQL Query Class dict - fields for GraphQL types implementing 'GraphNode' interface
         for node_type, graphql_type in self._graphql_types.items():
             field_name = inflection.plural(node_type)
             resolver = graph_nodes_resolver(graphql_type, node_type)
@@ -713,7 +713,7 @@ class GraphQLBuilder(NetworkxBuilder):
 
         # endregion
 
-        #  region  - Defining GraphQL Query Class dict - field measure for 'GraphMeasure' GraphQL type
+        # region - Defining GraphQL Query Class dict - field measure for 'GraphMeasure' GraphQL type
 
         def graph_measure(self, measure: GraphQLBuilder.GraphMeasure) -> GraphQLBuilder.Measure:
 
