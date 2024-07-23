@@ -21,10 +21,10 @@
     <td>Tools</td>
     <td>
       <a href="https://www.jetbrains.com/pycharm/"><img alt="PyCharm" src="https://img.shields.io/badge/PyCharm-FCF84A.svg?logo=PyCharm&logoColor=black&labelColor=21D789&color=FCF84A"></a>
-      <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff" style="max-width:100%;"></a>
-      <a href="https://github.com/astral-sh/uv"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json" alt="uv" style="max-width:100%;"></a>
-      <a href="https://squidfunk.github.io/mkdocs-material/"><img src="https://img.shields.io/badge/Material_for_MkDocs-526CFE?&logo=MaterialForMkDocs&logoColor=white&labelColor=grey"></a>
-      <a href="https://github.com/tox-dev/pipdeptree"><img src="https://img.shields.io/badge/pipdeptree-526CFE.svg?labelColor=gray&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAADFElEQVR4nFxTW2tcVRRe39773E/mliZjwKRmhBaKt4BWRKmGgihCH3xUKNWC/Q/ii76IP8AHpSIiRfqmD5YKCinalhgiCMZLSVtMM0mTdDLTuZyZc9l7yTlp7WXBgXPW+fa31rfWtxU9FLMN79Crr028e+iJsZfb7fJMp23xRlOvbTR3L/y5cuOL3Vbv7/vxuPviecI/eWr6k/mj4+8AkM11y+zs2MKwMJvNgIgYINZX/rlx+tIvf72fZXr4P0EQyOCjjw98P9vwn8+/+z3Bq6sek7AJkNhsOjQcyjvFmHd2upd+PP/zsSxNI5mnPvjw8U9fPFJ9XVkgNuDVayEbcgVEfgikNfFg4JAmh1LyyfGq06QqE9vN6+fEs4fHnjv25vjbAOA4AsL2MVZ1hRcI4QXIH7ilMqQXkiYXRBJRbFNQnTsRlqfmxFvH66ccFyAQMxP3I5cqNZBSxIWcKORMO9g3yeSHzFkGbnVCIkDUZ+beEy+8VJ4XguC6TMPYokwrCAHUJsBxYptoFBYSMi0oLIlcAkuFYhal8Zl5VanZU0zErgfurufMFjEkWZ7iRFY4SlgYfW9bUIJKFQNjiNPYf1QZOZn/hTaStPQKTI4eDCxSjsL4I6BeJzOjgcnT0HqPqwBJCdHZjW/miWjkkG3hzqKIe5FVlM3llGuWqOxTDMBkWlJ/6PB2p0Sb21gXixdvLeTtDGOHLFvQHpkiYyTuNU5kuxJercTdpEK3Bz4yLdFrXVsQ33x1/bModjhvyrKKVXB/YD9gb8PgKAlolAZipmFTOIYcxq21Xz8XS5dbi+e+2zqbA3MjxYninH3PpkyZljwYjZE2FoxBIWm6YVHaW/k66qwtF05curz509OHHzvqBqWp232fE+2AoCjOXNMfhcRcjAxxoijNFNpbG0vL588cNzpLC4I00cnCD1fPBuVqffbA5DMGNjR5MOSBpC+UYxGE5G5PmNXff/vy4rdnTmRJHD1wG+9G42D9qVfeePLk/oONI8qv7+/2fbq11f53ZfnqhStLi6d3b67/cT/+vwAAAP//Xo5dwOtdLi4AAAAASUVORK5CYII="></a>
+      <a href="https://github.com/astral-sh/ruff"><img alt="ruff" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" style="max-width:100%;"></a>
+      <a href="https://github.com/astral-sh/uv"><img alt="uv" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json" style="max-width:100%;"></a>
+      <a href="https://squidfunk.github.io/mkdocs-material/"><img alt="mkdocs-material" src="https://img.shields.io/badge/Material_for_MkDocs-526CFE?&logo=MaterialForMkDocs&logoColor=white&labelColor=grey"></a>
+      <a href="https://github.com/tox-dev/pipdeptree"><img alt="pipdeptree" src="https://img.shields.io/badge/pipdeptree-526CFE.svg?labelColor=gray&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAADFElEQVR4nFxTW2tcVRRe39773E/mliZjwKRmhBaKt4BWRKmGgihCH3xUKNWC/Q/ii76IP8AHpSIiRfqmD5YKCinalhgiCMZLSVtMM0mTdDLTuZyZc9l7yTlp7WXBgXPW+fa31rfWtxU9FLMN79Crr028e+iJsZfb7fJMp23xRlOvbTR3L/y5cuOL3Vbv7/vxuPviecI/eWr6k/mj4+8AkM11y+zs2MKwMJvNgIgYINZX/rlx+tIvf72fZXr4P0EQyOCjjw98P9vwn8+/+z3Bq6sek7AJkNhsOjQcyjvFmHd2upd+PP/zsSxNI5mnPvjw8U9fPFJ9XVkgNuDVayEbcgVEfgikNfFg4JAmh1LyyfGq06QqE9vN6+fEs4fHnjv25vjbAOA4AsL2MVZ1hRcI4QXIH7ilMqQXkiYXRBJRbFNQnTsRlqfmxFvH66ccFyAQMxP3I5cqNZBSxIWcKORMO9g3yeSHzFkGbnVCIkDUZ+beEy+8VJ4XguC6TMPYokwrCAHUJsBxYptoFBYSMi0oLIlcAkuFYhal8Zl5VanZU0zErgfurufMFjEkWZ7iRFY4SlgYfW9bUIJKFQNjiNPYf1QZOZn/hTaStPQKTI4eDCxSjsL4I6BeJzOjgcnT0HqPqwBJCdHZjW/miWjkkG3hzqKIe5FVlM3llGuWqOxTDMBkWlJ/6PB2p0Sb21gXixdvLeTtDGOHLFvQHpkiYyTuNU5kuxJercTdpEK3Bz4yLdFrXVsQ33x1/bModjhvyrKKVXB/YD9gb8PgKAlolAZipmFTOIYcxq21Xz8XS5dbi+e+2zqbA3MjxYninH3PpkyZljwYjZE2FoxBIWm6YVHaW/k66qwtF05curz509OHHzvqBqWp232fE+2AoCjOXNMfhcRcjAxxoijNFNpbG0vL588cNzpLC4I00cnCD1fPBuVqffbA5DMGNjR5MOSBpC+UYxGE5G5PmNXff/vy4rdnTmRJHD1wG+9G42D9qVfeePLk/oONI8qv7+/2fbq11f53ZfnqhStLi6d3b67/cT/+vwAAAP//Xo5dwOtdLi4AAAAASUVORK5CYII="></a>
     </td>
   </tr>
   <tr>
@@ -73,9 +73,9 @@ In addition, there are several modes of output to enable examination of the Grap
 
 ### Links
 
-- Website (including documentation): https://erivlis.github.io/graphinate
-- Source: https://github.com/erivlis/graphinate
-- Package: https://pypi.org/project/graphinate
+- Website (including documentation): <https://erivlis.github.io/graphinate>
+- Source: <https://github.com/erivlis/graphinate>
+- Package: <https://pypi.org/project/graphinate>
 
 ## Quick Start
 
@@ -118,11 +118,17 @@ def edge():
 graphinate.materialize(graph_model)
 ```
 
+
+
+#### `graphinate.model` function
+
 > [!NOTE]
-> ### `graphinate.model` function
 > This function creates `GraphModel` class that is used to declaratively register _Edge_ and/or _Node_ data
 > supplier functions by using the `GraphModel.node()` and `GraphModel.edge()` decorators.
-> ### `graphinate.materialize` function
+
+#### `graphinate.materialize` function
+
+> [!NOTE]
 > This function can be used to easily generate an output from a `GraphModel` instance.
 > By default, it will prompt the user to choose the output format, using a popup GUI dialog box.
 
@@ -130,7 +136,7 @@ graphinate.materialize(graph_model)
 
 ### Commands
 
-```
+```text
 Usage: python -m graphinate [OPTIONS] COMMAND [ARGS]...
 
 Options:
@@ -143,7 +149,7 @@ Commands:
 
 #### Save
 
-```
+```text
 Usage: python -m graphinate save [OPTIONS]
 
 Options:
@@ -156,7 +162,7 @@ Options:
 
 #### Server
 
-```
+```text
 Usage: python -m graphinate server [OPTIONS]
 
 Options:
@@ -252,7 +258,7 @@ python -m mkdocs build
 
 <a href="https://www.jetbrains.com/pycharm/"><img height="60" style="background: linear-gradient(-45deg, #FCF84A, #3DEA62, #21D789);" src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm.png" alt="PyCharm logo."></a>
 
-------
+---------------------
 
 <img alt="Star Chart" src="https://forthebadge.com/images/badges/works-on-my-machine.svg">
 
