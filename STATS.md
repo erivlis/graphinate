@@ -7,6 +7,12 @@
 
 ## Repos
 
-### Graphinate Stars
+### Graphinate
 
 <img alt="Graphinate Star Chart" src="https://starchart.cc/erivlis/graphinate.svg">
+
+https://starchart.cc/erivlis/graphinate.svg
+
+### MappingTools
+
+<img alt="MappingTools Star Chart" src="https://starchart.cc/erivlis/mappingtools.svg">
