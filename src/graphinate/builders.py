@@ -1,5 +1,5 @@
 """
-Build classes that can generate graph data structures from a GraphModel
+Builder classes that generate graph data structures from a GraphModel
 """
 import base64
 import functools
@@ -101,6 +101,18 @@ class GraphType(Enum):
     DiGraph = nx.DiGraph
     MultiDiGraph = nx.MultiDiGraph
     MultiGraph = nx.MultiGraph
+
+    @classmethod
+    def of(cls, graph: nx.Graph):
+        if graph.is_directed() and graph.is_multigraph():
+            return cls.MultiDiGraph
+        elif graph.is_directed():
+            return cls.MultiGraph
+        elif graph.is_multigraph():
+            return cls.MultiDiGraph.MultiGraph
+        else:
+            return cls.Graph
+
 
 
 class Builder(ABC):
