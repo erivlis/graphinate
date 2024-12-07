@@ -12,11 +12,11 @@ import operator
 import pickle
 from abc import ABC
 from collections import Counter
-from collections.abc import Hashable, Mapping
+from collections.abc import Callable, Hashable, Mapping
 from datetime import datetime
 from enum import Enum
 from types import MappingProxyType
-from typing import Any, Callable, Optional, Union
+from typing import Any, Optional, Union
 
 import inflect
 import networkx as nx
