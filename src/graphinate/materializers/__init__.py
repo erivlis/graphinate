@@ -1,9 +1,9 @@
 import functools
 import json
 import os
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from enum import Enum
-from typing import Callable, Optional
+from typing import Optional
 
 from .. import builders, modeling, server
 from ..tools.gui import radiobutton_chooser

@@ -1,15 +1,23 @@
-import graphinate
 import pytest
+
+import graphinate
+import graphinate.typing
 
 
 def test_graph_model(map_graph_model):
     # arrange
-    country_count, city_count, graph_model = map_graph_model
+    expected_country_count, expected_city_count, graph_model = map_graph_model
+
+
+    # act
+    actual_model_count = len(graph_model._node_models)
+    actual_country_count = len(list(graph_model._node_models[(graphinate.typing.UniverseNode, 'country')].generator()))
+    actual_city_count = len(list(graph_model._node_models[('country', 'city')].generator()))
 
     # assert
-    assert len(graph_model._node_models) == 3
-    assert len(list(graph_model._node_models[(graphinate.UNIVERSE_NODE, 'country')].generator())) == country_count  # len(country_ids)
-    assert len(list(graph_model._node_models[('country', 'city')].generator())) == city_count  # len(city_ids)
+    assert actual_model_count == 3
+    assert actual_country_count == expected_country_count  # len(country_ids)
+    assert actual_city_count == expected_city_count  # len(city_ids)
 
 
 def test_graph_model__add__():

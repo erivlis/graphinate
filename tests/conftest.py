@@ -8,16 +8,17 @@ from _ast import AST
 from collections.abc import Iterable
 
 import faker
-import graphinate
 import pytest
 
+import graphinate
 
-@pytest.fixture()
+
+@pytest.fixture
 def country_count():
     return random.randint(1, 10)
 
 
-@pytest.fixture()
+@pytest.fixture
 def city_count():
     return random.randint(20, 40)
 
@@ -42,7 +43,7 @@ def _ast_edge(parsed_ast: AST):
             yield from _ast_edge(child_ast)
 
 
-@pytest.fixture()
+@pytest.fixture
 def ast_graph_model():
     graph_model = graphinate.model(name='AST Graph')
 
@@ -84,7 +85,7 @@ def ast_graph_model():
     return graph_model
 
 
-@pytest.fixture()
+@pytest.fixture
 def map_graph_model(country_count, city_count):
     country_ids = {str(c): None for c in range(1, country_count + 1)}
     city_ids = {str(c): random.choice(list(country_ids.keys())) for c in range(1, city_count + 1)}
@@ -133,7 +134,7 @@ def map_graph_model(country_count, city_count):
     return country_count, city_count, graph_model
 
 
-@pytest.fixture()
+@pytest.fixture
 def octagonal_graph_model():
     graph_model = graphinate.model(name="Octagonal Graph")
     number_of_sides = 8
@@ -148,7 +149,7 @@ def octagonal_graph_model():
     return graph_model
 
 
-@pytest.fixture()
+@pytest.fixture
 def graphql_query():
     return """
     query Graph {

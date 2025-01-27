@@ -1,4 +1,5 @@
 import pytest
+
 from graphinate.color import color_hex
 
 colors = [

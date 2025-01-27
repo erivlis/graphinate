@@ -7,18 +7,29 @@
     Extractor (Extractor): Source of data for an Element
 """
 
-from collections.abc import Iterable
-from typing import Any, Callable, NamedTuple, Protocol, TypeVar, Union
+from collections.abc import Callable, Iterable
+from typing import Any, NamedTuple, NewType, Protocol, TypeVar, Union
 
-Node = Union[type[NamedTuple], tuple[str, Any]]
+IdentifierStr = NewType('IdentifierStr', str)
+IdentifierStr.__doc__ = "A string that is a valid Python identifier (i.e., `isidentifier()` is True)."
 
-Edge = Union[type[NamedTuple], tuple[str, str, Any]]
+NodeTypeAbsoluteId = NewType("NodeTypeAbsoluteId", tuple[str, str])
+NodeTypeAbsoluteId.__doc__ = "A unique identifier for a node type."
 
-Element = Union[Node, Edge]
+UniverseNode = NewType('UniverseNode', None)
+UniverseNode.__doc__ = "The UniverseNode Type. All Node Types are the implicit children of the Universe Node Type."
 
-Extractor = Union[str, Callable[[Any], str]]
+Node = Union[type[NamedTuple], tuple[str, Any]]  # noqa: UP007
+Node.__doc__ = "A node in a graph."
 
-NodeTypeAbsoluteId = TypeVar("NodeTypeAbsoluteId", bound=tuple[str, str])
+Edge = Union[type[NamedTuple], tuple[str, str, Any]]  # noqa: UP007
+Edge.__doc__ = "An edge in a graph."
+
+Element = Union[Node, Edge]  # noqa: UP007
+Element.__doc__ = "An element in a graph."
+
+Extractor = Union[str, Callable[[Any], str]]  # noqa: UP007
+Extractor.__doc__ = "A source of data for an element."
 
 T = TypeVar("T")
 

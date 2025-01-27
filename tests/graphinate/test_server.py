@@ -1,7 +1,8 @@
-import graphinate.server.starlette.views
 import pytest
-from graphinate.server.web import get_static_path
 from starlette.responses import FileResponse
+
+import graphinate.server.starlette.views
+from graphinate.server.web import get_static_path
 
 
 def test_get_static_path():
@@ -10,7 +11,7 @@ def test_get_static_path():
     assert f'static/{path}' in actual_path.as_posix()
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_favicon():
     actual = await graphinate.server.starlette.views.favicon(None)
 

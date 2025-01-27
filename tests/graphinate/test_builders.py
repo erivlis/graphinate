@@ -1,6 +1,7 @@
-import graphinate.builders
 import networkx as nx
 import pytest
+
+import graphinate.builders
 
 
 @pytest.mark.parametrize('case', [0, None, "", False])
@@ -174,8 +175,8 @@ def test_d3_builder__map_graph_model__both_specific_ids(map_graph_model):
 @pytest.mark.parametrize('execution_number', range(5))
 def test_graphql_builder__map_graph_model(execution_number, map_graph_model, graphql_query):
     # arrange
-    country_count, city_count, graph_model = map_graph_model
-    person_count = city_count
+    expected_country_count, expected_city_count, graph_model = map_graph_model
+    expected_person_count = expected_city_count
 
     # act
     builder = graphinate.builders.GraphQLBuilder(graph_model)
@@ -192,9 +193,9 @@ def test_graphql_builder__map_graph_model(execution_number, map_graph_model, gra
     assert actual_graph['edges']
     assert actual_graph['graph']['name'] == 'Map'
     node_types_counts = {c['name']: c['value'] for c in actual_graph['graph']['nodeTypeCounts']}
-    assert node_types_counts['country'] == country_count
-    assert node_types_counts['city'] == city_count
-    assert len(actual_graph['nodes']) == country_count + city_count + person_count
+    assert node_types_counts['country'] == expected_country_count
+    assert node_types_counts['city'] == expected_city_count
+    assert len(actual_graph['nodes']) == expected_country_count + expected_city_count + expected_person_count
 
 
 graphql_operations_cases = [
@@ -255,39 +256,41 @@ graphql_operations_cases = [
       nodes(nodeId: "H4sIAFs7E2UC/2tgmcrKAAHeDK1T9ADQP1FHEAAAAA==") {type label}
       edges(edgeId: "H4sIAFs7E2UC/2tgmZrIAAE9Oh4mxZ6ObsXmrkahzvpGJem5yUXejo4eqS7ehiGWji6BAYZuHq6OIGBrOwW38iywcmfDcH9jfbjytil6AHhudC5sAAAA") {type label}
     }
-    """, {
-        "nodes": [
-            {
-                "type": "node",
-                "label": "0"
-            }
-        ],
-        "edges": [
-            {
-                "type": "edge",
-                "label": "{'source': 0, 'target': 1}"
-            }
-        ]
-    }),
+    """, # noqa: E501
+     {
+         "nodes": [
+             {
+                 "type": "node",
+                 "label": "0"
+             }
+         ],
+         "edges": [
+             {
+                 "type": "edge",
+                 "label": "{'source': 0, 'target': 1}"
+             }
+         ]
+     }),
     ("""
     query Graph {
       nodes(nodeId: "H4sIAFs7E2UC/2tgmcrKAAHeDK1T9ADQP1FHEAAAAA==") {type label}
       edges(edgeId: "H4sIAFs7E2UC/2tgmZrIAAE9Oh4mxZ6ObsXmrkahzvpGJem5yUXejo4eqS7ehiGWji6BAYZuHq6OIGBrOwW38iywcmfDcH9jfbjytil6AHhudC5sAAAA") {type label}
     }
-    """, {
-        "nodes": [
-            {
-                "type": "node",
-                "label": "0"
-            }
-        ],
-        "edges": [
-            {
-                "type": "edge",
-                "label": "{'source': 0, 'target': 1}"
-            }
-        ]
-    }),
+    """,  # noqa: E501
+     {
+         "nodes": [
+             {
+                 "type": "node",
+                 "label": "0"
+             }
+         ],
+         "edges": [
+             {
+                 "type": "edge",
+                 "label": "{'source': 0, 'target': 1}"
+             }
+         ]
+     }),
     ("mutation {refresh}", {'refresh': True})
 ]
 

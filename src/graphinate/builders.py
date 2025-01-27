@@ -25,14 +25,14 @@ from loguru import logger
 from strawberry.extensions import ParserCache, QueryDepthLimiter, ValidationCache
 
 from . import color
-from .modeling import UNIVERSE_NODE, GraphModel
+from .modeling import GraphModel
 from .tools import converters, mutators, utcnow
-from .typing import NodeTypeAbsoluteId
+from .typing import NodeTypeAbsoluteId, UniverseNode
 
 DEFAULT_NODE_DELIMITER = ' ∋ '
 DEFAULT_EDGE_DELIMITER = ' ↔ '
 
-GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema]
+GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema]  # noqa: UP007
 
 
 def label_converter(value, delimiter: str):
@@ -114,7 +114,6 @@ class GraphType(Enum):
             return cls.Graph
 
 
-
 class Builder(ABC):
     """Builder abstract base class"""
 
@@ -169,7 +168,7 @@ class NetworkxBuilder(Builder):
 
         return self._graph.edges(**params)
 
-    def _populate_node_type(self, node_type: Union[Hashable, UNIVERSE_NODE] = UNIVERSE_NODE, **kwargs):
+    def _populate_node_type(self, node_type: Union[Hashable, UniverseNode] = UniverseNode, **kwargs):
         for parent_node_type, child_node_types in self.model.node_children_types(node_type).items():
             for child_node_type in child_node_types:
                 node_type_absolute_id = (parent_node_type, child_node_type)
@@ -177,8 +176,8 @@ class NetworkxBuilder(Builder):
 
     @staticmethod
     def _parent_node_id(node_type_absolute_id: NodeTypeAbsoluteId, **kwargs):
-        if node_type_absolute_id[0] is UNIVERSE_NODE:
-            return UNIVERSE_NODE
+        if node_type_absolute_id[0] is UniverseNode:
+            return UniverseNode
 
         ids = []
         for k, v in kwargs.items():
@@ -193,7 +192,7 @@ class NetworkxBuilder(Builder):
         unique = node_model.uniqueness
         for node in node_model.generator(**kwargs):
             parent_node_id = self._parent_node_id(node_type_absolute_id, **kwargs)
-            node_lineage = (*parent_node_id, node.key) if parent_node_id is not UNIVERSE_NODE else (node.key,)
+            node_lineage = (*parent_node_id, node.key) if parent_node_id is not UniverseNode else (node.key,)
             node_id = (node.key,) if unique else node_lineage
 
             label = node.key
@@ -221,7 +220,7 @@ class NetworkxBuilder(Builder):
 
                 self._graph.graph['node_types'].update({node_type: 1})
 
-            if node_model.parent_type is not UNIVERSE_NODE:
+            if node_model.parent_type is not UniverseNode:
                 logger.debug("Adding edge from: '{}' to '{}'", parent_node_id, node_id)
                 self._graph.add_edge(parent_node_id,
                                      node_id,
@@ -820,4 +819,4 @@ def build(builder_cls: type[Builder],
     return materialized_graph
 
 
-__all__ = ('GraphType', 'NetworkxBuilder', 'D3Builder', 'GraphQLBuilder', 'build')
+__all__ = ('D3Builder', 'GraphQLBuilder', 'GraphType', 'NetworkxBuilder', 'build')

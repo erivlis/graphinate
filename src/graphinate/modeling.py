@@ -1,12 +1,10 @@
 import inspect
 from collections import defaultdict, namedtuple
-from collections.abc import Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
-from typing import Any, Callable, Optional, TypeVar, Union
+from typing import Any, Optional, Union
 
-from .typing import Edge, Edges, Element, Extractor, Items, Node, Nodes, NodeTypeAbsoluteId
-
-UNIVERSE_NODE = TypeVar('UNIVERSE_NODE', bound=None)
+from .typing import Edge, Edges, Element, Extractor, Items, Node, Nodes, NodeTypeAbsoluteId, UniverseNode
 
 
 class GraphModelError(Exception):
@@ -91,11 +89,11 @@ class NodeModel:
     """
 
     type: str
-    parent_type: Optional[str] = UNIVERSE_NODE
+    parent_type: Optional[str] = UniverseNode
     uniqueness: bool = False
-    parameters: Optional[set[str]] = None
-    generator: Optional[Nodes] = None
-    label: Callable[[Any], Optional[str]] = None
+    parameters: set[str] | None = None
+    generator: Nodes | None = None
+    label: Callable[[Any], str | None] = None
 
     @property
     def absolute_id(self) -> NodeTypeAbsoluteId:
@@ -151,7 +149,7 @@ class GraphModel:
         """
         return {v.type for v in self._node_models.values()}
 
-    def node_children_types(self, _type: str = UNIVERSE_NODE) -> dict[str, list[str]]:
+    def node_children_types(self, _type: str = UniverseNode) -> dict[str, list[str]]:
         """Children Node Types for given input Node Type
 
         Parameters:
@@ -161,6 +159,11 @@ class GraphModel:
             List of children Node Types.
         """
         return {k: v for k, v in self._node_children.items() if k == _type}
+
+    @staticmethod
+    def _validate_type(_type: str):
+        if not callable(_type) and not _type.isidentifier():
+            raise ValueError(f"Invalid Type: {_type}. Must be a valid Python identifier.")
 
     def _validate_node_parameters(self, parameters: list[str]):
         node_types = self.node_types
@@ -174,13 +177,13 @@ class GraphModel:
 
     def node(self,
              _type: Optional[Extractor] = None,
-             parent_type: Optional[str] = UNIVERSE_NODE,
+             parent_type: Optional[str] = UniverseNode,
              uniqueness: bool = False,
              key: Optional[Extractor] = None,
              value: Optional[Extractor] = None,
              label: Optional[Extractor] = None) -> Callable[[Items], None]:
-        """Decorator to Register a Generator of node payloads as a source to create Graph Nodes. It creates a
-        NodeModel object.
+        """Decorator to Register a Generator of node payloads as a source for Graph Nodes.
+        It creates a NodeModel object.
 
         Parameters:
             _type: Optional source for the Node Type. Defaults to use Generator function
@@ -200,6 +203,8 @@ class GraphModel:
 
         def register_node(f: Items):
             node_type = _type or f.__name__
+            self._validate_type(node_type)
+
             model_type = f.__name__ if callable(node_type) else node_type
 
             def node_generator(**kwargs) -> Iterable[Node]:
@@ -227,12 +232,12 @@ class GraphModel:
              value: Optional[Extractor] = None,
              weight: Union[float, Callable[[Any], float]] = 1.0,
              ) -> Callable[[Items], None]:
-        """Decorator to Register a generator of edge payloads as a source to create
-           Graph Edges. It creates an Edge generator function.
+        """Decorator to Register a generator of edge payloads as a source of Graph Edges.
+         It creates an Edge generator function.
 
         Parameters:
-            _type: Optional source for the Node Type. Defaults to use Generator function
-                   name as the Node Type.
+            _type: Optional source for the Edge Type. Defaults to use Generator function
+                   name as the Edge Type.
             source: Source for edge source Node ID.
             target: Source for edge target Node ID.
             label: Source for edge label.
@@ -245,6 +250,7 @@ class GraphModel:
 
         def register_edge(f: Items):
             edge_type = _type or f.__name__
+            self._validate_type(edge_type)
 
             getters = {
                 'source': source,
@@ -263,7 +269,7 @@ class GraphModel:
         return register_edge
 
     def rectify(self, _type: Optional[Extractor] = None,
-                parent_type: Optional[str] = UNIVERSE_NODE,
+                parent_type: Optional[str] = UniverseNode,
                 key: Optional[Extractor] = None,
                 value: Optional[Extractor] = None,
                 label: Optional[Extractor] = None):
@@ -306,4 +312,4 @@ def model(name: str):
     return GraphModel(name=name)
 
 
-__all__ = ('GraphModel', 'UNIVERSE_NODE', 'model')
+__all__ = ('GraphModel', 'model')

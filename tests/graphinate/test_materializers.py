@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 
 import graphinate
 
-MODAL_RADIOBUTTON_CHOOSER = 'graphinate.materializers.modal_radiobutton_chooser'
+RADIOBUTTON_CHOOSER = 'graphinate.materializers.radiobutton_chooser'
 
 
 def test_materialize(map_graph_model, capsys):
@@ -24,8 +24,8 @@ def test_materialize_d3graph(map_graph_model, monkeypatch, capsys):
 
     expected_snippet = '"graph": {\n    "name": "Map",'
 
-    with patch(MODAL_RADIOBUTTON_CHOOSER) as modal_radiobutton_chooser:
-        modal_radiobutton_chooser.return_value = ('Test', graphinate.materializers.Materializers.D3Graph.value)
+    with patch(RADIOBUTTON_CHOOSER) as radiobutton_chooser:
+        radiobutton_chooser.return_value = ('Test', graphinate.materializers.Materializers.D3Graph.value)
 
         *_, graph_model = map_graph_model
         graphinate.materialize(graph_model)
@@ -40,10 +40,10 @@ def valid_materialization(graph_model) -> bool:
 
 
 def test_materialize_graphql(map_graph_model, monkeypatch):
-    with patch(MODAL_RADIOBUTTON_CHOOSER) as modal_radiobutton_chooser:
+    with patch(RADIOBUTTON_CHOOSER) as radiobutton_chooser:
         import uvicorn
         monkeypatch.setattr(uvicorn, "run", lambda *args, **kwargs: None)
-        modal_radiobutton_chooser.return_value = ('Test', graphinate.materializers.Materializers.GraphQL.value)
+        radiobutton_chooser.return_value = ('Test', graphinate.materializers.Materializers.GraphQL.value)
 
         *_, graph_model = map_graph_model
 
@@ -62,17 +62,17 @@ networkx_materializers = [
 def test_materialize_networkx(map_graph_model, materializer, monkeypatch):
     with monkeypatch.context():
         monkeypatch.setattr(plt, 'show', lambda: None)
-        with patch('graphinate.materializers.modal_radiobutton_chooser') as modal_radiobutton_chooser:
-            modal_radiobutton_chooser.return_value = ('Test', materializer)
+        with patch('graphinate.materializers.radiobutton_chooser') as radiobutton_chooser:
+            radiobutton_chooser.return_value = ('Test', materializer)
             *_, graph_model = map_graph_model
             assert valid_materialization(graph_model)
 
 
 def test_materialize_none(map_graph_model, monkeypatch):
-    with patch(MODAL_RADIOBUTTON_CHOOSER) as modal_radiobutton_chooser:
+    with patch(RADIOBUTTON_CHOOSER) as radiobutton_chooser:
         import uvicorn
         monkeypatch.setattr(uvicorn, "run", lambda *args, **kwargs: None)
-        modal_radiobutton_chooser.return_value = ('Test', (None, None))
+        radiobutton_chooser.return_value = ('Test', (None, None))
 
         *_, graph_model = map_graph_model
         with pytest.raises(ValueError, match="Missing: builder, actualizer"):

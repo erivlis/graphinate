@@ -7,8 +7,8 @@ The main function 'dictify' acts as a dispatcher to call the appropriate handler
 
 import dataclasses
 import inspect
-from collections.abc import Iterable, Mapping
-from typing import Any, Callable, Optional
+from collections.abc import Callable, Iterable, Mapping
+from typing import Any, Optional
 
 
 def is_strict_iterable(obj: Any) -> bool:

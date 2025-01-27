@@ -36,7 +36,7 @@ def color_hex(color: Union[str, Sequence[Union[float, int]]]) -> Union[str, Sequ
     Returns:
          Color HEX code
     """
-    if isinstance(color, (tuple, list)):
+    if isinstance(color, (tuple, list)):  # noqa: UP038
         rgb = color[:3]
 
         if all(isinstance(c, float) and 0 <= c <= 1 for c in rgb):

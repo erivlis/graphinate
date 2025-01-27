@@ -1,14 +1,15 @@
 import sys
 
-import graphinate
 import pytest
 from click.testing import CliRunner
+
+import graphinate
 from graphinate.cli import ImportFromStringError, cli, import_from_string
 
 EXAMPLES_MATH = 'examples/math'
 
 
-@pytest.fixture()
+@pytest.fixture
 def runner():
     return CliRunner()
 
