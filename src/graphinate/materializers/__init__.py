@@ -6,7 +6,7 @@ from enum import Enum
 from typing import Callable, Optional
 
 from .. import builders, modeling, server
-from ..tools.gui import modal_radiobutton_chooser
+from ..tools.gui import radiobutton_chooser
 from .matplotlib import plot
 
 ENABLE_GUI = bool(os.getenv('GRAPHINATE_ENABLE_GUI', True))
@@ -43,7 +43,7 @@ def materialize(model: modeling.GraphModel,
         default_node_attributes:
         builder: Builder instance
         actualizer: function that will consume the resulting built graph and
-                    actualises it (e.g., display, serves, print etc.)
+                    actualizes it (e.g., display, serves, print etc.)
         **kwargs:
 
     Returns:
@@ -51,9 +51,9 @@ def materialize(model: modeling.GraphModel,
     """
     title = title or model.name
     if ENABLE_GUI and builder is None and actualizer is None:
-        result = modal_radiobutton_chooser(title,
-                                           options={m.name: m.value for m in Materializers},
-                                           default=(None, None))
+        result = radiobutton_chooser(title,
+                                     options={m.name: m.value for m in Materializers},
+                                     default=(None, None))
         builder, actualizer = result[1]
 
     if builder is None and actualizer is None:

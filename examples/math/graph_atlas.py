@@ -1,8 +1,8 @@
 import itertools
 
 import graphinate
-import graphinate.tools.gui
 import networkx as nx
+from graphinate.tools.gui import listbox_chooser
 
 
 def cylinder_edges(circumference: int, length: int):
@@ -820,7 +820,9 @@ def models(iterable):
 model = next(models(atlas().items()))
 
 if __name__ == '__main__':
-    choices = graphinate.tools.gui.modal_listbox_chooser('Choose Graph', atlas())
+    # choices = graphinate.tools.gui.modal_listbox_chooser('Choose Graph', atlas())
+
+    choices = listbox_chooser('Choose Graph', atlas())
 
     for model in models(choices):
         graphinate.materialize(model)

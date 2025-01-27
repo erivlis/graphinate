@@ -17,7 +17,7 @@ def _modal_window(title: str) -> tk.Tk:  # pragma: no cover
     return win
 
 
-def modal_radiobutton_chooser(window_title: str, options: dict, default=None):  # pragma: no cover
+def radiobutton_chooser(window_title: str, options: dict, default=None):  # pragma: no cover
     win = _modal_window(window_title)
 
     # let us create a Tkinter string variable
@@ -67,7 +67,7 @@ def modal_radiobutton_chooser(window_title: str, options: dict, default=None):  
     return choice, options.get(choice, default)
 
 
-def modal_listbox_chooser(window_title: str, options: dict, default=None):  # pragma: no cover
+def listbox_chooser(window_title: str, options: dict, default=None):  # pragma: no cover
     win = _modal_window(window_title)
 
     choices = list(options.keys())
