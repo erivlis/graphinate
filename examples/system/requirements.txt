@@ -1,2 +1,2 @@
 graphinate
-psutil>=5.9.8
+psutil
