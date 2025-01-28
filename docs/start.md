@@ -1,7 +1,8 @@
 # Quick Start
 
 **Graphinate** is designed to be used as a library first and foremost.
-In addition, it has several interfaces for ease of use: CLI and a GraphQL API (using [**_Strawberry GraphQL_**](https://strawberry.rocks/)).
+In addition, it has several interfaces for ease of use: CLI and a GraphQL API (using [**_Strawberry GraphQL_
+**](https://strawberry.rocks/)).
 
 ## Install
 
@@ -27,7 +28,7 @@ import graphinate
 N: int = 8
 
 # Define a GraphModel
-graph_model = graphinate.model(name="Octagonal Graph")
+graph_model: graphinate.GraphModel = graphinate.model(name="Octagonal Graph")
 
 
 # Register in the Graph Model the edges' supplier function
@@ -38,6 +39,9 @@ def edge():
     yield {'source': N, 'target': 0}
 
 
+# Choose builder and handler
+builder, handler = graphinate.materializers.Materializers.NetworkX_with_edge_labels.value
+
 # Materialize the GraphModel
-graphinate.materialize(graph_model)
+graphinate.materialize(graph_model, builder=builder, builder_output_handler=handler)
 ```
