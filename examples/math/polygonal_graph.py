@@ -1,5 +1,7 @@
-import graphinate
 import networkx as nx
+
+import graphinate
+
 # import graphinate.modeling
 from graphinate import GraphModel
 
