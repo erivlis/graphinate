@@ -1,6 +1,6 @@
 import platform
 import tkinter as tk
-from tkinter import ttk as ttk
+from tkinter import ttk
 
 
 def _modal_window(title: str) -> tk.Tk:  # pragma: no cover

@@ -1,15 +1,11 @@
 import functools
 import json
-import os
 from collections.abc import Callable, Mapping
 from enum import Enum
 from typing import Optional
 
 from .. import builders, modeling, server
-from ..tools.gui import radiobutton_chooser
 from .matplotlib import plot
-
-ENABLE_GUI = bool(os.getenv('GRAPHINATE_ENABLE_GUI', True))
 
 
 class Materializers(Enum):
@@ -28,35 +24,29 @@ class Materializers(Enum):
 
 
 def materialize(model: modeling.GraphModel,
-                title: Optional[str] = None,
                 graph_type: builders.GraphType = builders.GraphType.Graph,
                 default_node_attributes: Optional[Mapping] = None,
                 builder: Optional[type[builders.Builder]] = None,
-                actualizer: Optional[Callable] = None,
+                builder_output_handler: Optional[Callable] = None,
                 **kwargs):
     """
+    Materialize a GraphModel using a Builder and an Actualizer
 
     Args:
-        model: GraphModel
-        title: the GraphModel name
-        graph_type: GraphType
-        default_node_attributes:
-        builder: Builder instance
-        actualizer: function that will consume the resulting built graph and
-                    actualizes it (e.g., display, serves, print etc.)
+        model: GraphModel - the model to be materialized
+        graph_type: GraphType - the type of graph to be built.
+                                Default is Graph.
+        default_node_attributes: Mapping - A Mapping containing attributes that are added to all nodes.
+        builder: Builder - the builder to be used to build the graph.
+        builder_output_handler: function that will consume the resulting built graph and
+                    outputs it (e.g., display, serve, print, etc.).
         **kwargs:
+
 
     Returns:
         None
     """
-    title = title or model.name
-    if ENABLE_GUI and builder is None and actualizer is None:
-        result = radiobutton_chooser(title,
-                                     options={m.name: m.value for m in Materializers},
-                                     default=(None, None))
-        builder, actualizer = result[1]
-
-    if builder is None and actualizer is None:
+    if builder is None and builder_output_handler is None:
         raise ValueError("Missing: builder, actualizer")
 
     if builder:
@@ -66,8 +56,8 @@ def materialize(model: modeling.GraphModel,
                                default_node_attributes=default_node_attributes,
                                **kwargs)
 
-        if actualizer and callable(actualizer):
-            actualizer(graph)
+        if builder_output_handler and callable(builder_output_handler):
+            builder_output_handler(graph)
         else:
             print(graph)
 

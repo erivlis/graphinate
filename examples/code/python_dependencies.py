@@ -1,8 +1,9 @@
-import graphinate
 from pipdeptree._cli import get_options
 from pipdeptree._discovery import get_installed_distributions
 from pipdeptree._models import PackageDAG
 from pipdeptree._non_host import handle_non_host_target
+
+import graphinate
 
 
 def dependency_graph_model():

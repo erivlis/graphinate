@@ -1,53 +1,58 @@
 import functools
-from unittest.mock import patch
 
 import pytest
 from matplotlib import pyplot as plt
 
 import graphinate
 
-RADIOBUTTON_CHOOSER = 'graphinate.materializers.radiobutton_chooser'
-
 
 def test_materialize(map_graph_model, capsys):
+    # Arrange
     expected_snippet = '"graph": {\n    "name": "Map",'
     *_, graph_model = map_graph_model
-    builder, actualizer = graphinate.materializers.Materializers.D3Graph.value
-    graphinate.materialize(graph_model, builder=builder, actualizer=actualizer)
+    builder, handler = graphinate.materializers.Materializers.D3Graph.value
+
+    # Act
+    graphinate.materialize(graph_model, builder=builder, builder_output_handler=handler)
     captured = capsys.readouterr()
+
+    # Assert
     assert expected_snippet in captured.out
     assert captured.err == ""
 
 
 def test_materialize_d3graph(map_graph_model, monkeypatch, capsys):
+    # Arrange
     monkeypatch.setattr(plt, 'show', lambda: None)
+    *_, graph_model = map_graph_model
+    builder, handler = graphinate.materializers.Materializers.D3Graph.value
 
     expected_snippet = '"graph": {\n    "name": "Map",'
 
-    with patch(RADIOBUTTON_CHOOSER) as radiobutton_chooser:
-        radiobutton_chooser.return_value = ('Test', graphinate.materializers.Materializers.D3Graph.value)
+    # Act
+    graphinate.materialize(graph_model, builder=builder, builder_output_handler=handler)
+    captured = capsys.readouterr()
 
-        *_, graph_model = map_graph_model
-        graphinate.materialize(graph_model)
-        captured = capsys.readouterr()
-        assert expected_snippet in captured.out
-        assert captured.err == ""
+    # Assert
+    assert expected_snippet in captured.out
+    assert captured.err
 
 
-def valid_materialization(graph_model) -> bool:
-    graphinate.materialize(graph_model)
+def valid_materialization(*args, **kwargs) -> bool:
+    graphinate.materialize(*args, **kwargs)
     return True
 
 
 def test_materialize_graphql(map_graph_model, monkeypatch):
-    with patch(RADIOBUTTON_CHOOSER) as radiobutton_chooser:
+    with monkeypatch.context():
+        # Arrange
         import uvicorn
         monkeypatch.setattr(uvicorn, "run", lambda *args, **kwargs: None)
-        radiobutton_chooser.return_value = ('Test', graphinate.materializers.Materializers.GraphQL.value)
-
         *_, graph_model = map_graph_model
+        builder, handler = graphinate.materializers.Materializers.GraphQL.value
 
-        assert valid_materialization(graph_model)
+        # Act & Assert
+        assert valid_materialization(graph_model, builder=builder, builder_output_handler=handler)
 
 
 networkx_materializers = [
@@ -62,18 +67,21 @@ networkx_materializers = [
 def test_materialize_networkx(map_graph_model, materializer, monkeypatch):
     with monkeypatch.context():
         monkeypatch.setattr(plt, 'show', lambda: None)
-        with patch('graphinate.materializers.radiobutton_chooser') as radiobutton_chooser:
-            radiobutton_chooser.return_value = ('Test', materializer)
-            *_, graph_model = map_graph_model
-            assert valid_materialization(graph_model)
+
+        # Arrange
+        *_, graph_model = map_graph_model
+        builder, handler = materializer
+
+        # Act & Assert
+        assert valid_materialization(graph_model, builder=builder, builder_output_handler=handler)
 
 
 def test_materialize_none(map_graph_model, monkeypatch):
-    with patch(RADIOBUTTON_CHOOSER) as radiobutton_chooser:
-        import uvicorn
-        monkeypatch.setattr(uvicorn, "run", lambda *args, **kwargs: None)
-        radiobutton_chooser.return_value = ('Test', (None, None))
+    # Arrange
+    import uvicorn
+    monkeypatch.setattr(uvicorn, "run", lambda *args, **kwargs: None)
+    *_, graph_model = map_graph_model
 
-        *_, graph_model = map_graph_model
-        with pytest.raises(ValueError, match="Missing: builder, actualizer"):
-            graphinate.materialize(graph_model)
+    # Act & Assert
+    with pytest.raises(ValueError, match="Missing: builder, builder_output_handler"):
+        graphinate.materialize(graph_model, builder=None, builder_output_handler=None)

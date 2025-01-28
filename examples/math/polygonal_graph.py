@@ -1,6 +1,7 @@
 import graphinate
-import graphinate.modeling
 import networkx as nx
+# import graphinate.modeling
+from graphinate import GraphModel
 
 
 def polygonal_graph_edges(edges_count: int):
@@ -22,7 +23,7 @@ def polygonal_graph_model(name: str, number_of_sides: int) -> graphinate.GraphMo
     """
 
     # Define GraphModel
-    graph_model = graphinate.model(name)
+    graph_model: GraphModel = graphinate.model(name)
 
     # Register edges supplier function
     @graph_model.edge()
@@ -42,7 +43,7 @@ if __name__ == '__main__':
         graphinate.materialize(
             model,
             builder=graphinate.builders.GraphQLBuilder,
-            actualizer=graphinate.graphql
+            builder_output_handler=graphinate.graphql
         )
 
     else:

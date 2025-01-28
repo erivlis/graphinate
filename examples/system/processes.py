@@ -1,9 +1,10 @@
 import operator
 from collections.abc import Iterable
 
-import graphinate
 import networkx as nx
 import psutil
+
+import graphinate
 
 
 def processes_graph_model():

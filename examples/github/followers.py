@@ -6,8 +6,9 @@ The function yields edges between users in the graph.
 
 from typing import Optional
 
-import graphinate
 from _client import github_user  # see _client.py
+
+import graphinate
 
 DEPTH = 0
 

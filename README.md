@@ -13,7 +13,7 @@
       <img alt="Libraries.io SourceRank" src="https://img.shields.io/librariesio/sourcerank/pypi/Graphinate.svg?logo=Libraries.io&label=SourceRank">
     </td>
   </tr>
-  <tr>
+  <tr style="vertical-align: middle;">
     <td>Code</td>
     <td>
       <img alt="GitHub" src="https://img.shields.io/github/license/erivlis/graphinate">
@@ -22,7 +22,7 @@
       <a href="https://github.com/erivlis/graphinate/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/erivlis/graphinate.svg?&logo=git"></a>
     </td>
   </tr>
-  <tr>
+  <tr style="vertical-align: middle;">
     <td>Tools</td>
     <td>
       <a href="https://www.jetbrains.com/pycharm/"><img alt="PyCharm" src="https://img.shields.io/badge/PyCharm-FCF84A.svg?logo=PyCharm&logoColor=black&labelColor=21D789&color=FCF84A"></a>
@@ -33,7 +33,7 @@
       <a href="https://hatch.pypa.io"><img alt="Hatch project" class="off-glb" loading="lazy" src="https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg"></a>
     </td>
   </tr>
-  <tr>
+  <tr style="vertical-align: middle;">
     <td>CI/CD</td>
     <td>
       <a href="https://github.com/erivlis/graphinate/actions/workflows/test.yml"><img alt="Tests" src="https://github.com/erivlis/graphinate/actions/workflows/test.yml/badge.svg?branch=master"></a>
@@ -42,7 +42,7 @@
       <a href="https://github.com/erivlis/graphinate/actions/workflows/publish-docs.yaml"><img alt="Publish Docs" src="https://github.com/erivlis/graphinate/actions/workflows/publish-docs.yaml/badge.svg"></a>
     </td>
   </tr>
-  <tr>
+  <tr style="vertical-align: middle;">
     <td>Scans</td>
     <td>
       <a href="https://codecov.io/gh/erivlis/graphinate"><img alt="Coverage" src="https://codecov.io/gh/erivlis/graphinate/graph/badge.svg?token=POODT8M9NV"/></a>
@@ -68,14 +68,14 @@
 
 ### What is Graphinate?
 
-**Graphinate** is a python library that aims to simplify the generation of Graph Data Structures from Data Sources.
+**Graphinate** is a python library that can be used to generate Graph Data Structures from Data Sources.
 
-It can help create an efficient retrieval pipeline from a given data source, while also enabling the developer to easily
-map data payloads and hierarchies to a Graph.
+It can help create an efficient retrieval pipeline from a given data source, while also enabling the developer to map
+data payloads and hierarchies to a Graph.
 
-In addition, there are several modes of output to enable examination of the Graph, and it's content.
+In addition, there are several modes of output to enable examination of the Graph and its content.
 
-**Graphinate** utilizes and builds upon the excellent [**_NetworkX_**](https://networkx.org/).
+**Graphinate** uses and builds upon the excellent [**_NetworkX_**](https://networkx.org/).
 
 ### Links
 
@@ -103,25 +103,28 @@ pip install graphinate[server]
 
 ### Example
 
-```python
+```python title="Octagonal Graph"
 import graphinate
 
 N: int = 8
 
-# Define GraphModel
-graph_model = graphinate.model(name="Octagonal Graph")
+# Define a GraphModel
+graph_model: graphinate.GraphModel = graphinate.model(name="Octagonal Graph")
 
 
-# Register edges supplier function
+# Register in the Graph Model the edges' supplier function
 @graph_model.edge()
 def edge():
-    for i in range(N - 1):
+    for i in range(N):
         yield {'source': i, 'target': i + 1}
-    yield {'source': N - 1, 'target': 0}
+    yield {'source': N, 'target': 0}
 
+
+# Choose builder and handler
+builder, handler = graphinate.materializers.Materializers.NetworkX_with_edge_labels.value
 
 # Materialize the GraphModel
-graphinate.materialize(graph_model)
+graphinate.materialize(graph_model, builder=builder, builder_output_handler=handler)
 ```
 
 #### `graphinate.model` function
@@ -134,7 +137,6 @@ graphinate.materialize(graph_model)
 
 > [!NOTE]
 > This function can be used to easily generate an output from a `GraphModel` instance.
-> By default, it will prompt the user to choose the output format, using a popup GUI dialog box.
 
 ## CLI
 
