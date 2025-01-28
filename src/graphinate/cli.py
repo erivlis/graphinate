@@ -83,7 +83,7 @@ def save(ctx, model):
     with open(f"{model.name}.json", mode='w') as fp:
         materialize(model=model,
                     builder=builders.D3Builder,
-                    actualizer=functools.partial(json.dump, fp=fp, default=str),
+                    builder_output_handler=functools.partial(json.dump, fp=fp, default=str),
                     **_get_kwargs(ctx))
 
 
@@ -102,5 +102,5 @@ def server(ctx, model, port):
     click.echo(message)
     materialize(model=model,
                 builder=builders.GraphQLBuilder,
-                actualizer=functools.partial(graphql, port=port),
+                builder_output_handler=functools.partial(graphql, port=port),
                 **_get_kwargs(ctx))

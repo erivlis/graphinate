@@ -101,5 +101,5 @@ if __name__ == '__main__':
     graphinate.materialize(
         ast_model,
         builder=graphinate.builders.GraphQLBuilder,
-        actualizer=graphinate.graphql
+        builder_output_handler=graphinate.graphql
     )

@@ -49,5 +49,4 @@ if __name__ == '__main__':
                                  options={m.name: m.value for m in Materializers},
                                  default=(None, None))
     builder, handler = result[1]
-
     graphinate.materialize(model, builder=builder, builder_output_handler=handler)

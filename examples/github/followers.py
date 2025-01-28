@@ -50,9 +50,13 @@ if __name__ == '__main__':
         # 'user_id' "strawberry-graphql"
     }
 
+    builder, handler = graphinate.materializers.Materializers.GraphQL.value
+
     graphinate.materialize(
         model=followers_model,
         graph_type=graphinate.GraphType.DiGraph,
+        builder=graphinate.builders.GraphQLBuilder,
+        builder_output_handler=graphinate.graphql,
         default_node_attributes={'type': 'user'},
         **params
     )

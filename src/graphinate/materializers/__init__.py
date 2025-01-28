@@ -47,7 +47,7 @@ def materialize(model: modeling.GraphModel,
         None
     """
     if builder is None and builder_output_handler is None:
-        raise ValueError("Missing: builder, actualizer")
+        raise ValueError("Missing: builder, builder_output_handler")
 
     if builder:
         graph = builders.build(builder,

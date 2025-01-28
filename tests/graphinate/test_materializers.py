@@ -35,7 +35,7 @@ def test_materialize_d3graph(map_graph_model, monkeypatch, capsys):
 
     # Assert
     assert expected_snippet in captured.out
-    assert captured.err
+    assert captured.err == ""
 
 
 def valid_materialization(*args, **kwargs) -> bool:

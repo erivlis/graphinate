@@ -62,5 +62,7 @@ if __name__ == '__main__':
         model=model,
         graph_type=graphinate.GraphType.DiGraph,
         default_node_attributes={'type': 'url'},
+        builder=graphinate.builders.NetworkxBuilder,
+        builder_output_handler=graphinate.materializers.matplotlib.plot,
         **params
     )
