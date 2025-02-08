@@ -3,131 +3,106 @@ import tkinter as tk
 from tkinter import ttk
 
 
-def _modal_window(title: str) -> tk.Tk:  # pragma: no cover
-    """Creating a parent Tkinter modal window"""
-    win = tk.Tk()
-    # win.geometry("200x125")
-    win.title(title)
+class ModalWindow(tk.Tk):
+    def __init__(self, title: str):
+        super().__init__()
+        self.title(title)
+        self.configure_window()
 
-    if platform.system().lower() == 'windows':
-        win.wm_attributes('-toolwindow', 'True')
-
-    win.wm_attributes('-topmost', 'True')
-    win.resizable(False, False)
-    return win
-
-
-def radiobutton_chooser(window_title: str, options: dict, default=None):  # pragma: no cover
-    win = _modal_window(window_title)
-
-    # let us create a Tkinter string variable
-    # that is able to store any string value
-    choice_var = tk.Variable(win, None)
-
-    radiobuttons_frame = ttk.Frame(
-        win,
-        borderwidth=5,
-        relief='solid',
-    )
-    radiobuttons_frame.pack(padx=4, pady=4)
-
-    ttk.Label(
-        radiobuttons_frame,
-        text="Output Mode:",
-        # font=('Helvetica 9 bold'),
-        # foreground="red3"
-    ).pack()
-
-    def change_state():
-        exit_button['state'] = tk.NORMAL
-
-    for option in options:
-        ttk.Radiobutton(
-            radiobuttons_frame,
-            text=option,
-            variable=choice_var,
-            value=option,
-            command=change_state,
-            padding=4
-        ).pack(
-            side=tk.TOP,
-            # ipady=1,
-            anchor="w"
-        )
-
-    exit_button = ttk.Button(win, text="OK", command=win.destroy, state=tk.DISABLED)
-    exit_button.pack(pady=4, side=tk.BOTTOM)
-
-    # sv_ttk.set_theme("dark")
-
-    win.mainloop()
-
-    choice = choice_var.get()
-
-    return choice, options.get(choice, default)
+    def configure_window(self):
+        if platform.system().lower() == 'windows':
+            self.wm_attributes('-toolwindow', 'True')
+        self.wm_attributes('-topmost', 'True')
+        self.resizable(False, False)
 
 
-def listbox_chooser(window_title: str, options: dict, default=None):  # pragma: no cover
-    win = _modal_window(window_title)
+class RadiobuttonChooser(ModalWindow):
+    """
+    Usage Example:
+    ```python
+    radiobutton_chooser = RadiobuttonChooser("Choose an option", {"Option 1": 1, "Option 2": 2})
+    choice, value = radiobutton_chooser.get_choice()
+    print(choice, value)
+    ```
+    """
 
-    choices = list(options.keys())
+    def __init__(self, window_title: str, options: dict, default=None):
+        super().__init__(window_title)
+        self.exit_button = None
+        self.choice_var = tk.StringVar(self, None)
+        self.default = default
+        self.options = options
+        self.create_widgets()
+        self.mainloop()
 
-    choices_var = tk.Variable(win, value=choices)
+    def create_widgets(self):
+        frame = ttk.Frame(self, borderwidth=5, relief='solid')
+        frame.pack(padx=4, pady=4)
 
-    selection_var = tk.Variable(win)
+        ttk.Label(frame, text="Output Mode:").pack()
 
-    listbox_frame = ttk.Frame(
-        win,
-        # borderwidth=5,
-        # relief='solid',
-    )
-    listbox_frame.pack(padx=2, pady=2)
+        for option in self.options:
+            ttk.Radiobutton(
+                frame,
+                text=option,
+                variable=self.choice_var,
+                value=option,
+                command=self.enable_exit_button,
+                padding=4
+            ).pack(side=tk.TOP, anchor="w")
 
-    # Creating a Listbox and
-    # attaching it to root window
-    listbox = tk.Listbox(listbox_frame,
-                         listvariable=choices_var,
-                         selectmode="MULTIPLE",
-                         height=min(len(choices), 50),
-                         width=max(len(c) for c in choices))
+        self.exit_button = ttk.Button(self, text="OK", command=self.destroy, state=tk.DISABLED)
+        self.exit_button.pack(pady=4, side=tk.BOTTOM)
 
-    # Adding Listbox to the left
-    # side of root window
-    listbox.pack(side=tk.LEFT, fill=tk.BOTH)
+    def enable_exit_button(self):
+        self.exit_button['state'] = tk.NORMAL
 
-    # Creating a Scrollbar and
-    # attaching it to root window
-    scrollbar = tk.Scrollbar(listbox_frame)
+    def get_choice(self):
+        return self.choice_var.get(), self.options.get(self.choice_var.get(), self.default)
 
-    # Adding Scrollbar to the right
-    # side of root window
-    scrollbar.pack(side=tk.RIGHT, fill=tk.BOTH)
 
-    # Attaching Listbox to Scrollbar
-    # Since we need to have a vertical
-    # scroll we use yscrollcommand
-    listbox.config(yscrollcommand=scrollbar.set)
+class ListboxChooser(ModalWindow):
+    """
+    Usage Example:
 
-    # setting scrollbar command parameter
-    # to listbox.yview method its yview because
-    # we need to have a vertical view
-    scrollbar.config(command=listbox.yview)
+    ```python
+    listbox_chooser = ListboxChooser("Choose options", {"Option 1": 1, "Option 2": 2, "Option 3": 3})
+    for choice, value in listbox_chooser.get_choices():
+    print(choice, value)
+    ```
+    """
 
-    def on_select(e):
-        print(e)
-        exit_button['state'] = tk.NORMAL
-        selection_var.set(listbox.curselection())
+    def __init__(self, window_title: str, options: dict, default=None):
+        super().__init__(window_title)
+        self.exit_button = None
+        self.choices = list(options.keys())
+        self.options = options
+        self.default = default
+        self.selection_var = tk.Variable(self)
+        self.create_widgets()
+        self.mainloop()
 
-    listbox.bind("<<ListboxSelect>>", on_select)
-    # listbox.bind("<Double-1>", lambda e: selection_var.set(listbox.curselection()))
+    def create_widgets(self):
+        frame = ttk.Frame(self)
+        frame.pack(padx=2, pady=2)
 
-    exit_button = ttk.Button(win, text="OK", command=win.destroy, state=tk.DISABLED)
-    exit_button.pack(pady=4, side=tk.BOTTOM)
+        listbox = tk.Listbox(frame, listvariable=tk.Variable(self, value=self.choices), selectmode="multiple",
+                             height=min(len(self.choices), 50), width=max(len(c) for c in self.choices))
+        listbox.pack(side=tk.LEFT, fill=tk.BOTH)
 
-    win.mainloop()
+        scrollbar = ttk.Scrollbar(frame, command=listbox.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.BOTH)
+        listbox.config(yscrollcommand=scrollbar.set)
 
-    for choice in selection_var.get():
-        yield choice, options.get(choices[choice], default)
-        # choice = options.get(options.keys()[listbox.curselection()], default)
+        listbox.bind("<<ListboxSelect>>", self.on_select)
 
-    # return choice, options.get(choice, default)
+        self.exit_button = ttk.Button(self, text="OK", command=self.destroy, state=tk.DISABLED)
+        self.exit_button.pack(pady=4, side=tk.BOTTOM)
+
+    def on_select(self, event):
+        self.exit_button['state'] = tk.NORMAL
+        self.selection_var.set(event.widget.curselection())
+
+    def get_choices(self):
+        for choice in self.selection_var.get():
+            yield self.choices[choice], self.options.get(self.choices[choice], self.default)

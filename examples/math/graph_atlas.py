@@ -34,19 +34,20 @@ def model(iterable: Iterable[nx.Graph]) -> graphinate.GraphModel:
 
 
 if __name__ == '__main__':
-    from gui import listbox_chooser, radiobutton_chooser
+    from gui import ListboxChooser, RadiobuttonChooser
 
     graph_atlas = graphs.atlas()
 
-    choices = listbox_chooser('Choose Graph', graph_atlas)
-
+    listbox_chooser = ListboxChooser('Choose Graph', graph_atlas)
+    choices = listbox_chooser.get_choices()
     model = model(choices)
 
     # or
     # model(graph_atlas.values())
 
-    result = radiobutton_chooser('Choose Materializer',
-                                 options={m.name: m.value for m in Materializers},
-                                 default=(None, None))
+    radiobutton_chooser = RadiobuttonChooser('Choose Materializer',
+                                             options={m.name: m.value for m in Materializers},
+                                             default=(None, None))
+    result = radiobutton_chooser.get_choice()
     builder, handler = result[1]
     graphinate.materialize(model, builder=builder, builder_output_handler=handler)
