@@ -2,13 +2,30 @@
 <html lang="">
 <head>
     <title>Graphinate</title>
-    <style> body { margin: 0; } </style>
-    <script src="https://cdn.jsdelivr.net/npm/3d-force-graph@1.72.3/dist/3d-force-graph.min.js"
-            integrity="sha256-X4nSjPQnyc5QqQ88WM5oVzMx2KUKXj3hxRAvt2WxDRI="
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+    <script src="https://unpkg.com/3d-force-graph@1.76.1/dist/3d-force-graph.min.js"
+            integrity="sha384-7PiolihqoWLaY+8+zoccK5LLtWiGzovYvg5gjpKkQYhL51yq4JYt6owMj3bzQFBc"
             crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/murmurhash-js@1.0.0/murmurhash3_gc.js"
+            integrity="sha384-g+j9YCPmBDu4mlFm1UGyQFBh5P7x/xYGJvqbX/WFbzJC2V/wwBRCorSlQ1UaAED0"
+            crossorigin="anonymous"></script>
+    <script>
+        function fetchGraphQL(payload) {
+            return fetch(
+                '/graphql',
+                {
+                    method: 'post',
+                    headers: {Accept: 'application/json', 'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload),
+                    credentials: 'include',
+                }).then((response) => response.json());
+        }
 
-    <script src="/static/js/murmurhash3_gc.js"
-            integrity="sha384-qmbe8KG4+frUnGS6DOKYZgFKbBvbhNNOL/LZ4hSpKauxmgrTX3LALg5+oQJS4AOn"></script>
+    </script>
 </head>
 <body>
 <div id="3d-graph"></div>
@@ -34,33 +51,26 @@ fragment Details on GraphElement {
   color
 }`
 
-    function fetchGraphQL(payload) {
-      return fetch(
-          '/graphql',
-          {
-              method: 'post',
-              headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload),
-              credentials: 'include',
-          }).then((response) => response.json());
-    }
-
     fetchGraphQL({query: graphQuery})
-    .then((responseJson) => responseJson.data)
-    .then((gData) => {
-      gData.nodes = gData.nodes.map((node) => {node.id = murmurhash3_32_gc(node.id, 1); return node;});
-      gData.links = gData.links.map((link) => {return {"source": murmurhash3_32_gc(link.source.id,1), "target": murmurhash3_32_gc(link.target.id, 1)};});
-      const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
-      .graphData(gData)
-      .nodeColor('color')
-// <!--  .nodeAutoColorBy('type')-->
-      .nodeLabel(node => `${node.type}: '${node.name}'`)
-// <!--      .linkDirectionalArrowLength(3.5)-->
-// <!--      .linkDirectionalArrowRelPos(1)-->
-// <!--      .linkCurvature(0.0)-->
-      .onEngineStop(() => Graph.zoomToFit(400));
-      });
-
+        .then((responseJson) => responseJson.data)
+        .then((gData) => {
+            gData.nodes = gData.nodes.map((node) => {
+                node.id = murmurhash3_32_gc(node.id, 1);
+                return node;
+            });
+            gData.links = gData.links.map((link) => {
+                return {"source": murmurhash3_32_gc(link.source.id, 1), "target": murmurhash3_32_gc(link.target.id, 1)};
+            });
+            const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
+                .graphData(gData)
+                .nodeColor('color')
+                // <!--  .nodeAutoColorBy('type')-->
+                .nodeLabel(node => `${node.type}: '${node.name}'`)
+                // <!--      .linkDirectionalArrowLength(3.5)-->
+                // <!--      .linkDirectionalArrowRelPos(1)-->
+                // <!--      .linkCurvature(0.0)-->
+                .onEngineStop(() => Graph.zoomToFit(400));
+        });
 </script>
 </body>
 </html>
