@@ -7,49 +7,138 @@
             margin: 0;
         }
     </style>
+
+    <script type="module"
+            integrity="sha384-Dt9sd/AA7KNs3M8XRJs7rNwUZ9bRWhsKjVz4UpCle+pCI/lqdylOH3mcYcKRBPKF"
+            crossorigin="anonymous">
+        // Import ES module
+        import * as Tweakpane from 'https://unpkg.com/tweakpane@4.0.5/dist/tweakpane.min.js';
+        // Export it as a global variable
+        window.Tweakpane = Tweakpane;
+    </script>
+
+
     <script src="https://unpkg.com/3d-force-graph@1.76.1/dist/3d-force-graph.min.js"
             integrity="sha384-7PiolihqoWLaY+8+zoccK5LLtWiGzovYvg5gjpKkQYhL51yq4JYt6owMj3bzQFBc"
             crossorigin="anonymous"></script>
     <script src="https://unpkg.com/murmurhash-js@1.0.0/murmurhash3_gc.js"
             integrity="sha384-g+j9YCPmBDu4mlFm1UGyQFBh5P7x/xYGJvqbX/WFbzJC2V/wwBRCorSlQ1UaAED0"
             crossorigin="anonymous"></script>
-    <script>
-        function fetchGraphQL(payload) {
-            return fetch(
-                '/graphql',
-                {
-                    method: 'post',
-                    headers: {Accept: 'application/json', 'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload),
-                    credentials: 'include',
-                }).then((response) => response.json());
+
+    <!-- Append this element into the head element to apply the theme -->
+    <style>
+        .tp-dfwv {
+            height: 95vh;
+            overflow-y: auto;
         }
 
-    </script>
+        :root {
+            --tp-base-background-color: hsla(40, 3%, 90%, 1.00);
+            --tp-base-shadow-color: hsla(0, 0%, 0%, 0.30);
+            --tp-button-background-color: hsla(40, 3%, 70%, 1.00);
+            --tp-button-background-color-active: hsla(40, 3%, 55%, 1.00);
+            --tp-button-background-color-focus: hsla(40, 3%, 60%, 1.00);
+            --tp-button-background-color-hover: hsla(40, 3%, 65%, 1.00);
+            --tp-button-foreground-color: hsla(40, 3%, 20%, 1.00);
+            --tp-container-background-color: hsla(40, 3%, 70%, 1.00);
+            --tp-container-background-color-active: hsla(40, 3%, 55%, 1.00);
+            --tp-container-background-color-focus: hsla(40, 3%, 60%, 1.00);
+            --tp-container-background-color-hover: hsla(40, 3%, 65%, 1.00);
+            --tp-container-foreground-color: hsla(40, 3%, 20%, 1.00);
+            --tp-groove-foreground-color: hsla(40, 3%, 40%, 1.00);
+            --tp-input-background-color: hsla(120, 3%, 20%, 1.00);
+            --tp-input-background-color-active: hsla(120, 3%, 35%, 1.00);
+            --tp-input-background-color-focus: hsla(120, 3%, 30%, 1.00);
+            --tp-input-background-color-hover: hsla(120, 3%, 25%, 1.00);
+            --tp-input-foreground-color: hsla(120, 40%, 60%, 1.00);
+            --tp-label-foreground-color: hsla(40, 3%, 50%, 1.00);
+            --tp-monitor-background-color: hsla(120, 3%, 20%, 1.00);
+            --tp-monitor-foreground-color: hsla(120, 40%, 60%, 0.80);
+        }
+    </style>
+
+
 </head>
 <body>
 <div id="3d-graph"></div>
+<div id="legend"></div>
 <script>
-    const graphQuery = `query GenericGraph {
-  nodes {
-    ...Details
-  }
-  links: edges {
-    source {
-      ...Details
-    }
-    target {
-      ...Details
-    }
-  }
-}
+    const graphQuery = `query GenericGraph{nodes{...Details} links: edges{source{...Details} target{...Details}}} fragment Details on GraphElement {id name: label type color}`;
+    const nodeTypesQuery = `query GraphTypes{graph{name nodeTypes: nodeTypeCounts{name count: value} edgeTypes: edgeTypeCounts{name count: value}}}`;
 
-fragment Details on GraphElement {
-  id
-  name: label
-  type
-  color
-}`
+    const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
+        .nodeColor('color')
+        .nodeLabel(node => `${node.type}: '${node.name}'`)
+        .onEngineStop(() => Graph.zoomToFit(400));
+
+    const nodeTypeColor = {}
+    const nodeTypeVisibility = {};
+
+    function fetchGraphQL(payload) {
+        return fetch(
+            '/graphql',
+            {
+                method: 'post',
+                headers: {Accept: 'application/json', 'Content-Type': 'application/json'},
+                body: JSON.stringify(payload),
+                credentials: 'include',
+            }).then((response) => response.json());
+    }
+
+
+    function updateGraph(gData) {
+        Graph.graphData(gData);
+    }
+
+
+    function filterGraph(gData) {
+        const visibleNodes = []
+        gData.nodes.forEach((node) => {
+            if (node.type in nodeTypeVisibility && nodeTypeVisibility[node.type]) {
+                visibleNodes.push(node);
+            }
+        });
+        const visibleLinks = [];
+        gData.links.forEach((link) => {
+            if (visibleNodes.find((node) => node.id === link.source.id) && visibleNodes.find((node) => node.id === link.target.id)) {
+                visibleLinks.push(link);
+            }
+        });
+
+        return {nodes: visibleNodes, links: visibleLinks};
+    }
+
+    function updateNodeTypeColorMapping(nodes) {
+        nodes.forEach(node => {
+            if (!nodeTypeColor[node.type]) {
+                nodeTypeColor[node.type] = node.color;
+            }
+        });
+    }
+
+    function createLegend(graph, gData) {
+        updateNodeTypeColorMapping(gData.nodes);
+        const pane = new Tweakpane.Pane({title: `${graph.name} Legend`});
+        graph.nodeTypes.forEach(nodeType => {
+            info = `V: ${nodeType.count}`
+            edgeType = graph.edgeTypes.find((t) => t.name === nodeType.name);
+            if (edgeType) {
+                info += `, E: ${edgeType.count}`;
+            }
+
+            const f = pane.addFolder({title: `${nodeType.name} [${info}]}`});
+
+            f.addBinding(nodeTypeColor, nodeType.name, {label: ''});
+
+            nodeTypeVisibility[nodeType.name] = true;
+            f.addBinding(nodeTypeVisibility, nodeType.name, {label: 'Visible'})
+                .on('change', (value) => {
+                    visibleGData = filterGraph(gData);
+                    updateGraph(visibleGData);
+                });
+        });
+    }
+
 
     fetchGraphQL({query: graphQuery})
         .then((responseJson) => responseJson.data)
@@ -61,15 +150,12 @@ fragment Details on GraphElement {
             gData.links = gData.links.map((link) => {
                 return {"source": murmurhash3_32_gc(link.source.id, 1), "target": murmurhash3_32_gc(link.target.id, 1)};
             });
-            const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
-                .graphData(gData)
-                .nodeColor('color')
-                // <!--  .nodeAutoColorBy('type')-->
-                .nodeLabel(node => `${node.type}: '${node.name}'`)
-                // <!--      .linkDirectionalArrowLength(3.5)-->
-                // <!--      .linkDirectionalArrowRelPos(1)-->
-                // <!--      .linkCurvature(0.0)-->
-                .onEngineStop(() => Graph.zoomToFit(400));
+            updateGraph(gData);
+            fetchGraphQL({query: nodeTypesQuery})
+                .then((responseJson) => responseJson.data)
+                .then((data) => {
+                    createLegend(data.graph, gData);
+                });
         });
 </script>
 </body>
