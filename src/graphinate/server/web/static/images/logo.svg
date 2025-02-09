@@ -1,0 +1,50 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Filters for shadow -->
+    <defs>
+        <filter id="circle-shadow" x="-50%" y="-50%" width="200%" height="500%">
+            <feDropShadow dx="6" dy="6" stdDeviation="1" flood-color="rgba(0, 0, 0, 0.8)"/>
+        </filter>
+        <filter id="text-shadow" x="-50%" y="-50%" width="200%" height="500%">
+            <feDropShadow dx="5" dy="5" stdDeviation="1" flood-color="rgba(0, 0, 0, 0.6)"/>
+        </filter>
+    </defs>
+
+    <text x="10" y="30"
+          font-family="serif"
+          font-size="40"
+          font-weight="500"
+          fill="darkviolet"
+          stroke="indigo"
+          stroke-width="0.5"
+          filter="url(#text-shadow)">&#120126;raphinate
+    </text>
+    <!-- Background -->
+    <!--rect width="100%" height="100%" fill="#2E004F" /-->
+
+    <!-- Circle with shadow -->
+    <circle cx="100" cy="100" r="60" fill="indigo" stroke="rebeccapurple" stroke-width="0.5"
+            filter="url(#circle-shadow)"/>
+    <!-- Double-struck G with shadow -->
+    <text x="99" y="113"
+          font-family="serif"
+          font-size="108"
+          fill="darkviolet"
+          text-anchor="middle"
+          stroke="indigo"
+          stroke-width="0.5"
+          alignment-baseline="middle"
+          filter="url(#text-shadow)">
+        &#120126;
+    </text>
+
+
+        <text x="10" y="190"
+          font-family="serif"
+          font-size="40"
+          font-weight="500"
+          fill="darkviolet"
+          stroke="indigo"
+          stroke-width="0.5"
+          filter="url(#text-shadow)">&#120126;raphinate
+    </text>
+</svg>
