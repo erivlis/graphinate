@@ -203,7 +203,7 @@ class NetworkxBuilder(Builder):
             if node_type == 'tuple':
                 node_type = node_model.type.lower()
 
-            logger.debug("Adding node: '{}'", node_id)
+            logger.debug("Adding node: '{}'", node.value)
 
             if node_id in self._graph:
                 self._graph.nodes[node_id]['value'].append(node.value)
@@ -231,16 +231,16 @@ class NetworkxBuilder(Builder):
             self._populate_node_type(node_model.type, **new_kwargs)
 
     def _populate_edges(self, **kwargs):
-        for edge_type, edge_generators in self.model.edge_generators.items():
+        for edge_model, edge_generators in self.model.edge_generators.items():
             for edge_generator in edge_generators:
                 for edge in edge_generator(**kwargs):
                     edge_id = ((edge.source,), (edge.target,))
                     edge_weight = edge.weight or 1.0
-                    logger.debug("Adding edge from: '{}' to: '{}'", edge.source, edge.target)
+                    edge_type = edge.type.lower()
+                    logger.debug("Adding edge from: '{}' to: '{}'", *edge_id)
 
                     if isinstance(self._graph, nx.MultiGraph) or edge_id not in self._graph.edges:
-                        self._graph.add_edge((edge.source,),
-                                             (edge.target,),
+                        self._graph.add_edge(*edge_id,
                                              label=edge.label,
                                              type=edge_type,
                                              value=[edge.value],

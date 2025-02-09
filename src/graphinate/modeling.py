@@ -4,7 +4,7 @@ from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any, Optional, Union
 
-from .typing import Edge, Edges, Element, Extractor, Items, Node, Nodes, NodeTypeAbsoluteId, UniverseNode
+from .typing import Edge, Element, Extractor, Items, Node, NodeTypeAbsoluteId, UniverseNode
 
 
 class GraphModelError(Exception):
@@ -59,17 +59,14 @@ def elements(iterable: Iterable[Any],
     Returns:
         Iterable of Elements.
     """
+    for item in iterable:
+        _type = element_type(item) if element_type and callable(element_type) else element_type
+        if not _type.isidentifier():
+            raise ValueError(f"Invalid Type: {_type}. Must be a valid Python identifier.")
 
-    if element_type and callable(element_type):
-        for item in iterable:
-            create_element = element(element_type(item), getters.keys())
-            kwargs = {k: extractor(item, v) for k, v in getters.items()}
-            yield create_element(**kwargs)
-    else:
-        create_element = element(element_type, getters.keys())
-        for item in iterable:
-            kwargs = {k: extractor(item, v) for k, v in getters.items()}
-            yield create_element(**kwargs)
+        create_element = element(_type, getters.keys())
+        kwargs = {k: extractor(item, v) for k, v in getters.items()}
+        yield create_element(**kwargs)
 
 
 @dataclass
@@ -92,7 +89,7 @@ class NodeModel:
     parent_type: Optional[str] = UniverseNode
     uniqueness: bool = False
     parameters: set[str] | None = None
-    generator: Nodes | None = None
+    generator: Callable[[], Iterable[Node]] | None = None
     label: Callable[[Any], str | None] = None
 
     @property
@@ -114,7 +111,7 @@ class GraphModel:
         self.name: str = name
         self._node_models: dict[NodeTypeAbsoluteId, NodeModel] = {}
         self._node_children: dict[str, list[str]] = defaultdict(list)
-        self._edge_generators: dict[str, list[Edges]] = defaultdict(list)
+        self._edge_generators: dict[str, list[Callable[[], Iterable[Edge]]]] = defaultdict(list)
         self._networkx_graph = None
 
     def __add__(self, other: 'GraphModel'):
@@ -225,7 +222,7 @@ class GraphModel:
         return register_node
 
     def edge(self,
-             _type: Optional[str] = None,
+             _type: Optional[Extractor] = None,
              source: Extractor = 'source',
              target: Extractor = 'target',
              label: Optional[Extractor] = str,
@@ -252,6 +249,8 @@ class GraphModel:
             edge_type = _type or f.__name__
             self._validate_type(edge_type)
 
+            model_type = f.__name__ if callable(edge_type) else edge_type
+
             getters = {
                 'source': source,
                 'target': target,
@@ -264,7 +263,7 @@ class GraphModel:
             def edge_generator(**kwargs) -> Iterable[Edge]:
                 yield from elements(f(**kwargs), edge_type, **getters)
 
-            self._edge_generators[edge_type].append(edge_generator)
+            self._edge_generators[model_type].append(edge_generator)
 
         return register_edge
 
