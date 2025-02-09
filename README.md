@@ -1,4 +1,4 @@
-# [Graphinate. Data to Graphs.](https://erivlis.github.io/graphinate/)
+# [𝔾raphinate. Data to Graphs.](https://erivlis.github.io/graphinate/)
 
 <img height="360" src="https://github.com/erivlis/graphinate/assets/9897520/dae41f9f-69e5-4eb5-a488-87ce7f51fa32" alt="Graphinate. Data to Graphs.">
 
@@ -60,9 +60,13 @@
       <a href="https://snyk.io/test/github/erivlis/graphinate"><img alt="Snyk" src="https://snyk.io/test/github/erivlis/Graphinate/badge.svg"></a>
     </td>
   </tr>
+  <tr>
+    <td>Badge</td>
+    <td>
+       <a href="https://img.shields.io/badge/%F0%9D%94%BE%3D%7B%F0%9D%95%8D%2C%F0%9D%94%BC%7D-Graphinate-darkviolet"><img alt="Graphinate" src="https://img.shields.io/badge/%F0%9D%94%BE%3D%7B%F0%9D%95%8D%2C%F0%9D%94%BC%7D-Graphinate-darkviolet"></a>
+    </td>
+  </tr>
 </table>
-
----------------------
 
 ## Introduction
 
