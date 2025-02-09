@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+import operator
 
 import graphs
 import networkx as nx
@@ -7,7 +7,7 @@ import graphinate
 from graphinate.materializers import Materializers
 
 
-def model(iterable: Iterable[nx.Graph]) -> graphinate.GraphModel:
+def model(items: list[tuple[str, nx.Graph]]) -> graphinate.GraphModel:
     """
     Generate a graph model based on the provided iterable of graphs.
     The function creates a graph model named 'Graph Atlas' using the 'graphinate' library.
@@ -17,18 +17,34 @@ def model(iterable: Iterable[nx.Graph]) -> graphinate.GraphModel:
     Finally, the function yields the created graph model containing the combined graph with defined edges.
 
     Args:
-        iterable: An iterable containing graphs to be combined into a single graph model.
+        items: A list containing graphs to be combined into a single graph model.
 
     Yields:
         GraphModel: A graph model containing the combined graph with defined edges.
     """
 
+    def items_iter(recs):
+        for name, g in recs:
+            print(name)
+            yield g
+
+    g = nx.disjoint_union_all(items_iter(items)) if len(items) > 1 else items[0][1]
+
     graph_model = graphinate.model('Graph Atlas')
 
-    @graph_model.edge()
+    @graph_model.node(operator.itemgetter(1),
+                      key=operator.itemgetter(0),
+                      value=operator.itemgetter(0))
+    def nodes():
+        yield from g.nodes(data='type')
+
+    @graph_model.edge(operator.itemgetter(2),
+                      source=operator.itemgetter(0),
+                      target=operator.itemgetter(1),
+                      label=operator.itemgetter(0, 1),
+                      value=operator.itemgetter(0, 1))
     def edge():
-        for e in nx.disjoint_union_all(g for _, g in iterable).edges:
-            yield {'source': e[0], 'target': e[1]}
+        yield from g.edges.data('type')
 
     return graph_model
 
@@ -39,7 +55,7 @@ if __name__ == '__main__':
     graph_atlas = graphs.atlas()
 
     listbox_chooser = ListboxChooser('Choose Graph', graph_atlas)
-    choices = listbox_chooser.get_choices()
+    choices = list(listbox_chooser.get_choices())
     model = model(choices)
 
     # or

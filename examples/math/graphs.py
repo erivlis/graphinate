@@ -1,4 +1,5 @@
 import itertools
+import re
 from collections.abc import Iterable
 from typing import NewType
 
@@ -692,18 +693,20 @@ SPECIAL_GRAPHS_ADJACENCY_LISTS = {
 AdjacencyList = NewType('AdjacencyList', dict[int, list[int]])
 
 
-def ladder_ring_graph(size: int):
-    ring = nx.ladder_graph(size)
-    ring.add_edge(size, size * 2 - 1)
-    ring.add_edge(0, size - 1)
-    return ladder_ring_graph
+def ladder_ring_graph(size: int) -> nx.Graph:
+    g: nx.Graph = nx.ladder_graph(size)
+    g.add_edge(size, size * 2 - 1)
+    g.add_edge(0, size - 1)
+    g.name = f'Ladder Ring[{size}]'
+    return g
 
 
-def ladder_mobius_graph(size: int):
-    mobius = nx.ladder_graph(size)
-    mobius.add_edge(size, size - 1)
-    mobius.add_edge(0, size * 2 - 1)
-    return mobius
+def ladder_mobius_graph(size: int) -> nx.Graph:
+    g = nx.ladder_graph(size)
+    g.add_edge(size, size - 1)
+    g.add_edge(0, size * 2 - 1)
+    g.name = f'Ladder Möbius Ring[{size}]'
+    return g
 
 
 def _cylinder_edges(circumference: int, length: int) -> Iterable[tuple[int, int]]:
@@ -721,7 +724,9 @@ def _cylinder_edges(circumference: int, length: int) -> Iterable[tuple[int, int]
 
 
 def cylinder_graph(circumference: int, length: int) -> nx.Graph:
-    return nx.Graph(_cylinder_edges(circumference, length))
+    g = nx.Graph(_cylinder_edges(circumference, length))
+    g.name = f'Cylinder[circumference={circumference},length={length}]'
+    return g
 
 
 def _spiral_edges(n, k) -> Iterable[tuple[int, int]]:
@@ -733,7 +738,9 @@ def _spiral_edges(n, k) -> Iterable[tuple[int, int]]:
 
 
 def spiral_graph(n, k) -> nx.Graph:
-    return nx.Graph(_spiral_edges(n, k))
+    g = nx.Graph(_spiral_edges(n, k))
+    g.name = f'Spiral[n={n},k={k}]'
+    return g
 
 
 def _spiral_torus_edges(n, k) -> Iterable[tuple[int, int]]:
@@ -744,7 +751,20 @@ def _spiral_torus_edges(n, k) -> Iterable[tuple[int, int]]:
 
 
 def spiral_torus_graph(n, k) -> nx.Graph:
-    return nx.Graph(_spiral_torus_edges(n, k))
+    g = nx.Graph(_spiral_torus_edges(n, k))
+    g.name = f'Spiral Torus[n={n},k={k}]'
+    return g
+
+
+def k_regular_edges(n, k) -> Iterable[tuple[int, int]]:
+    yield from itertools.chain.from_iterable(
+        ((i, j) for j in range(i + 1, i + k + 1))
+        for i in range(n-k))
+
+def k_regular_graph(n, k) -> nx.Graph:
+    g = nx.Graph(k_regular_edges(n, k))
+    g.name = f'Generalized Buckyball[n={n},k={k}]'
+    return g
 
 
 def adjacency_edges(adjacency_list: AdjacencyList) -> Iterable[tuple[int, int]]:
@@ -786,20 +806,28 @@ def atlas():
     """
 
     graph_atlas = {
+        'Triangle': nx.cycle_graph(3),
+        'Square': nx.cycle_graph(4),
+        'Square Lattice[3,3]': nx.grid_2d_graph(3, 3),
+        'Pentagon': nx.cycle_graph(5),
+        'Hexagon': nx.cycle_graph(6),
+        'Heptagon': nx.cycle_graph(7),
+        'Octagon': nx.cycle_graph(8),
         'Tetrahedron': nx.tetrahedral_graph(),
         'Cube': nx.hypercube_graph(3),
         'Octahedron': nx.octahedral_graph(),
         'Dodecahedron': nx.dodecahedral_graph(),
         'Icosahedron': nx.icosahedral_graph(),
         'Tesseract': nx.hypercube_graph(4),
+        'Hypercube[5]': nx.hypercube_graph(5),
         'Truncated Cube': nx.truncated_cube_graph(),
         'Truncated Tetrahedron': nx.truncated_tetrahedron_graph(),
         'Ladder[16]': nx.ladder_graph(16),
         'Ladder Ring[16]': ladder_ring_graph(16),
         'Ladder Möbius Ring[16]': ladder_mobius_graph(16),
         'Cylinder[6,8]': cylinder_graph(6, 8),
-        'Spiral': spiral_graph(18, 8),
-        'Spiral Torus': spiral_torus_graph(128, 8),
+        'Spiral[128,8]': spiral_graph(128, 8),
+        'Spiral Torus[128,8]': spiral_torus_graph(128, 8),
         'Chvátal': nx.chvatal_graph(),
         'Circulant[10,[2]]': nx.circulant_graph(10, [2]),
         'Desargues': nx.desargues_graph(),
@@ -807,7 +835,7 @@ def atlas():
         'Frucht': nx.frucht_graph(),
         'Heawood': nx.heawood_graph(),
         'Hoffman-Singleton': nx.hoffman_singleton_graph(),
-        'Margulis-Gabber-Galil[8]': nx.margulis_gabber_galil_graph(8),
+        # 'Margulis-Gabber-Galil[8]': nx.margulis_gabber_galil_graph(8),
         'Papus': nx.pappus_graph(),
         'Petersen': nx.petersen_graph(),
         'Sedgewick Maze': nx.sedgewick_maze_graph(),
@@ -816,4 +844,19 @@ def atlas():
 
     graph_atlas.update(special_graphs())
 
+    def clean(s: str):
+        # Remove invalid characters
+        s = re.sub('[^0-9a-zA-Z_]', '_', s)
+
+        # Remove leading characters until we find a letter or underscore
+        s = re.sub('^[^a-zA-Z_]+', '', s)
+
+        return s
+
+    for name, g in graph_atlas.items():
+        _type = clean(name).capitalize()
+        nx.set_node_attributes(g, _type, 'type')
+        nx.set_edge_attributes(g, _type, 'type')
+
     return graph_atlas
+

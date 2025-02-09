@@ -1,4 +1,4 @@
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -28,13 +28,17 @@ def page_links_graph_model(max_depth: int = DEFAULT_MAX_DEPTH):
         for link in soup.find_all('a', href=True):
             child_url = link.get('href')
 
-            if child_url.startswith('javascript:'):
+            if child_url.startswith('javascript:'):  # Skip JavaScript links
                 continue
-            elif child_url.startswith('//'):
+
+            if child_url.startswith('//'):  # Handle protocol-relative URLs
                 child_url = f"https:{child_url}"
-            elif not bool(urlparse(child_url).netloc):
-                child_url = urljoin(url, child_url)
-            elif not child_url.startswith('http'):
+
+            if not bool(urlparse(child_url).netloc):  # Skip relative URLs
+                # child_url = urljoin(url, child_url)
+                continue
+
+            if not child_url.startswith('http'):  # Skip non-HTTP URLs
                 continue
 
             yield {'source': url, 'target': child_url}
@@ -62,7 +66,7 @@ if __name__ == '__main__':
         model=model,
         graph_type=graphinate.GraphType.DiGraph,
         default_node_attributes={'type': 'url'},
-        builder=graphinate.builders.NetworkxBuilder,
-        builder_output_handler=graphinate.materializers.matplotlib.plot,
+        builder=graphinate.builders.GraphQLBuilder,
+        builder_output_handler=graphinate.graphql,
         **params
     )
