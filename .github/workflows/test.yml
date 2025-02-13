@@ -40,7 +40,7 @@ jobs:
           python -m pip install faker pytest pytest-asyncio pytest-cov pytest-randomly pytest-xdist starlette-prometheus uvicorn[standard]
           pytest tests --cov=src --cov-branch --cov-report=xml --junitxml=test_results.xml -n auto
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Run codacy-coverage-reporter
