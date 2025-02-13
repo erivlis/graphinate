@@ -1,6 +1,6 @@
 [project]
 name = "Graphinate"
-version = "0.5.0"
+version = "0.5.1"
 authors = [
     { name = "Eran Rivlis", email = "eran@rivlis.info" },
 ]
@@ -45,6 +45,15 @@ dependencies = [
 
 
 [project.optional-dependencies]
+plot = [
+    "scipy"
+]
+server = [
+    "starlette-prometheus",
+    "uvicorn[standard]"
+]
+
+[dependency-groups]
 dev = [
     "ruff",
     "pipdeptree"
@@ -66,13 +75,7 @@ test = [
     "pytest-randomly",
     "pytest-xdist"
 ]
-plot = [
-    "scipy"
-]
-server = [
-    "starlette-prometheus",
-    "uvicorn[standard]"
-]
+
 
 
 [build-system]

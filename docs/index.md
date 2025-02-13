@@ -2,7 +2,7 @@
 
 <table style="border-width: 0;">
   <tr style="vertical-align: middle; border-width: 0;">
-    <td rowspan="5"><img height="240" src="https://github.com/erivlis/graphinate/assets/9897520/dae41f9f-69e5-4eb5-a488-87ce7f51fa32" alt="Graphinate. Data to Graphs."></td>
+    <td rowspan="7"><img height="240" src="https://github.com/erivlis/graphinate/assets/9897520/dae41f9f-69e5-4eb5-a488-87ce7f51fa32" alt="Graphinate. Data to Graphs."></td>
     <td>Package</td>
     <td>
       <img alt="PyPI - version" src="https://img.shields.io/pypi/v/graphinate.svg?logo=pypi&logoColor=lightblue">
@@ -35,8 +35,8 @@
   <tr style="vertical-align: middle;">
     <td>CI/CD</td>
     <td>
-      <a href="https://github.com/erivlis/graphinate/actions/workflows/test.yml"><img alt="Tests" src="https://github.com/erivlis/graphinate/actions/workflows/test.yml/badge.svg?branch=master"></a>
-      <a href="https://github.com/erivlis/graphinate/actions/workflows/test.yml"><img alt="Tests" src="https://github.com/erivlis/graphinate/actions/workflows/test-beta.yml/badge.svg?branch=master"></a>
+      <a href="https://github.com/erivlis/graphinate/actions/workflows/test.yml"><img alt="Test" src="https://github.com/erivlis/graphinate/actions/workflows/test.yml/badge.svg"></a>
+      <a href="https://github.com/erivlis/graphinate/actions/workflows/test-beta.yml"><img alt="Test (Beta)" src="https://github.com/erivlis/graphinate/actions/workflows/test-beta.yml/badge.svg"></a>
       <a href="https://github.com/erivlis/graphinate/actions/workflows/publish.yml"><img alt="Publish" src="https://github.com/erivlis/graphinate/actions/workflows/publish.yml/badge.svg"></a>
       <a href="https://github.com/erivlis/graphinate/actions/workflows/publish-docs.yaml"><img alt="Publish Docs" src="https://github.com/erivlis/graphinate/actions/workflows/publish-docs.yaml/badge.svg"></a>
     </td>
@@ -59,5 +59,11 @@
       <a href="https://snyk.io/test/github/erivlis/graphinate"><img alt="Snyk" src="https://snyk.io/test/github/erivlis/Graphinate/badge.svg"></a>
     </td>
   </tr>
+  <tr>
+    <td>Mentions</td>
+    <td>
+      <a href="https://www.youtube.com/live/k01G0b0Y0Jg?si=030OT8sK3BqPyy8r&t=1028"><img alt="PythonBytes Podcast" src="https://img.shields.io/badge/Python_Bytes-Ep. 361-D7F9FF?logo=applepodcasts&labelColor=blue"></a>
+      <a href="https://pythonhub.dev/digest/2024-03-10/"><img alt="Static Badge" src="https://img.shields.io/badge/PythonHub-2024.03.10-gold?labelColor=blue"></a>
+    </td>
+  </tr>
 </table>
-
