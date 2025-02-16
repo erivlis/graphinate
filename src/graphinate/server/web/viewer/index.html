@@ -1,13 +1,7 @@
 <!DOCTYPE html>
 <html lang="">
 <head>
-    <title>Graphinate</title>
-    <style>
-        body {
-            margin: 0;
-        }
-    </style>
-
+    <title>Graphinate Viewer</title>
     <script type="module"
             integrity="sha384-Dt9sd/AA7KNs3M8XRJs7rNwUZ9bRWhsKjVz4UpCle+pCI/lqdylOH3mcYcKRBPKF"
             crossorigin="anonymous">
@@ -27,6 +21,10 @@
 
     <!-- Append this element into the head element to apply the theme -->
     <style>
+        body {
+            margin: 0;
+        }
+
         .tp-dfwv {
             height: 95vh;
             overflow-y: auto;
@@ -56,18 +54,99 @@
             --tp-monitor-foreground-color: hsla(120, 40%, 60%, 0.80);
         }
     </style>
-
-
 </head>
 <body>
 <div id="3d-graph"></div>
-<div id="legend"></div>
 <script>
+    function createFloatingPanel(url) {
+        // Create the panel container
+        const panel = document.createElement('div');
+        panel.style.position = 'absolute';
+        panel.style.top = '50px';
+        panel.style.left = '50px';
+        panel.style.width = '400px';
+        panel.style.height = '300px';
+        panel.style.border = '1px solid #ccc';
+        panel.style.backgroundColor = '#fff';
+        panel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+        panel.style.resize = 'both';
+        panel.style.overflow = 'auto';
+        panel.style.zIndex = '1000';
+
+        // Create the panel header
+        const header = document.createElement('div');
+        header.style.width = '100%';
+        header.style.height = '30px';
+        header.style.backgroundColor = '#f1f1f1';
+        header.style.borderBottom = '1px solid #ccc';
+        header.style.cursor = 'move';
+        header.style.display = 'flex';
+        header.style.justifyContent = 'space-between';
+        header.style.alignItems = 'center';
+        header.style.padding = '0 10px';
+
+        // Create the close button
+        const closeButton = document.createElement('button');
+        closeButton.innerHTML = '✖';
+        closeButton.style.border = 'none';
+        closeButton.style.background = 'none';
+        closeButton.style.cursor = 'pointer';
+        closeButton.style.fontSize = '16px';
+        closeButton.style.color = '#333';
+        closeButton.addEventListener('click', () => {
+            document.body.removeChild(panel);
+        });
+
+        // Create the iframe to load the URL
+        const iframe = document.createElement('iframe');
+        iframe.src = url;
+        iframe.style.width = '100%';
+        iframe.style.height = 'calc(100% - 30px)';
+        iframe.style.border = 'none';
+
+        // Append the close button to the header
+        header.appendChild(closeButton);
+
+        // Append the header and iframe to the panel
+        panel.appendChild(header);
+        panel.appendChild(iframe);
+
+        // Make the panel draggable
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        header.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offsetX = e.clientX - panel.getBoundingClientRect().left;
+            offsetY = e.clientY - panel.getBoundingClientRect().top;
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+
+        function onMouseMove(e) {
+            if (isDragging) {
+                panel.style.left = `${e.clientX - offsetX}px`;
+                panel.style.top = `${e.clientY - offsetY}px`;
+            }
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
+
+        // Append the panel to the body
+        document.body.appendChild(panel);
+    }
+
+
     const graphQuery = `query GenericGraph{nodes{...Details} links: edges{source{...Details} target{...Details}}} fragment Details on GraphElement {id name: label type color}`;
     const nodeTypesQuery = `query GraphTypes{graph{name nodeTypes: nodeTypeCounts{name count: value} edgeTypes: edgeTypeCounts{name count: value}}}`;
 
     const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
         .nodeColor('color')
+        .nodeVal(8)
         .nodeLabel(node => `${node.type}: '${node.name}'`)
         .onEngineStop(() => Graph.zoomToFit(400));
 
@@ -87,11 +166,11 @@
 
 
     function updateGraph(gData) {
-        Graph.graphData(gData);
+        Graph.graphData(gData).zoomToFit(400);
     }
 
 
-    function filterGraph(gData) {
+    function getVisible(gData) {
         const visibleNodes = []
         gData.nodes.forEach((node) => {
             if (node.type in nodeTypeVisibility && nodeTypeVisibility[node.type]) {
@@ -108,6 +187,12 @@
         return {nodes: visibleNodes, links: visibleLinks};
     }
 
+    function setAllNodeTypeVisibility(value) {
+        Object.keys(nodeTypeVisibility).forEach(key => {
+            nodeTypeVisibility[key] = value;
+        });
+    }
+
     function updateNodeTypeColorMapping(nodes) {
         nodes.forEach(node => {
             if (!nodeTypeColor[node.type]) {
@@ -116,9 +201,32 @@
         });
     }
 
-    function createLegend(graph, gData) {
+
+    function createPanel(graph, gData) {
         updateNodeTypeColorMapping(gData.nodes);
-        const pane = new Tweakpane.Pane({title: `${graph.name} Legend`});
+        const pane = new Tweakpane.Pane();
+        const tab = pane.addTab({
+            pages: [
+                {title: 'Legend'},
+                {title: 'Tools'}
+            ],
+        });
+
+        // Legend tab
+
+        tab.pages[0].addButton({title: 'Zoom - Fit to Page'}).on('click', () => Graph.zoomToFit(400));
+        tab.pages[0].addButton({title: 'Visibility - All On'}).on('click', () => {
+            setAllNodeTypeVisibility(true);
+            updateGraph(gData);
+            pane.refresh();
+        });
+        tab.pages[0].addButton({title: 'Visibility - All Off'}).on('click', () => {
+            setAllNodeTypeVisibility(false);
+            const visibleGData = getVisible(gData);
+            updateGraph(visibleGData);
+            pane.refresh();
+        });
+
         graph.nodeTypes.forEach(nodeType => {
             info = `V: ${nodeType.count}`
             edgeType = graph.edgeTypes.find((t) => t.name === nodeType.name);
@@ -126,19 +234,33 @@
                 info += `, E: ${edgeType.count}`;
             }
 
-            const f = pane.addFolder({title: `${nodeType.name} [${info}]}`});
+            const f = tab.pages[0].addFolder({title: `${nodeType.name} [${info}]`});
 
-            f.addBinding(nodeTypeColor, nodeType.name, {label: ''});
+            f.addBinding(nodeTypeColor, nodeType.name, {label: 'Color'})
+                .on('change', (ev) => {
+                    gData.nodes.forEach(node => {
+                        if (node.type === nodeType.name) {
+                            node.color = ev.value;
+                        }
+                    });
+                    const visibleGData = getVisible(gData);
+                    updateGraph(visibleGData);
+                });
 
             nodeTypeVisibility[nodeType.name] = true;
             f.addBinding(nodeTypeVisibility, nodeType.name, {label: 'Visible'})
-                .on('change', (value) => {
-                    visibleGData = filterGraph(gData);
+                .on('change', (ev) => {
+                    const visibleGData = getVisible(gData);
                     updateGraph(visibleGData);
                 });
         });
-    }
 
+        // Links tab
+        tab.pages[1].addButton({title: 'GraphiQL'}).on('click', () => createFloatingPanel('/graphql'));
+        tab.pages[1].addButton({title: 'GraphQL Voyager'}).on('click', () => createFloatingPanel('/voyager'));
+        tab.pages[1].addButton({title: 'RapiDoc'}).on('click', () => createFloatingPanel('/rapidoc'));
+        tab.pages[1].addButton({title: 'Metrics'}).on('click', () => createFloatingPanel('/metrics'));
+    }
 
     fetchGraphQL({query: graphQuery})
         .then((responseJson) => responseJson.data)
@@ -154,7 +276,7 @@
             fetchGraphQL({query: nodeTypesQuery})
                 .then((responseJson) => responseJson.data)
                 .then((data) => {
-                    createLegend(data.graph, gData);
+                    createPanel(data.graph, gData);
                 });
         });
 </script>
