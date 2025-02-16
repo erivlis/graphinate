@@ -101,8 +101,12 @@ extra:
       link: https://pypi.org/project/graphinate
     - icon: fontawesome/brands/mastodon
       link: https://mastodon.social/@erivlis
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/erivlis
+    - icon: fontawesome/brands/bluesky
+      link: https://bsky.app/profile/erivlis.bsky.social
+    - icon: fontawesome/brands/x-twitter
+      link: https://x.com/erivlis
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/eranrivlis
 
 
 plugins:

@@ -36,14 +36,6 @@ dependencies = [
     "strawberry-graphql[asgi,opentelemetry]"
 ]
 
-
-[project.urls]
-"Homepage" = "https://erivlis.github.io/graphinate"
-"Documentation" = "https://erivlis.github.io/graphinate"
-"Bug Tracker" = "https://github.com/erivlis/graphinate/issues"
-"Source" = "https://github.com/erivlis/graphinate"
-
-
 [project.optional-dependencies]
 plot = [
     "scipy"
@@ -53,8 +45,16 @@ server = [
     "uvicorn[standard]"
 ]
 
+[project.urls]
+"Homepage" = "https://erivlis.github.io/graphinate"
+"Documentation" = "https://erivlis.github.io/graphinate"
+"Bug Tracker" = "https://github.com/erivlis/graphinate/issues"
+"Source" = "https://github.com/erivlis/graphinate"
+
+
 [dependency-groups]
 dev = [
+    "uv",
     "ruff",
     "pipdeptree"
 ]

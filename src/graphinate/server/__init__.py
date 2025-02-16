@@ -4,6 +4,7 @@ import webbrowser
 import strawberry
 from starlette.applications import Starlette
 from starlette.requests import Request
+from starlette.responses import RedirectResponse
 from starlette.schemas import SchemaGenerator
 from starlette.types import ASGIApp
 from strawberry.asgi import GraphQL
@@ -54,11 +55,12 @@ def graphql(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT):
     """
     graphql_schema.extensions.append(OpenTelemetryExtension)
 
+    def open_url():
+        for app_name in ('viewer',):
+            webbrowser.open(f'http://localhost:{port}/{app_name}')
+
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):  # pragma: no cover
-        def open_url():
-            for app_name in ('voyager', 'graphiql', 'viewer'):
-                webbrowser.open(f'http://localhost:{port}/{app_name}')
 
         open_url()
         yield
@@ -75,6 +77,12 @@ def graphql(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT):
     app.add_middleware(PrometheusMiddleware)
     app.add_route("/metrics", metrics)
     app.add_route("/schema", route=openapi_schema, include_in_schema=False)
+    app.add_route("/openapi.json", route=openapi_schema, include_in_schema=False)
+
+    async def redirect_to_existing_route(request):
+        return RedirectResponse(url='/viewer')
+
+    app.add_route('/', redirect_to_existing_route)
 
     import uvicorn
     uvicorn.run(app, host='0.0.0.0', port=port)

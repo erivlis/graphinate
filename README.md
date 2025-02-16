@@ -179,6 +179,8 @@ Options:
 
 #### Server
 
+> TIP: requires the `server` extra to be installed. e.g., `pip install graphinate[server]`
+
 ```text
 Usage: python -m graphinate server [OPTIONS]
 

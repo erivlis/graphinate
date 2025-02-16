@@ -28,6 +28,14 @@ Options:
 
 ### Server
 
+!!! tip
+
+    requires the `server` extra to be installed.
+
+      ```shell
+      pip install graphinate[server]
+      ```
+
 ```console
 Usage: python -m graphinate server [OPTIONS]
 

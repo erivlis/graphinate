@@ -15,21 +15,25 @@ In addition, there are several modes of output to enable examination of the Grap
 
 ### What is a Graph?
 
-“In a mathematician's terminology, a graph is a collection of points and lines connecting some (possibly empty) subset
-of them.
-The points of a graph are most commonly known as graph *vertices*, but may also be called *nodes* or *points*.
-Similarly, the lines connecting the vertices of a graph are most commonly known as graph *edges*, but may also
-be called *arcs* or *lines*.”
+!!! quote
 
-&mdash; [https://mathworld.wolfram.com/Graph.html](https://mathworld.wolfram.com/Graph.html)
+    “In a mathematician's terminology, a graph is a collection of points and lines connecting some (possibly empty) subset
+    of them.
+    The points of a graph are most commonly known as graph *vertices*, but may also be called *nodes* or *points*.
+    Similarly, the lines connecting the vertices of a graph are most commonly known as graph *edges*, but may also
+    be called *arcs* or *lines*.”
+
+    &mdash; [https://mathworld.wolfram.com/Graph.html](https://mathworld.wolfram.com/Graph.html)
 
 ### What is Data?
 
-“...data is a collection of discrete or continuous values that convey information, describing the quantity, quality,
-fact, statistics, other basic units of meaning, or simply sequences of symbols that may be further interpreted
-formally.”
+!!! quote
 
-&mdash; [https://en.wikipedia.org/wiki/Data](https://en.wikipedia.org/wiki/Data)
+    “...data is a collection of discrete or continuous values that convey information, describing the quantity, quality,
+    fact, statistics, other basic units of meaning, or simply sequences of symbols that may be further interpreted
+    formally.”
+   
+    &mdash; [https://en.wikipedia.org/wiki/Data](https://en.wikipedia.org/wiki/Data)
 
 ## How?
 
