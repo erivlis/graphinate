@@ -58,54 +58,182 @@
 <body>
 <div id="3d-graph"></div>
 <script>
-    function createFloatingPanel(url) {
+    let highestZIndex = 0;
+    let lastPanelPosition = {top: 50, left: 50};
+
+    function createFloatingPanel(url, title) {
         // Create the panel container
         const panel = document.createElement('div');
+        panel.className = 'floating-panel';
         panel.style.position = 'absolute';
-        panel.style.top = '50px';
-        panel.style.left = '50px';
+        panel.style.top = `${lastPanelPosition.top}px`;
+        panel.style.left = `${lastPanelPosition.left}px`;
         panel.style.width = '400px';
         panel.style.height = '300px';
-        panel.style.border = '1px solid #ccc';
+        panel.style.border = '4px solid #b5b3b0';
+        panel.style.borderBottom = 'none'; // Remove bottom border
+        panel.style.borderRadius = '5px'; // Smaller rounded corners
         panel.style.backgroundColor = '#fff';
         panel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
         panel.style.resize = 'both';
-        panel.style.overflow = 'auto';
-        panel.style.zIndex = '1000';
+        panel.style.overflow = 'hidden'; // Prevent panel from scrolling
+        panel.style.zIndex = ++highestZIndex; // Set zIndex to one higher than the highest
+
+        // Update the last panel position
+        lastPanelPosition.top += 5;
+        lastPanelPosition.left += 5;
+
+        function lowerZIndexForHigherPanels(panel) {
+            const panels = document.querySelectorAll('.floating-panel');
+            panels.forEach(p => {
+                const zIndex = parseInt(window.getComputedStyle(p).zIndex, 10);
+                if (zIndex > parseInt(panel.style.zIndex, 10)) {
+                    p.style.zIndex = zIndex - 1;
+                }
+            });
+        }
+
+        // Function to bring the panel to the front
+        function bringToFront() {
+            lowerZIndexForHigherPanels(panel);
+            // Set the current panel's zIndex to the highest
+            panel.style.zIndex = highestZIndex;
+        }
+
+        // Add event listener to bring the panel to the front on click
+        panel.addEventListener('mousedown', (e) => {
+            if (e.target !== closeButton && e.target !== maximizeToggleButton) {
+                bringToFront();
+            }
+        });
 
         // Create the panel header
         const header = document.createElement('div');
+        header.className = 'floating-panel-header';
         header.style.width = '100%';
-        header.style.height = '30px';
-        header.style.backgroundColor = '#f1f1f1';
-        header.style.borderBottom = '1px solid #ccc';
+        header.style.height = '20px'; // Set height to 20px
+        header.style.backgroundColor = '#b5b3b0'; // Updated background color
+        header.style.borderBottom = '1px solid #b5b3b0';
         header.style.cursor = 'move';
         header.style.display = 'flex';
-        header.style.justifyContent = 'space-between';
+        header.style.justifyContent = 'space-between'; // Align items to the sides
         header.style.alignItems = 'center';
-        header.style.padding = '0 10px';
+        header.style.padding = '0 5px'; // Adjust padding to fit buttons
+        header.style.boxSizing = 'border-box'; // Include padding in width calculation
+        header.style.position = 'relative';
+        header.style.zIndex = '1'; // Ensure header is above iframe
+
+        // Create the title element
+        const titleElement = document.createElement('div');
+        titleElement.className = 'floating-panel-title';
+        titleElement.innerHTML = title; // Support HTML syntax
+        titleElement.style.flexGrow = '1';
+        titleElement.style.textAlign = 'left'; // Justify title to the left
+        titleElement.style.fontFamily = 'monospace'; // Monospace font
+        titleElement.style.userSelect = 'none'; // Prevent text selection
+
+        // Create the loading ticker
+        const loadingTicker = document.createElement('div');
+        loadingTicker.innerHTML = 'Loading...';
+        loadingTicker.style.marginLeft = '10px';
+        loadingTicker.style.display = 'none'; // Hide by default
+
+        // Create the button container
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'floating-panel-buttons';
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+        buttonContainer.style.margin = '0'; // Remove margin to fit buttons
 
         // Create the close button
         const closeButton = document.createElement('button');
+        closeButton.className = 'floating-panel-close';
         closeButton.innerHTML = '✖';
         closeButton.style.border = 'none';
         closeButton.style.background = 'none';
         closeButton.style.cursor = 'pointer';
         closeButton.style.fontSize = '16px';
         closeButton.style.color = '#333';
+        closeButton.style.padding = '5px'; // Add padding to the button
         closeButton.addEventListener('click', () => {
+            lowerZIndexForHigherPanels(panel);
+            highestZIndex--;
             document.body.removeChild(panel);
         });
 
+        // Create the maximize toggle button
+        const maximizeToggleButton = document.createElement('button');
+        maximizeToggleButton.className = 'floating-panel-maximize';
+        maximizeToggleButton.innerHTML = '🗖';
+        maximizeToggleButton.style.border = 'none';
+        maximizeToggleButton.style.background = 'none';
+        maximizeToggleButton.style.cursor = 'pointer';
+        maximizeToggleButton.style.fontSize = '16px';
+        maximizeToggleButton.style.color = '#333';
+        maximizeToggleButton.style.padding = '5px'; // Add padding to the button
+        let isMaximized = false;
+        let lastSize = {
+            width: panel.style.width,
+            height: panel.style.height,
+            top: panel.style.top,
+            left: panel.style.left
+        };
+
+        function toggleMaximize() {
+            bringToFront();
+            if (isMaximized) {
+                panel.style.width = lastSize.width;
+                panel.style.height = lastSize.height;
+                panel.style.top = lastSize.top;
+                panel.style.left = lastSize.left;
+                header.style.cursor = 'move';
+                maximizeToggleButton.innerHTML = '🗖';
+            } else {
+                lastSize = {
+                    width: panel.style.width,
+                    height: panel.style.height,
+                    top: panel.style.top,
+                    left: panel.style.left
+                };
+                panel.style.width = 'calc(100% - 10px - 8px)'; // padding + border
+                panel.style.height = 'calc(100% - 10px)';
+                panel.style.top = '5px';
+                panel.style.left = '5px';
+                header.style.cursor = 'default';
+                maximizeToggleButton.innerHTML = '❐';
+            }
+            isMaximized = !isMaximized;
+        }
+
+        // Add double-click event listener to the header to toggle maximize
+        header.addEventListener('dblclick', toggleMaximize);
+        maximizeToggleButton.addEventListener('click', toggleMaximize);
+
+        // Append buttons to the button container
+        buttonContainer.appendChild(maximizeToggleButton);
+        buttonContainer.appendChild(closeButton);
+
+        // Append the title element, loading ticker, and button container to the header
+        header.appendChild(titleElement);
+        header.appendChild(loadingTicker);
+        header.appendChild(buttonContainer);
+
         // Create the iframe to load the URL
         const iframe = document.createElement('iframe');
+        iframe.className = 'floating-panel-iframe';
         iframe.src = url;
-        iframe.style.width = '100%';
-        iframe.style.height = 'calc(100% - 30px)';
-        iframe.style.border = 'none';
+        iframe.style.width = 'calc(100% - 8px)'; // Adjust width to match border
+        iframe.style.height = 'calc(100% - 20px)'; // Adjust height to match header
+        iframe.style.border = '4px solid #e6e6e5';
+        iframe.style.overflow = 'auto'; // Allow iframe to scroll
 
-        // Append the close button to the header
-        header.appendChild(closeButton);
+        // Show loading ticker when iframe is loading
+        iframe.addEventListener('load', () => {
+            loadingTicker.style.display = 'none';
+        });
+        iframe.addEventListener('beforeunload', () => {
+            loadingTicker.style.display = 'block';
+        });
 
         // Append the header and iframe to the panel
         panel.appendChild(header);
@@ -114,14 +242,6 @@
         // Make the panel draggable
         let isDragging = false;
         let offsetX, offsetY;
-
-        header.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            offsetX = e.clientX - panel.getBoundingClientRect().left;
-            offsetY = e.clientY - panel.getBoundingClientRect().top;
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
-        });
 
         function onMouseMove(e) {
             if (isDragging) {
@@ -135,6 +255,16 @@
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
         }
+
+        header.addEventListener('mousedown', (e) => {
+            if (!isMaximized) {
+                isDragging = true;
+                offsetX = e.clientX - panel.getBoundingClientRect().left;
+                offsetY = e.clientY - panel.getBoundingClientRect().top;
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            }
+        });
 
         // Append the panel to the body
         document.body.appendChild(panel);
@@ -256,10 +386,10 @@
         });
 
         // Links tab
-        tab.pages[1].addButton({title: 'GraphiQL'}).on('click', () => createFloatingPanel('/graphql'));
-        tab.pages[1].addButton({title: 'GraphQL Voyager'}).on('click', () => createFloatingPanel('/voyager'));
-        tab.pages[1].addButton({title: 'RapiDoc'}).on('click', () => createFloatingPanel('/rapidoc'));
-        tab.pages[1].addButton({title: 'Metrics'}).on('click', () => createFloatingPanel('/metrics'));
+        tab.pages[1].addButton({title: 'GraphiQL'}).on('click', () => createFloatingPanel('/graphql', 'Graph<i>i</i>QL'));
+        tab.pages[1].addButton({title: 'GraphQL Voyager'}).on('click', () => createFloatingPanel('/voyager', 'GraphQL Voyager'));
+        tab.pages[1].addButton({title: 'RapiDoc'}).on('click', () => createFloatingPanel('/rapidoc', 'RapiDoc'));
+        tab.pages[1].addButton({title: 'Metrics'}).on('click', () => createFloatingPanel('/metrics', 'Metrics'));
     }
 
     fetchGraphQL({query: graphQuery})
