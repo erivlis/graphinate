@@ -267,7 +267,7 @@ graphql_operations_cases = [
          "edges": [
              {
                  "type": "edge",
-                 "label": "{'source': 0, 'target': 1}"
+                 "label": "0 ⟹ 1"
              }
          ]
      }),
@@ -287,7 +287,7 @@ graphql_operations_cases = [
          "edges": [
              {
                  "type": "edge",
-                 "label": "{'source': 0, 'target': 1}"
+                 "label": "0 ⟹ 1"
              }
          ]
      }),
