@@ -7,8 +7,11 @@
             crossorigin="anonymous">
         // Import ES module
         import * as Tweakpane from 'https://unpkg.com/tweakpane@4.0.5/dist/tweakpane.min.js';
+        import * as TweakpaneEssentialsPlugin
+            from 'https://unpkg.com/@tweakpane/plugin-essentials@0.2.1/dist/tweakpane-plugin-essentials.min.js';
         // Export it as a global variable
         window.Tweakpane = Tweakpane;
+        window.TweakpaneEssentialsPlugin = TweakpaneEssentialsPlugin;
     </script>
 
 
@@ -27,6 +30,7 @@
 
         .tp-dfwv {
             height: 95vh;
+            min-width: 272px;
             overflow-y: auto;
         }
 
@@ -61,15 +65,15 @@
     let highestZIndex = 0;
     let lastPanelPosition = {top: 50, left: 50};
 
-    function createFloatingPanel(url, title) {
+    function createFloatingIFramePanel(url, title) {
         // Create the panel container
         const panel = document.createElement('div');
         panel.className = 'floating-panel';
         panel.style.position = 'absolute';
         panel.style.top = `${lastPanelPosition.top}px`;
         panel.style.left = `${lastPanelPosition.left}px`;
-        panel.style.width = '400px';
-        panel.style.height = '300px';
+        panel.style.width = '800px';
+        panel.style.height = '600px';
         panel.style.border = '4px solid #b5b3b0';
         panel.style.borderBottom = 'none'; // Remove bottom border
         panel.style.borderRadius = '5px'; // Smaller rounded corners
@@ -80,8 +84,8 @@
         panel.style.zIndex = ++highestZIndex; // Set zIndex to one higher than the highest
 
         // Update the last panel position
-        lastPanelPosition.top += 5;
-        lastPanelPosition.left += 5;
+        lastPanelPosition.top += 10;
+        lastPanelPosition.left += 10;
 
         function lowerZIndexForHigherPanels(panel) {
             const panels = document.querySelectorAll('.floating-panel');
@@ -136,6 +140,7 @@
         const loadingTicker = document.createElement('div');
         loadingTicker.innerHTML = 'Loading...';
         loadingTicker.style.marginLeft = '10px';
+        loadingTicker.style.marginTop = '10px';
         loadingTicker.style.display = 'none'; // Hide by default
 
         // Create the button container
@@ -152,9 +157,9 @@
         closeButton.style.border = 'none';
         closeButton.style.background = 'none';
         closeButton.style.cursor = 'pointer';
-        closeButton.style.fontSize = '16px';
+        closeButton.style.fontSize = '12px';
         closeButton.style.color = '#333';
-        closeButton.style.padding = '5px'; // Add padding to the button
+        closeButton.style.padding = '0 5px'; // Add padding to the button
         closeButton.addEventListener('click', () => {
             lowerZIndexForHigherPanels(panel);
             highestZIndex--;
@@ -168,9 +173,9 @@
         maximizeToggleButton.style.border = 'none';
         maximizeToggleButton.style.background = 'none';
         maximizeToggleButton.style.cursor = 'pointer';
-        maximizeToggleButton.style.fontSize = '16px';
+        maximizeToggleButton.style.fontSize = '12px';
         maximizeToggleButton.style.color = '#333';
-        maximizeToggleButton.style.padding = '5px'; // Add padding to the button
+        maximizeToggleButton.style.padding = '0 5px'; // Add padding to the button
         let isMaximized = false;
         let lastSize = {
             width: panel.style.width,
@@ -271,17 +276,47 @@
     }
 
 
-    const graphQuery = `query GenericGraph{nodes{...Details} links: edges{source{...Details} target{...Details}}} fragment Details on GraphElement {id name: label type color}`;
+    const graphQuery = `query GenericGraph{nodes{...Details} links: edges{source{...Details} target{...Details} ...Details}} fragment Details on GraphElement {id label type color}`;
     const nodeTypesQuery = `query GraphTypes{graph{name nodeTypes: nodeTypeCounts{name count: value} edgeTypes: edgeTypeCounts{name count: value}}}`;
 
-    const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
-        .nodeColor('color')
-        .nodeVal(8)
-        .nodeLabel(node => `${node.type}: '${node.name}'`)
-        .onEngineStop(() => Graph.zoomToFit(400));
 
     const nodeTypeColor = {}
     const nodeTypeVisibility = {};
+    let graphParams = {
+        nodeVal: 8,
+        linkWidth: 0,
+        linkCurvature: 0,
+        linkCurveRotation: 0,
+        linkDirectionalArrowLength: 0, // 0 hides
+        linkDirectionalArrowRelPos: 1, // value between 0 [source] and 1 [target]
+        linkDirectionalParticles: 0,
+        linkDirectionalParticleSpeed: 0.002,
+        linkDirectionalParticleWidth: 1.5,
+        linkDirectionalParticleColor: '#ffff00'
+    }
+
+    function createLabel(gEl) {
+        return `<div style="color: ${gEl.color}; font-family: 'Consolas', 'Menlo', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace; outline-color: ${gEl.color}">${gEl.type}<br>'${gEl.label}'</div>`
+    }
+
+
+    const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
+        .nodeColor('color')
+        .nodeVal(node => graphParams.nodeVal)
+        .nodeLabel(node => createLabel(node))
+        .linkWidth(link => graphParams.linkWidth)
+        .linkColor('color')
+        .linkLabel(link => createLabel(link))
+        .linkCurvature(link => graphParams.linkCurvature)
+        .linkCurveRotation(link => graphParams.linkCurveRotation)
+        .linkDirectionalArrowLength(link => graphParams.linkDirectionalArrowLength)
+        .linkDirectionalArrowRelPos(link => graphParams.linkDirectionalArrowRelPos)
+        .linkDirectionalParticles(link => graphParams.linkDirectionalParticles)
+        .linkDirectionalParticleSpeed(link => graphParams.linkDirectionalParticleSpeed / 10000.0)
+        .linkDirectionalParticleWidth(link => graphParams.linkDirectionalParticleWidth)
+        .linkDirectionalParticleColor(link => graphParams.linkDirectionalParticleColor)
+        .onEngineStop(() => Graph.zoomToFit(400));
+
 
     function fetchGraphQL(payload) {
         return fetch(
@@ -332,12 +367,19 @@
     }
 
 
-    function createPanel(graph, gData) {
+    function refreshGraph(gData) {
+        const visibleGData = getVisible(gData);
+        updateGraph(visibleGData);
+    }
+
+    function createControlPanel(graph, gData) {
         updateNodeTypeColorMapping(gData.nodes);
         const pane = new Tweakpane.Pane();
+        pane.registerPlugin(TweakpaneEssentialsPlugin);
         const tab = pane.addTab({
             pages: [
                 {title: 'Legend'},
+                {title: 'Advanced'},
                 {title: 'Tools'}
             ],
         });
@@ -357,6 +399,8 @@
             pane.refresh();
         });
 
+        tab.pages[0].addBlade({view: 'separator'});
+
         graph.nodeTypes.forEach(nodeType => {
             info = `V: ${nodeType.count}`
             edgeType = graph.edgeTypes.find((t) => t.name === nodeType.name);
@@ -373,23 +417,101 @@
                             node.color = ev.value;
                         }
                     });
-                    const visibleGData = getVisible(gData);
-                    updateGraph(visibleGData);
+                    refreshGraph(gData);
                 });
 
             nodeTypeVisibility[nodeType.name] = true;
             f.addBinding(nodeTypeVisibility, nodeType.name, {label: 'Visible'})
                 .on('change', (ev) => {
-                    const visibleGData = getVisible(gData);
-                    updateGraph(visibleGData);
+                    refreshGraph(gData);
                 });
         });
 
+
+        // Advanced tab
+
+        const nodesFolder = tab.pages[1].addFolder({title: 'Nodes'});
+
+        nodesFolder.addBinding(graphParams, 'nodeVal', {label: 'Volume', step: 1, min: 0, max: 30})
+            .on('change', (ev) => {
+                Graph.refresh();
+            });
+
+        const edgesFolder = tab.pages[1].addFolder({title: 'Edges'});
+
+        edgesFolder.addBinding(graphParams, 'linkDirectionalArrowLength', {label: 'Arrow Length', min: 0, max: 5})
+            .on('change', (ev) => {
+                Graph.refresh();
+            });
+
+        edgesFolder.addBinding(graphParams, 'linkDirectionalArrowRelPos', {
+            label: 'Arrow Position',
+            options: {
+                beginning: 0,
+                middle: 0.5,
+                end: 1,
+            }
+        })
+            .on('change', (ev) => {
+                Graph.refresh();
+            });
+
+        edgesFolder.addBlade({view: 'separator'});
+
+        edgesFolder.addBinding(graphParams, 'linkCurvature', {label: 'Curvature', min: -5, max: 5})
+            .on('change', (ev) => {
+                Graph.refresh();
+                // refreshGraph(gData);
+            });
+
+        edgesFolder.addBinding(graphParams, 'linkCurveRotation', {label: 'Curve Rotation'})
+            .on('change', (ev) => {
+                Graph.refresh();
+            });
+
+        edgesFolder.addBlade({view: 'separator'});
+
+        edgesFolder.addBinding(graphParams, 'linkDirectionalParticles', {
+            label: 'Particles',
+            format: (v) => v.toFixed(0),
+            step: 1,
+            min: 0,
+            max: 10
+        })
+            .on('change', (ev) => {
+                Graph.refresh();
+            });
+
+        edgesFolder.addBinding(graphParams, 'linkDirectionalParticleWidth', {label: 'Particles Width', min: 0, max: 10})
+            .on('change', (ev) => {
+                Graph.refresh();
+            });
+
+        edgesFolder.addBinding(
+            graphParams,
+            'linkDirectionalParticleSpeed',
+            {
+                label: 'Particles Speed',
+                format: (v) => v.toFixed(0),
+                step: 1,
+                min: 0,
+                max: 300,
+            })
+            .on('change', (ev) => {
+                Graph.refresh();
+            });
+
+        edgesFolder.addBinding(graphParams, 'linkDirectionalParticleColor', {label: 'Particles Color'})
+            .on('change', (ev) => {
+                Graph.refresh();
+            });
+
+
         // Links tab
-        tab.pages[1].addButton({title: 'GraphiQL'}).on('click', () => createFloatingPanel('/graphql', 'Graph<i>i</i>QL'));
-        tab.pages[1].addButton({title: 'GraphQL Voyager'}).on('click', () => createFloatingPanel('/voyager', 'GraphQL Voyager'));
-        tab.pages[1].addButton({title: 'RapiDoc'}).on('click', () => createFloatingPanel('/rapidoc', 'RapiDoc'));
-        tab.pages[1].addButton({title: 'Metrics'}).on('click', () => createFloatingPanel('/metrics', 'Metrics'));
+        tab.pages[2].addButton({title: 'GraphiQL'}).on('click', () => createFloatingIFramePanel('/graphql', 'Graph<i>i</i>QL'));
+        tab.pages[2].addButton({title: 'GraphQL Voyager'}).on('click', () => createFloatingIFramePanel('/voyager', 'GraphQL Voyager'));
+        tab.pages[2].addButton({title: 'RapiDoc'}).on('click', () => createFloatingIFramePanel('/rapidoc', 'RapiDoc'));
+        tab.pages[2].addButton({title: 'Metrics'}).on('click', () => createFloatingIFramePanel('/metrics', 'Metrics'));
     }
 
     fetchGraphQL({query: graphQuery})
@@ -400,13 +522,19 @@
                 return node;
             });
             gData.links = gData.links.map((link) => {
-                return {"source": murmurhash3_32_gc(link.source.id, 1), "target": murmurhash3_32_gc(link.target.id, 1)};
+                return {
+                    "source": murmurhash3_32_gc(link.source.id, 1),
+                    "target": murmurhash3_32_gc(link.target.id, 1),
+                    "color": link.color ? link.color : link.source.color,
+                    "label": link.label,
+                    "type": link.type
+                };
             });
             updateGraph(gData);
             fetchGraphQL({query: nodeTypesQuery})
                 .then((responseJson) => responseJson.data)
                 .then((data) => {
-                    createPanel(data.graph, gData);
+                    createControlPanel(data.graph, gData);
                 });
         });
 </script>
