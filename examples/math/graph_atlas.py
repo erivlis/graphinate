@@ -38,13 +38,9 @@ def model(items: list[tuple[str, nx.Graph]]) -> graphinate.GraphModel:
     def nodes():
         yield from g.nodes(data='type')
 
-    @graph_model.edge(operator.itemgetter(2),
-                      source=operator.itemgetter(0),
-                      target=operator.itemgetter(1),
-                      label=operator.itemgetter(0, 1),
-                      value=operator.itemgetter(0, 1))
+    @graph_model.edge(operator.itemgetter('type'))
     def edge():
-        yield from g.edges.data('type')
+        yield from ({'source': e[0], 'target': e[1], **e[2]} for e in g.edges.data())
 
     return graph_model
 

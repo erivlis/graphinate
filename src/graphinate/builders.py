@@ -30,7 +30,7 @@ from .tools import converters, mutators, utcnow
 from .typing import NodeTypeAbsoluteId, UniverseNode
 
 DEFAULT_NODE_DELIMITER = ' ∋ '
-DEFAULT_EDGE_DELIMITER = ' ↔ '
+DEFAULT_EDGE_DELIMITER = ' ⟹ '
 
 GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema]  # noqa: UP007
 
@@ -235,13 +235,14 @@ class NetworkxBuilder(Builder):
             for edge_generator in edge_generators:
                 for edge in edge_generator(**kwargs):
                     edge_id = ((edge.source,), (edge.target,))
+                    edge_label = edge.label(edge_id) if callable(edge.label) else edge.label
                     edge_weight = edge.weight or 1.0
                     edge_type = edge.type.lower()
                     logger.debug("Adding edge from: '{}' to: '{}'", *edge_id)
 
                     if isinstance(self._graph, nx.MultiGraph) or edge_id not in self._graph.edges:
                         self._graph.add_edge(*edge_id,
-                                             label=edge.label,
+                                             label=edge_label,
                                              type=edge_type,
                                              value=[edge.value],
                                              weight=edge_weight,
@@ -277,7 +278,7 @@ class NetworkxBuilder(Builder):
         for name, default in defaults.items():
             if callable(default):
                 values = {tuple(e): default(tuple(e)) for *e, a in self._graph_edges(data=name, default=None)
-                          if a is None}
+                          if a is not None}
             elif isinstance(default, dict):
                 values = default
             elif default:
