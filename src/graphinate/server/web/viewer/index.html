@@ -62,6 +62,25 @@
 <body>
 <div id="3d-graph"></div>
 <script>
+    // region GraphQL
+
+    const graphQuery = `query GenericGraph{nodes{...Details} links: edges{source{...Details} target{...Details} ...Details}} fragment Details on GraphElement {id label type color}`;
+    const nodeTypesQuery = `query GraphTypes{graph{name nodeTypes: nodeTypeCounts{name count: value} edgeTypes: edgeTypeCounts{name count: value}}}`;
+
+    function fetchGraphQL(payload) {
+        return fetch(
+            '/graphql',
+            {
+                method: 'post',
+                headers: {Accept: 'application/json', 'Content-Type': 'application/json'},
+                body: JSON.stringify(payload),
+                credentials: 'include',
+            }).then((response) => response.json());
+    }
+
+    // endregion GraphQL
+
+    // region FloatingIFramePanel
     let highestZIndex = 0;
     let lastPanelPosition = {top: 50, left: 50};
 
@@ -275,10 +294,7 @@
         document.body.appendChild(panel);
     }
 
-
-    const graphQuery = `query GenericGraph{nodes{...Details} links: edges{source{...Details} target{...Details} ...Details}} fragment Details on GraphElement {id label type color}`;
-    const nodeTypesQuery = `query GraphTypes{graph{name nodeTypes: nodeTypeCounts{name count: value} edgeTypes: edgeTypeCounts{name count: value}}}`;
-
+    // endregion FloatingIFramePanel
 
     const nodeTypeColor = {}
     const nodeTypeVisibility = {};
@@ -299,7 +315,6 @@
         return `<div style="color: ${gEl.color}; font-family: 'Consolas', 'Menlo', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace; outline-color: ${gEl.color}">${gEl.type}<br>'${gEl.label}'</div>`
     }
 
-
     const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
         .nodeColor('color')
         .nodeVal(node => graphParams.nodeVal)
@@ -316,18 +331,6 @@
         .linkDirectionalParticleWidth(link => graphParams.linkDirectionalParticleWidth)
         .linkDirectionalParticleColor(link => graphParams.linkDirectionalParticleColor)
         .onEngineStop(() => Graph.zoomToFit(400));
-
-
-    function fetchGraphQL(payload) {
-        return fetch(
-            '/graphql',
-            {
-                method: 'post',
-                headers: {Accept: 'application/json', 'Content-Type': 'application/json'},
-                body: JSON.stringify(payload),
-                credentials: 'include',
-            }).then((response) => response.json());
-    }
 
 
     function updateGraph(gData) {
@@ -372,10 +375,60 @@
         updateGraph(visibleGData);
     }
 
-    function createControlPanel(graph, gData) {
+    function createGraphControlPanel(graph, gData) {
         updateNodeTypeColorMapping(gData.nodes);
-        const pane = new Tweakpane.Pane();
+
+
+        const pane = new Tweakpane.Pane({
+            title: 'Control Panel',
+            expanded: true
+        });
         pane.registerPlugin(TweakpaneEssentialsPlugin);
+
+
+        pane.addButton({title: 'Zoom to Fit'}).on('click', () => Graph.zoomToFit(400));
+
+
+        pane.addBlade({
+            view: 'buttongrid',
+            size: [2, 1],
+            cells: (x, y) => ({
+                title: [
+                    ['All On', 'All Off'],
+                ][y][x],
+            }),
+            label: 'Visibility',
+        }).on('click', (ev) => {
+            switch (ev.cell.title) {
+                case 'All On':
+                    setAllNodeTypeVisibility(true);
+                    updateGraph(gData);
+                    pane.refresh();
+                    break;
+                case 'All Off':
+                    setAllNodeTypeVisibility(false);
+                    const visibleGData = getVisible(gData);
+                    updateGraph(visibleGData);
+                    pane.refresh();
+                    break;
+                default:
+                    console.log('Unknown action');
+            }
+        });
+        // pane.addButton({title: 'Visibility - All On'}).on('click', () => {
+        //     setAllNodeTypeVisibility(true);
+        //     updateGraph(gData);
+        //     pane.refresh();
+        // });
+        // pane.addButton({title: 'Visibility - All Off'}).on('click', () => {
+        //     setAllNodeTypeVisibility(false);
+        //     const visibleGData = getVisible(gData);
+        //     updateGraph(visibleGData);
+        //     pane.refresh();
+        // });
+
+        pane.addBlade({view: 'separator'});
+
         const tab = pane.addTab({
             pages: [
                 {title: 'Legend'},
@@ -385,21 +438,7 @@
         });
 
         // Legend tab
-
-        tab.pages[0].addButton({title: 'Zoom - Fit to Page'}).on('click', () => Graph.zoomToFit(400));
-        tab.pages[0].addButton({title: 'Visibility - All On'}).on('click', () => {
-            setAllNodeTypeVisibility(true);
-            updateGraph(gData);
-            pane.refresh();
-        });
-        tab.pages[0].addButton({title: 'Visibility - All Off'}).on('click', () => {
-            setAllNodeTypeVisibility(false);
-            const visibleGData = getVisible(gData);
-            updateGraph(visibleGData);
-            pane.refresh();
-        });
-
-        tab.pages[0].addBlade({view: 'separator'});
+        const legendTab = tab.pages[0];
 
         graph.nodeTypes.forEach(nodeType => {
             info = `V: ${nodeType.count}`
@@ -408,9 +447,9 @@
                 info += `, E: ${edgeType.count}`;
             }
 
-            const f = tab.pages[0].addFolder({title: `${nodeType.name} [${info}]`});
+            const nodeTypeFolder = legendTab.addFolder({title: `${nodeType.name} [${info}]`});
 
-            f.addBinding(nodeTypeColor, nodeType.name, {label: 'Color'})
+            nodeTypeFolder.addBinding(nodeTypeColor, nodeType.name, {label: 'Color'})
                 .on('change', (ev) => {
                     gData.nodes.forEach(node => {
                         if (node.type === nodeType.name) {
@@ -421,7 +460,7 @@
                 });
 
             nodeTypeVisibility[nodeType.name] = true;
-            f.addBinding(nodeTypeVisibility, nodeType.name, {label: 'Visible'})
+            nodeTypeFolder.addBinding(nodeTypeVisibility, nodeType.name, {label: 'Visible'})
                 .on('change', (ev) => {
                     refreshGraph(gData);
                 });
@@ -430,14 +469,92 @@
 
         // Advanced tab
 
-        const nodesFolder = tab.pages[1].addFolder({title: 'Nodes'});
+        const advancedTab = tab.pages[1];
+
+        // const presets = () => JSON.parse(localStorage.getItem('graphPresets')) || {};
+        //
+        // function savePreset(name, settings) {
+        //     presets[name] = settings;
+        //     localStorage.setItem('graphPresets', JSON.stringify(presets()));
+        // }
+        //
+        //
+        // const presetFolder = advancedTab.addFolder({title: 'Presets'});
+        //
+        // presetFolder.addBlade({
+        //     view: 'buttongrid',
+        //     size: [2, 1],
+        //     cells: (x, y) => ({
+        //         title: [
+        //             ['Save', 'Delete'],
+        //         ][y][x],
+        //     }),
+        //     label: 'Preset',
+        // }).on('click', (ev) => {
+        //     switch (ev.cell.title) {
+        //         case 'Save':
+        //             const presetName = prompt('Enter preset name:');
+        //             if (presetName) {
+        //                 savePreset(presetName, {...graphParams});
+        //                 updatePresetDropdown();
+        //             }
+        //             break;
+        //         case 'Delete':
+        //             const selectedPresetName = presetDropdown.text;
+        //             if (selectedPresetName && presets()[selectedPresetName]) {
+        //                 const newPresets = presets()
+        //                 delete newPresets[selectedPresetName];
+        //                 localStorage.setItem('graphPresets', JSON.stringify(newPresets));
+        //                 updatePresetDropdown();
+        //             }
+        //             break;
+        //         default:
+        //             console.log('Unknown action');
+        //     }
+        // });
+        //
+        //
+        // presetFolder.addButton({title: 'Save Preset'}).on('click', () => {
+        //     const presetName = prompt('Enter preset name:');
+        //     if (presetName) {
+        //         savePreset(presetName, {...graphParams});
+        //         updatePresetDropdown();
+        //     }
+        // });
+        //
+        // const presetDropdown = presetFolder.addBlade({
+        //     view: 'list',
+        //     label: 'Presets',
+        //     options: Object.entries(presets()).map(([k, v]) => {
+        //             return {text: k, value: v};
+        //         }
+        //     ),
+        //     value: ''
+        // }).on('change', (ev) => {
+        //     Object.assign(graphParams, ev.value);
+        //     pane.refresh();
+        //     Graph.refresh();
+        // });
+        //
+        // function updatePresetDropdown() {
+        //     presetDropdown.options = Object.entries(presets()).map(([k, v]) => {
+        //             return {text: k, value: v};
+        //         }
+        //     );
+        //     pane.refresh();
+        // }
+        //
+        // // Call updatePresetDropdown initially to populate the dropdown
+        // updatePresetDropdown();
+
+        const nodesFolder = advancedTab.addFolder({title: 'Nodes'});
 
         nodesFolder.addBinding(graphParams, 'nodeVal', {label: 'Volume', step: 1, min: 0, max: 30})
             .on('change', (ev) => {
                 Graph.refresh();
             });
 
-        const edgesFolder = tab.pages[1].addFolder({title: 'Edges'});
+        const edgesFolder = advancedTab.addFolder({title: 'Edges'});
 
         edgesFolder.addBinding(graphParams, 'linkDirectionalArrowLength', {label: 'Arrow Length', min: 0, max: 5})
             .on('change', (ev) => {
@@ -507,11 +624,13 @@
             });
 
 
-        // Links tab
-        tab.pages[2].addButton({title: 'GraphiQL'}).on('click', () => createFloatingIFramePanel('/graphql', 'Graph<i>i</i>QL'));
-        tab.pages[2].addButton({title: 'GraphQL Voyager'}).on('click', () => createFloatingIFramePanel('/voyager', 'GraphQL Voyager'));
-        tab.pages[2].addButton({title: 'RapiDoc'}).on('click', () => createFloatingIFramePanel('/rapidoc', 'RapiDoc'));
-        tab.pages[2].addButton({title: 'Metrics'}).on('click', () => createFloatingIFramePanel('/metrics', 'Metrics'));
+        // Tools tab
+        const toolsTab = tab.pages[2];
+
+        toolsTab.addButton({title: 'GraphiQL'}).on('click', () => createFloatingIFramePanel('/graphql', 'Graph<i>i</i>QL'));
+        toolsTab.addButton({title: 'GraphQL Voyager'}).on('click', () => createFloatingIFramePanel('/voyager', 'GraphQL Voyager'));
+        toolsTab.addButton({title: 'RapiDoc'}).on('click', () => createFloatingIFramePanel('/rapidoc', 'RapiDoc'));
+        toolsTab.addButton({title: 'Metrics'}).on('click', () => createFloatingIFramePanel('/metrics', 'Metrics'));
     }
 
     fetchGraphQL({query: graphQuery})
@@ -534,7 +653,7 @@
             fetchGraphQL({query: nodeTypesQuery})
                 .then((responseJson) => responseJson.data)
                 .then((data) => {
-                    createControlPanel(data.graph, gData);
+                    createGraphControlPanel(data.graph, gData);
                 });
         });
 </script>
