@@ -7,6 +7,7 @@ from graphinate.server import graphql
 __all__ = (
     'GraphModel',
     'GraphType',
+    'Multiplicity',
     'build',
     'builders',
     'graphql',

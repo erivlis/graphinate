@@ -3,7 +3,7 @@ import itertools
 from collections import defaultdict, namedtuple
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
-from enum import StrEnum, auto
+from enum import Enum, auto
 from typing import Any, Optional, Union
 
 from .typing import Edge, Element, Extractor, Items, Node, NodeTypeAbsoluteId, UniverseNode
@@ -71,7 +71,7 @@ def elements(iterable: Iterable[Any],
         yield create_element(**kwargs)
 
 
-class Multiplicity(StrEnum):
+class Multiplicity(Enum):
     ADD = auto()
     ALL = auto()
     FIRST = auto()
