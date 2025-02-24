@@ -79,14 +79,14 @@ def ast_graph_model():
     def target(value):
         return endpoint(value, 'target')
 
-    @graph_model.node(_type=node_type,
+    @graph_model.node(type_=node_type,
                       key=key,
                       label=node_label,
-                      uniqueness=True)
+                      unique=True)
     def ast_node(**kwargs):
         yield from _ast_nodes([root_ast_node])
 
-    @graph_model.edge(_type='edge',
+    @graph_model.edge(type_='edge',
                       source=source,
                       target=target,
                       label=operator.itemgetter('type'))

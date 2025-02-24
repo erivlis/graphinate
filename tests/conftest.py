@@ -74,11 +74,11 @@ def ast_graph_model():
     def target(value):
         return endpoint(value, 'target')
 
-    @graph_model.node(_type=node_type, key=key, label=node_label, uniqueness=True)
+    @graph_model.node(type_=node_type, key=key, label=node_label, unique=True)
     def ast_node(**kwargs):
         yield from _ast_nodes([root_ast_node])
 
-    @graph_model.edge(_type='edge', source=source, target=target, label=operator.itemgetter('type'))
+    @graph_model.edge(type_='edge', source=source, target=target, label=operator.itemgetter('type'))
     def ast_edge(**kwargs):
         yield from _ast_edge(root_ast_node)
 
@@ -101,7 +101,7 @@ def map_graph_model(country_count, city_count):
     def city_node_label(value):
         return fake.city()
 
-    @graph_model.node(label=country_node_label)
+    @graph_model.node(label=country_node_label, unique=False)
     def country(country_id=None, **kwargs):
 
         if country_id and country_id in country_ids:
@@ -109,7 +109,7 @@ def map_graph_model(country_count, city_count):
         else:
             yield from country_ids
 
-    @graph_model.node(parent_type='country', label=city_node_label)
+    @graph_model.node(parent_type='country', label=city_node_label, unique=False)
     def city(country_id=None, city_id=None, **kwargs):
 
         if country_id is None and city_id is None:
@@ -124,8 +124,9 @@ def map_graph_model(country_count, city_count):
         if country_id is not None and city_id is None:
             yield from (k for k, v in city_ids.items() if v == country_id)
 
-    @graph_model.node(_type=operator.itemgetter('sex'),
+    @graph_model.node(type_=operator.itemgetter('sex'),
                       parent_type='city',
+                      unique= False,
                       key=operator.itemgetter('username'),
                       label=operator.itemgetter('name'))
     def person(country_id=None, city_id=None, person_id=None, **kwargs):

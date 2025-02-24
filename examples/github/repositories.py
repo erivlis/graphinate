@@ -18,7 +18,7 @@ def repo_graph_model():  # noqa: C901
 
     graph_model = graphinate.model(name='GitHub Repository Graph')
 
-    @graph_model.edge
+    @graph_model.edge()
     def github(user_id: Optional[str] = None,
                repository_id: Optional[str] = None,
                commit_id: Optional[str] = None,
@@ -56,7 +56,7 @@ def repo_graph_model():  # noqa: C901
                                    label=commit_label)
 
     file_node = graph_model.node(parent_type='commit',
-                                 uniqueness=True,
+                                 unique=True,
                                  key=operator.attrgetter('filename'),
                                  value=operator.attrgetter('raw_data'),
                                  label=operator.itemgetter('filename'))

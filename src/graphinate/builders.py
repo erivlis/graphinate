@@ -3,13 +3,11 @@ Builder classes that generate graph data structures from a GraphModel
 """
 import base64
 import functools
-import gzip
 import importlib
 import inspect
 import json
 import math
 import operator
-import pickle
 from abc import ABC
 from collections import Counter
 from collections.abc import Callable, Hashable, Mapping
@@ -25,7 +23,7 @@ from loguru import logger
 from strawberry.extensions import ParserCache, QueryDepthLimiter, ValidationCache
 
 from . import color
-from .modeling import GraphModel
+from .modeling import GraphModel, Multiplicity
 from .tools import converters, mutators, utcnow
 from .typing import NodeTypeAbsoluteId, UniverseNode
 
@@ -52,12 +50,11 @@ def edge_label_converter(value):
 def encode_id(graph_node_id: tuple,
               encoding: str = 'utf-8',
               delimiter: str = DEFAULT_NODE_DELIMITER) -> str:
-    # obj_s: str = delimiter.join(graph_node_id)
-    # obj_b: bytes = obj_s.encode(encoding)
-    obj_b = gzip.compress(pickle.dumps(graph_node_id))
+    # obj_s: str = delimiter.join(map(str,graph_node_id))
+    obj_s: str = json.dumps(graph_node_id)
+    obj_b: bytes = obj_s.encode(encoding)
     enc_b: bytes = base64.b64encode(obj_b)
     enc_s: str = enc_b.decode(encoding)
-
     return enc_s
 
 
@@ -66,9 +63,8 @@ def decode_id(graphql_node_id: strawberry.ID,
               delimiter: str = DEFAULT_NODE_DELIMITER) -> tuple[str, ...]:
     enc_b: bytes = graphql_node_id.encode(encoding)
     obj_b: bytes = base64.b64decode(enc_b)
-    # noinspection PickleLoad
-    obj = pickle.loads(gzip.decompress(obj_b))
-    # obj_s: str = obj_b.decode(encoding)
+    obj_s: str = obj_b.decode(encoding)
+    obj: tuple = tuple(json.loads(obj_s))
     # obj: tuple = tuple(obj_s.split(delimiter))
     return obj
 
@@ -188,47 +184,57 @@ class NetworkxBuilder(Builder):
         return tuple(ids)
 
     def _populate_nodes(self, node_type_absolute_id: NodeTypeAbsoluteId, **kwargs):
-        node_model = self.model.node_models[node_type_absolute_id]
-        unique = node_model.uniqueness
-        for node in node_model.generator(**kwargs):
-            parent_node_id = self._parent_node_id(node_type_absolute_id, **kwargs)
-            node_lineage = (*parent_node_id, node.key) if parent_node_id is not UniverseNode else (node.key,)
-            node_id = (node.key,) if unique else node_lineage
+        for node_model in self.model.node_models[node_type_absolute_id]:
+            unique = node_model.uniqueness
+            for node in node_model.generator(**kwargs):
+                parent_node_id = self._parent_node_id(node_type_absolute_id, **kwargs)
+                node_lineage = (*parent_node_id, node.key) if parent_node_id is not UniverseNode else (node.key,)
+                node_id = (node.key,) if unique else node_lineage
 
-            label = node.key
-            if node_model.label is not None:
-                label = node_model.label(node.value) if callable(node_model.label) else node_model.label
+                label = node.key
+                if node_model.label is not None:
+                    label = node_model.label(node.value) if callable(node_model.label) else node_model.label
 
-            node_type = node.__class__.__name__.lower()
-            if node_type == 'tuple':
-                node_type = node_model.type.lower()
+                node_type = node.__class__.__name__.lower()
+                if node_type == 'tuple':
+                    node_type = node_model.type.lower()
 
-            logger.debug("Adding node: '{}'", node.value)
+                if node_id in self._graph:
+                    logger.debug("Updating node. ID: {}, Label: {}", node_id, label)
 
-            if node_id in self._graph:
-                self._graph.nodes[node_id]['value'].append(node.value)
-                self._graph.nodes[node_id]['magnitude'] += 1
-                self._graph.nodes[node_id]['updated'] = utcnow()
-            else:
-                self._graph.add_node(node_id,
-                                     label=label,
-                                     type=node_type,
-                                     value=[node.value],
-                                     magnitude=1,
-                                     lineage=list(node_lineage),
-                                     created=utcnow())
+                    match node_model.multiplicity:
+                        case Multiplicity.ADD:
+                            self._graph.nodes[node_id]['value'] = [self._graph.nodes[node_id]['value'] + node.value]
+                        case Multiplicity.ALL:
+                            self._graph.nodes[node_id]['value'].append(node.value)
+                        case Multiplicity.FIRST:
+                            ...
+                        case Multiplicity.LAST:
+                            self._graph.nodes[node_id]['value'] = [node.value]
 
-                self._graph.graph['node_types'].update({node_type: 1})
+                    self._graph.nodes[node_id]['magnitude'] += 1
+                    self._graph.nodes[node_id]['updated'] = utcnow()
+                else:
+                    logger.debug("Adding node. ID: {}, Label: {}", node_id, label)
+                    self._graph.add_node(node_id,
+                                         label=label,
+                                         type=node_type,
+                                         value=[node.value],
+                                         magnitude=1,
+                                         lineage=list(node_lineage),
+                                         created=utcnow())
 
-            if node_model.parent_type is not UniverseNode:
-                logger.debug("Adding edge from: '{}' to '{}'", parent_node_id, node_id)
-                self._graph.add_edge(parent_node_id,
-                                     node_id,
-                                     created=utcnow())
+                    self._graph.graph['node_types'].update({node_type: 1})
 
-            new_kwargs = kwargs.copy()
-            new_kwargs[f"{node_type}_id"] = node.key
-            self._populate_node_type(node_model.type, **new_kwargs)
+                if node_model.parent_type is not UniverseNode:
+                    logger.debug("Adding edge. Source: {}, Target: {}", parent_node_id, node_id)
+                    self._graph.add_edge(parent_node_id,
+                                         node_id,
+                                         created=utcnow())
+
+                new_kwargs = kwargs.copy()
+                new_kwargs[f"{node_type}_id"] = node.key
+                self._populate_node_type(node_model.type, **new_kwargs)
 
     def _populate_edges(self, **kwargs):
         for edge_model, edge_generators in self.model.edge_generators.items():
@@ -238,7 +244,7 @@ class NetworkxBuilder(Builder):
                     edge_label = edge.label(edge_id) if callable(edge.label) else edge.label
                     edge_weight = edge.weight or 1.0
                     edge_type = edge.type.lower()
-                    logger.debug("Adding edge from: '{}' to: '{}'", *edge_id)
+                    logger.debug("Adding edge. Source: {}, Target: {}", *edge_id)
 
                     if isinstance(self._graph, nx.MultiGraph) or edge_id not in self._graph.edges:
                         self._graph.add_edge(*edge_id,

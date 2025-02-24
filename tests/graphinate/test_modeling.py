@@ -7,12 +7,13 @@ import graphinate.typing
 def test_graph_model(map_graph_model):
     # arrange
     expected_country_count, expected_city_count, graph_model = map_graph_model
-
+    country_type_id = (graphinate.typing.UniverseNode, 'country')
+    city_type_id = ('country', 'city')
 
     # act
     actual_model_count = len(graph_model._node_models)
-    actual_country_count = len(list(graph_model._node_models[(graphinate.typing.UniverseNode, 'country')].generator()))
-    actual_city_count = len(list(graph_model._node_models[('country', 'city')].generator()))
+    actual_country_count = len(list(graph_model._node_models[country_type_id][0].generator()))
+    actual_city_count = len(list(graph_model._node_models[city_type_id][0].generator()))
 
     # assert
     assert actual_model_count == 3
