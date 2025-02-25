@@ -83,6 +83,7 @@ nav:
   - Home: index.md
   - Introduction: intro.md
   - Quick Start: start.md
+  - Tutorial: tutorial.md
   - Usage: usage/
   - Examples: examples/
   # - Gallery: gallery/
