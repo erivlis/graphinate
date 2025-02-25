@@ -15,9 +15,9 @@ logger = logging.getLogger(__name__)
 
 def initialize_musicbrainz():
     musicbrainzngs.set_useragent(
-        "MusicGraph",
+        "MusicArtistGraph",
         "0.1.0",
-        "https://github.com/erivlis"
+        "https://github.com/erivlis/graphinate"
     )
 
 
