@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     graph_atlas = graphs.atlas()
 
-    listbox_chooser = ListboxChooser('Choose Graph', graph_atlas)
+    listbox_chooser = ListboxChooser('Choose Graph/s', graph_atlas)
     choices = list(listbox_chooser.get_choices())
     model = model(choices)
 
