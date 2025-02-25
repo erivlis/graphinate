@@ -31,9 +31,10 @@ dependencies = [
     "click",
     "inflect",
     "loguru",
+    "mappingtools",
     "matplotlib",
     "networkx",
-    "strawberry-graphql[asgi,opentelemetry]"
+    "strawberry-graphql[asgi,opentelemetry]",
 ]
 
 [project.optional-dependencies]

@@ -1,7 +1,6 @@
 """
 Builder classes that generate graph data structures from a GraphModel
 """
-import base64
 import functools
 import importlib
 import inspect
@@ -20,63 +19,16 @@ import inflect
 import networkx as nx
 import strawberry
 from loguru import logger
+from mappingtools.transformers import simplify
 from strawberry.extensions import ParserCache, QueryDepthLimiter, ValidationCache
 
-from . import color
+from . import color, converters
+from .converters import decode_edge_id, decode_id, edge_label_converter, encode_edge_id, encode_id, node_label_converter
 from .modeling import GraphModel, Multiplicity
-from .tools import converters, mutators, utcnow
+from .tools import utcnow
 from .typing import NodeTypeAbsoluteId, UniverseNode
 
-DEFAULT_NODE_DELIMITER = ' ∋ '
-DEFAULT_EDGE_DELIMITER = ' ⟹ '
-
 GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema]  # noqa: UP007
-
-
-def label_converter(value, delimiter: str):
-    if value:
-        return delimiter.join(str(v) for v in value) if isinstance(value, tuple) else str(value)
-
-    return value
-
-
-node_label_converter = functools.partial(label_converter, delimiter=DEFAULT_NODE_DELIMITER)
-
-
-def edge_label_converter(value):
-    return label_converter(tuple(node_label_converter(n) for n in value), delimiter=DEFAULT_EDGE_DELIMITER)
-
-
-def encode_id(graph_node_id: tuple,
-              encoding: str = 'utf-8',
-              delimiter: str = DEFAULT_NODE_DELIMITER) -> str:
-    # obj_s: str = delimiter.join(map(str,graph_node_id))
-    obj_s: str = json.dumps(graph_node_id)
-    obj_b: bytes = obj_s.encode(encoding)
-    enc_b: bytes = base64.b64encode(obj_b)
-    enc_s: str = enc_b.decode(encoding)
-    return enc_s
-
-
-def decode_id(graphql_node_id: strawberry.ID,
-              encoding: str = 'utf-8',
-              delimiter: str = DEFAULT_NODE_DELIMITER) -> tuple[str, ...]:
-    enc_b: bytes = graphql_node_id.encode(encoding)
-    obj_b: bytes = base64.b64decode(enc_b)
-    obj_s: str = obj_b.decode(encoding)
-    obj: tuple = tuple(json.loads(obj_s))
-    # obj: tuple = tuple(obj_s.split(delimiter))
-    return obj
-
-
-def encode_edge_id(edge: tuple, encoding: str = 'utf-8'):
-    encoded_edge = tuple(encode_id(n, encoding) for n in edge)
-    return encode_id(encoded_edge, encoding)
-
-
-def decode_edge_id(graphql_edge_id: strawberry.ID, encoding: str = 'utf-8'):
-    encoded_edge: tuple = decode_id(graphql_edge_id, encoding)
-    return tuple(decode_id(enc_node) for enc_node in encoded_edge)
 
 
 class GraphType(Enum):
@@ -103,9 +55,9 @@ class GraphType(Enum):
         if graph.is_directed() and graph.is_multigraph():
             return cls.MultiDiGraph
         elif graph.is_directed():
-            return cls.MultiGraph
+            return cls.DiGraph
         elif graph.is_multigraph():
-            return cls.MultiDiGraph.MultiGraph
+            return cls.MultiGraph
         else:
             return cls.Graph
 
@@ -310,7 +262,7 @@ class NetworkxBuilder(Builder):
 
         for counter_name in ('node_types', 'edge_types'):
             counter = self._graph.graph[counter_name]
-            self._graph.graph[counter_name] = mutators.dictify(counter)
+            self._graph.graph[counter_name] = simplify(counter)
 
         self._graph.graph['created'] = utcnow()
 

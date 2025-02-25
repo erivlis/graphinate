@@ -1,22 +1,25 @@
 import networkx as nx
 import pytest
 
+import graphinate
 import graphinate.builders
+from graphinate import GraphType
+
+graph_types = [
+    (nx.Graph(), GraphType.Graph),
+    (nx.DiGraph(), GraphType.DiGraph),
+    (nx.MultiGraph(), GraphType.MultiGraph),
+    (nx.MultiDiGraph(), GraphType.MultiDiGraph)
+]
 
 
-@pytest.mark.parametrize('case', [0, None, "", False])
-def test_label_converter__value__falsy(case):
-    actual = graphinate.builders.label_converter(case, delimiter=graphinate.builders.DEFAULT_NODE_DELIMITER)
-    assert actual == case
+@pytest.mark.parametrize(('graph', 'expected_graph_type'), graph_types)
+def test_returns_graph_type_for_graph(graph, expected_graph_type):
+    # Act
+    actual_graph_type = GraphType.of(graph)
 
-
-def test_encoding():
-    expected_edge = (("parent_a", "child_a"), ("parent_b", "child_b"))
-
-    edge_id = graphinate.builders.encode_edge_id(expected_edge)
-    actual_edge = graphinate.builders.decode_edge_id(edge_id)
-
-    assert actual_edge == expected_edge
+    # Assert
+    assert actual_graph_type == expected_graph_type
 
 
 def test_networkx_builder__empty_model():
@@ -200,31 +203,15 @@ def test_graphql_builder__map_graph_model(execution_number, map_graph_model, gra
 
 graphql_operations_cases = [
     ("""{
-      empty: measure(measure: is_empty) {
-        name
-        value
-      }
-      directed: measure(measure: is_directed) {
-        name
-        value
-      }
-      planar: measure(measure: is_planar) {
-        name
-        value
-      }
-      connectivity: measure(measure: is_connected) {
-        name
-        value
-      }
-      node_connectivity: measure(measure: node_connectivity) {
-        name
-        value
-      }
-      threshold_graph: measure(measure: is_threshold_graph) {
-        name
-        value
-      }
-    }""", {
+      empty: measure(measure: is_empty){...Details}
+      directed: measure(measure: is_directed){...Details}
+      planar: measure(measure: is_planar){...Details}
+      connectivity: measure(measure: is_connected){...Details}
+      node_connectivity: measure(measure: node_connectivity){...Details}
+      threshold_graph: measure(measure: is_threshold_graph){...Details}
+    }
+    fragment Details on Measure {name value}
+    """, {
         "empty": {
             "name": "is_empty",
             "value": 0
@@ -249,34 +236,9 @@ graphql_operations_cases = [
             "name": "is_threshold_graph",
             "value": 0
         }
-
     }),
-    ("""
-    query Graph {
-      nodes(nodeId: "H4sIAFs7E2UC/2tgmcrKAAHeDK1T9ADQP1FHEAAAAA==") {type label}
-      edges(edgeId: "H4sIAFs7E2UC/2tgmZrIAAE9Oh4mxZ6ObsXmrkahzvpGJem5yUXejo4eqS7ehiGWji6BAYZuHq6OIGBrOwW38iywcmfDcH9jfbjytil6AHhudC5sAAAA") {type label}
-    }
-    """, # noqa: E501
-     {
-         "nodes": [
-             {
-                 "type": "node",
-                 "label": "0"
-             }
-         ],
-         "edges": [
-             {
-                 "type": "edge",
-                 "label": "0 ⟹ 1"
-             }
-         ]
-     }),
-    ("""
-    query Graph {
-      nodes(nodeId: "H4sIAFs7E2UC/2tgmcrKAAHeDK1T9ADQP1FHEAAAAA==") {type label}
-      edges(edgeId: "H4sIAFs7E2UC/2tgmZrIAAE9Oh4mxZ6ObsXmrkahzvpGJem5yUXejo4eqS7ehiGWji6BAYZuHq6OIGBrOwW38iywcmfDcH9jfbjytil6AHhudC5sAAAA") {type label}
-    }
-    """,  # noqa: E501
+    ("""query Graph {nodes(nodeId: "WzBd") {type label} edges(edgeId: "WyJXekJkIiwgIld6RmQiXQ==") {type label}}""",
+     # noqa: E501
      {
          "nodes": [
              {

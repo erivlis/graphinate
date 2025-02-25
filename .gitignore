@@ -782,3 +782,4 @@ cython_debug/
 #.idea/
 
 /.idea/**
+.qodo
