@@ -75,6 +75,38 @@
   </tr>
 </table>
 
+## Table of Contents
+
+- [Introduction](#introduction)
+    - [What is Graphinate?](#what-is-graphinate)
+    - [Links](#links)
+- [Quick Start](#quick-start)
+    - [Install](#install)
+    - [Example](#example)
+- [CLI](#cli)
+    - [Commands](#commands)
+        - [Save](#save)
+        - [Server](#server)
+- [Gallery](#gallery)
+    - [Python AST](#python-ast)
+    - [GitHub Repository](#github-repository)
+    - [Python AST - 3D Force-Directed Animation](#python-ast---3d-force-directed-animation)
+    - [Web Page Links](#web-page-links)
+- [Development](#development)
+    - [Ruff](#ruff)
+    - [Test](#test)
+        - [Standard (cobertura) XML Coverage Report](#standard-cobertura-xml-coverage-report)
+        - [HTML Coverage Report](#html-coverage-report)
+    - [Docs](#docs)
+        - [test](#test-1)
+        - [build](#build)
+- [Acknowledgements](#acknowledgements)
+    - [Dependencies](#dependencies)
+        - [Python](#python)
+        - [Javascript and HTML](#javascript-and-html)
+    - [Dev Tools](#dev-tools)
+    - [IDE](#ide)
+
 ## Introduction
 
 ### What is Graphinate?
@@ -215,10 +247,33 @@ Options:
 
 ## Development
 
+### Install dependencies
+
+Use UV to install all dependencies
+
+```shell
+uv sync --all-extras --all-groups
+```
+
+### Update dependencies
+
+```shell
+uv lock --upgrade
+uv sync --all-extras --all-groups
+```
+
 ### Ruff
+
+#### Report issues
 
 ```shell
 ruff check src
+```
+
+#### Fix issues
+
+```shell
+ruff check src --fix
 ```
 
 ### Test
@@ -233,6 +288,12 @@ ruff check src
 
 ```shell
 python -m pytest tests -n auto --cov=src --cov-branch --doctest-modules --cov-report=html --junitxml=test_results.xml
+```
+
+#### Terminal Coverage Report
+
+```shell
+python -m pytest tests -n auto --cov=src --cov-branch --doctest-modules --cov-report=term --junitxml=test_results.xml
 ```
 
 ### Docs
@@ -283,4 +344,4 @@ python -m mkdocs build
 
 <img alt="Star Chart" src="https://forthebadge.com/images/badges/works-on-my-machine.svg">
 
-Copyright © 2023 Eran Rivlis
+Copyright © 2023-2025 Eran Rivlis

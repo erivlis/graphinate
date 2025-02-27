@@ -62,58 +62,43 @@ We need to import the necessary modules for creating the graph model.
 
 ```python
 import graphinate
-import musicbrainzngs
 from time import sleep
 import operator
-import diskcache
+
 ```
 
-### Step 3.2: Define the Cache Directory
+### Step 3.2: Define the Music Graph Model Function
 
-We will define a function to get the cache directory path. This will be used to store cached artist data.
-
-```python
-import pathlib
-
-
-def cache_dir():
-    current_script_path = pathlib.Path(__file__).resolve()
-    parent_dir = current_script_path.parent
-    return (parent_dir / 'cache').as_posix()
-
-
-artists_cache = diskcache.Cache(directory=cache_dir(), eviction_policy='none')
-```
-
-### Step 3.3: Define the Music Graph Model Function
-
-We will create a function `music_graph_model` that takes an artist's name and a maximum depth for the graph.
+We will create a function `music_graph_model` that takes an artist's name and a maximum depth of recursion.
 
 ```python
 def music_graph_model(name: str, max_depth: int = 0):
     graph_model = graphinate.model(f"{name.capitalize()} Graph")
 ```
 
-### Step 3.4: Search for the Root Artist
+### Step 3.3: Search for the Root Artist
 
 We will search for the root artist using the MusicBrainz API.
 
 ```python
     result = musicbrainzngs.search_artists(query=name, strict=True, artist=name)
-    sleep(1)
+    sleep(1) # Sleep for 1 second to avoid rate limiting
     root_artist = result.get('artist-list', [])[0] if result else None
 ```
 
-### Step 3.5: Define the Artists Generator Function
+### Step 3.4: Define the Artists Generator Function
 
 We will define a generator function `artists` to yield parent and related artists recursively.
+We will retrieve the artist data from the cache if it exists, otherwise, we will fetch it from the MusicBrainz API.
+Then we will yield the parent and related artists. If the depth is less than the maximum depth, we will recursively
+yield artists for each related artist as a starting point.
 
 ```python
     def artists(parent_artist, artist, depth):
         artist_id = artist.get('id')
         if artist_id not in artists_cache:
             artists_cache[artist_id] = musicbrainzngs.get_artist_by_id(id=artist_id, includes=['artist-rels']).get('artist')
-            sleep(0.1)
+            sleep(0.1) # Sleep for 0.1 second to avoid rate limiting
         
         artist = artists_cache.get(artist_id)
         yield parent_artist, artist
@@ -128,7 +113,7 @@ We will define a generator function `artists` to yield parent and related artist
                     yield from artists(artist, related_artist, depth + 1)
 ```
 
-### Step 3.6: Define the Artist Type Function
+### Step 3.5: Define the Artist Type Function
 
 We will define a function to get the type of an artist.
 
@@ -137,9 +122,12 @@ We will define a function to get the type of an artist.
         return value.get('type', '_UNKNOWN_')
 ```
 
-### Step 3.7: Define the Node Model
+### Step 3.6: Define the Node Model
 
 We will define the node model for the graph using the `graphinate` library.
+Using the musicbrainz artist type as the node type, the artist ID as the node key, and the artist name as the label.
+The `Multiplicity.FIRST` option to ensures that only the first occurrence of an artist is included in the graph.
+
 
 ```python
     @graph_model.node(artist_type,
@@ -157,7 +145,7 @@ We will define the node model for the graph using the `graphinate` library.
                 yield b
 ```
 
-### Step 3.8: Define the Edge Model
+### Step 3.7: Define the Edge Model
 
 We will define the edge model for the graph to represent relationships between artists.
 
@@ -169,7 +157,7 @@ We will define the edge model for the graph to represent relationships between a
                 yield {'source': a.get('id'), 'target': b.get('id')}
 ```
 
-### Step 3.9: Return the Graph Model
+### Step 3.8: Return the Graph Model
 
 Finally, we will return the created graph model.
 
@@ -201,7 +189,7 @@ def music_graph_model(name: str, max_depth: int = 0):
     graph_model = graphinate.model(f"{name.capitalize()} Graph")
 
     result = musicbrainzngs.search_artists(query=name, strict=True, artist=name)
-    sleep(1)
+    sleep(1) # Sleep for 1 second to avoid rate limiting
     root_artist = result.get('artist-list', [])[0] if result else None
 
     def artists(parent_artist, artist, depth):
@@ -209,7 +197,7 @@ def music_graph_model(name: str, max_depth: int = 0):
         if artist_id not in artists_cache:
             artists_cache[artist_id] = musicbrainzngs.get_artist_by_id(id=artist_id, includes=['artist-rels']).get(
                 'artist')
-            sleep(0.1)
+            sleep(0.1) # Sleep for 0.1 second to avoid rate limiting
 
         artist = artists_cache.get(artist_id)
         yield parent_artist, artist
@@ -288,6 +276,8 @@ listbox_chooser = ListboxChooser('Choose Artist/s', {name: name for name in arti
 
 We will generate the GraphModel for the selected artists.
 First creating a GraphModel for each artist and then combining them into a single model.
+In this case, we will use the `reduce` function from the `operator` module to combine the models.
+Leveraging the GrapModel support of the + operation. 
 
 ```python
 models = (music_graph_model(a, 2) for _, a in listbox_chooser.get_choices())

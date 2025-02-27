@@ -51,13 +51,18 @@ A Graph consists of two types of elements:
 
 A Graph Node can be any Python Hashable object. Usually it will be a primitive type such as an integer or a string,
 in particular when the node in itself has no specific meaning.
+
 One can also add attributes to the node to describe additional information. This information can be anything.
 Often attributes are used to store scalar dimensions (e.g., weight, area, width, age, etc.)
 or stylistic information (e.g., color, size, shape, label, etc.).
 
+Nodes are usually visualized as circles or points.
+
 #### Edges
 
 A Graph Edge is a pair of two node values. It can also have additional attributes in the same vain as a Graph Node.
+
+Edges are usually visualized as lines connecting two nodes.
 
 ### Defining a Graph
 
