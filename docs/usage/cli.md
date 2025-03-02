@@ -22,7 +22,7 @@ Options:
   -m, --model MODEL  A GraphModel instance reference {module-
                      name}:{GraphModel-instance-variable-name} For example,
                      given var `model=GraphModel()` defined in app.py file,
-                     then the  reference should be app:model
+                     then the reference should be app:model
   --help             Show this message and exit.
 ```
 

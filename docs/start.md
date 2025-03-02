@@ -23,6 +23,7 @@ pip install graphinate[server]
 ## Demo
 
 ```python title="Octagonal Graph"
+import examples.math.materializers
 import graphinate
 
 N: int = 8
@@ -40,8 +41,14 @@ def edge():
 
 
 # Choose builder and handler
-builder, handler = graphinate.materializers.Materializers.NetworkX_with_edge_labels.value
+builder, handler = examples.math.materializers.Materializers.NetworkX_with_edge_labels.value
 
-# Materialize the GraphModel
-graphinate.materialize(graph_model, builder=builder, builder_output_handler=handler)
+# Use the NetworkX Builder
+builder = graphinate.builders.NetworkxBuilder(graph_model)
+
+# build the NetworkX graph
+graph = builder.build()
+
+# plot the graph using matplotlib
+graphinate.plot(graph, with_edge_labels=True)
 ```

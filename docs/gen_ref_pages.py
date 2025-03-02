@@ -6,7 +6,7 @@ import mkdocs_gen_files
 
 nav = mkdocs_gen_files.Nav()
 
-ignore = ('server', 'cli.py', 'color.py', 'tools')
+ignore = ('cli.py', 'color.py', 'converters.py', 'constants.py', 'server', 'tools')
 
 for path in sorted(Path("src").rglob("*.py")):
     if any(v in path.as_posix() for v in ignore):

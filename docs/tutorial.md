@@ -291,11 +291,14 @@ Using the `GraphQLBuilder` to generate a GraphQL Schema (i.e. strawberry-graphql
 and use the `graphql` function to create and run the GraphQL server.
 
 ```python
-graphinate.materialize(
-    model,
-    builder=graphinate.builders.GraphQLBuilder,
-    builder_output_handler=graphinate.graphql
-)
+# Use the GraphQLBuilder Builder
+builder = graphinate.builders.GraphQLBuilder(graph_model)
+
+# build the strawberry-graphql schema
+schema = builder.build()
+
+# plot the graph using matplotlib
+graphinate.graphql(schema)
 ```
 
 ### Step 4.6: Putting it all together
@@ -321,11 +324,14 @@ if __name__ == '__main__':
     models = (music_graph_model(a, 2) for _, a in listbox_chooser.get_choices())
     model = reduce(operator.add, models)
 
-    graphinate.materialize(
-        model,
-        builder=graphinate.builders.GraphQLBuilder,
-        builder_output_handler=graphinate.graphql
-    )
+    # Use the GraphQLBuilder Builder
+    builder = graphinate.builders.GraphQLBuilder(graph_model)
+    
+    # build the strawberry-graphql schema
+    schema = builder.build()
+    
+    # plot the graph using matplotlib
+    graphinate.graphql(schema)
 ```
 
 ## Step 5: Run the Script
