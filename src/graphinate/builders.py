@@ -22,13 +22,15 @@ from loguru import logger
 from mappingtools.transformers import simplify
 from strawberry.extensions import ParserCache, QueryDepthLimiter, ValidationCache
 
+import networkx_mermaid as nxm
+
 from . import color, converters
 from .converters import decode_edge_id, decode_id, edge_label_converter, encode_edge_id, encode_id, node_label_converter
 from .modeling import GraphModel, Multiplicity
 from .tools import utcnow
 from .typing import NodeTypeAbsoluteId, UniverseNode
 
-GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema]  # noqa: UP007
+GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema, str]  # noqa: UP007
 
 
 class GraphType(Enum):
@@ -312,6 +314,33 @@ class D3Builder(NetworkxBuilder):
     def from_networkx(nx_graph: nx.Graph):
         d3_graph = nx.node_link_data(nx_graph)
         return d3_graph
+
+
+class MermaidBuilder(NetworkxBuilder):
+    """Build a Mermaid Graph"""
+
+    def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
+        super().__init__(model, graph_type)
+
+    def build(self,
+              orientation: nxm.Orientation = nxm.Orientation.LEFT_RIGHT,
+              node_shape: nxm.NodeShape = nxm.NodeShape.DEFAULT,
+              **kwargs) -> GraphRepresentation:
+        """
+        Build a Mermaid Graph
+
+        Args:
+          orientation : Orientation, optional
+            The orientation of the graph, by default Orientation.LEFT_RIGHT.
+          node_shape : NodeShape, optional
+            The shape of the nodes, by default NodeShape.DEFAULT.
+          **kwargs: additional inputs to the node and edge generator functions
+
+        Returns:
+            Mermaid Graph
+        """
+        super().build(**kwargs)
+        return nxm.mermaid(self._graph, orientation=orientation, node_shape=node_shape)
 
 
 class GraphQLBuilder(NetworkxBuilder):

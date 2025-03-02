@@ -10,14 +10,14 @@ from starlette.types import ASGIApp
 from strawberry.asgi import GraphQL
 from strawberry.extensions.tracing import OpenTelemetryExtension
 
-from .starlette import routes
+from graphinate.server.starlette import routes
 
 DEFAULT_PORT: int = 8072
 
 GRAPHQL_ROUTE_PATH = "/graphql"
 
 
-def openapi_schema(request: Request) -> ASGIApp:
+def _openapi_schema(request: Request) -> ASGIApp:
     """
     Generates an OpenAPI schema for the GraphQL API and other routes.
 
@@ -43,15 +43,13 @@ def openapi_schema(request: Request) -> ASGIApp:
     return schema.OpenAPIResponse(request=request)
 
 
-def graphql(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT):
+def graphql(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT, **kwargs):
     """
-
     Args:
-        graphql_schema:
-        port:
+        graphql_schema: The Strawberry GraphQL schema.
+        port: The port number to run the server on. Defaults to 8072.
 
     Returns:
-
     """
     graphql_schema.extensions.append(OpenTelemetryExtension)
 
@@ -61,11 +59,11 @@ def graphql(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT):
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):  # pragma: no cover
-
-        open_url()
+        if kwargs.get('browse'):
+            open_url()
         yield
 
-    graphql_app: GraphQL = GraphQL(graphql_schema)
+    graphql_app = GraphQL(graphql_schema, graphiql=True, graphql_ide='pathfinder')
     app = Starlette(
         lifespan=lifespan,
         routes=routes()
@@ -76,13 +74,13 @@ def graphql(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT):
     from starlette_prometheus import PrometheusMiddleware, metrics
     app.add_middleware(PrometheusMiddleware)
     app.add_route("/metrics", metrics)
-    app.add_route("/schema", route=openapi_schema, include_in_schema=False)
-    app.add_route("/openapi.json", route=openapi_schema, include_in_schema=False)
+    app.add_route("/schema", route=_openapi_schema, include_in_schema=False)
+    app.add_route("/openapi.json", route=_openapi_schema, include_in_schema=False)
 
-    async def redirect_to_existing_route(request):
+    async def redirect_to_viewer(request):
         return RedirectResponse(url='/viewer')
 
-    app.add_route('/', redirect_to_existing_route)
+    app.add_route('/', redirect_to_viewer)
 
     import uvicorn
     uvicorn.run(app, host='0.0.0.0', port=port)

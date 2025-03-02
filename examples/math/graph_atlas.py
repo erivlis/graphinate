@@ -4,7 +4,8 @@ import graphs
 import networkx as nx
 
 import graphinate
-from graphinate.materializers import Materializers
+
+from .materializers import Materializers, materialize
 
 
 def model(items: list[tuple[str, nx.Graph]]) -> graphinate.GraphModel:
@@ -62,4 +63,4 @@ if __name__ == '__main__':
                                              default=(None, None))
     result = radiobutton_chooser.get_choice()
     builder, handler = result[1]
-    graphinate.materialize(model, builder=builder, builder_output_handler=handler)
+    materialize(model, builder=builder, builder_output_handler=handler)

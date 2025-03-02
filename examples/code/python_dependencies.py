@@ -31,8 +31,5 @@ def dependency_graph_model():
 
 if __name__ == '__main__':
     dependency_model = dependency_graph_model()
-    graphinate.materialize(
-        dependency_model,
-        builder=graphinate.builders.GraphQLBuilder,
-        builder_output_handler=graphinate.graphql
-    )
+    schema = graphinate.builders.GraphQLBuilder(dependency_model).build()
+    graphinate.graphql(schema)

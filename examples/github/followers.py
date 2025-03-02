@@ -44,19 +44,11 @@ if __name__ == '__main__':
     followers_model = followers_graph_model(max_depth=1)
 
     params = {
-        # 'user_id': 'erivlis'
-        'user_id': 'jhwang1992 '
+        'user_id': 'erivlis'
         # 'user_id': 'andybrewer'
         # 'user_id' "strawberry-graphql"
     }
 
-    builder, handler = graphinate.materializers.Materializers.GraphQL.value
-
-    graphinate.materialize(
-        model=followers_model,
-        graph_type=graphinate.GraphType.DiGraph,
-        builder=graphinate.builders.GraphQLBuilder,
-        builder_output_handler=graphinate.graphql,
-        default_node_attributes={'type': 'user'},
-        **params
-    )
+    builder = graphinate.builders.GraphQLBuilder(followers_model, graph_type=graphinate.GraphType.DiGraph)
+    schema = builder.build(default_node_attributes={'type': 'user'}, **params)
+    graphinate.graphql(schema)

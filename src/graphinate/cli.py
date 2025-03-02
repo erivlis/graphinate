@@ -1,12 +1,11 @@
-import functools
 import importlib
 import json
 from typing import Any
 
 import click
 
-from graphinate import GraphModel, builders, graphql, materialize
-from graphinate.server import DEFAULT_PORT
+from graphinate import GraphModel, builders, graphql
+from graphinate.materializers.graphql import DEFAULT_PORT
 
 
 def _get_kwargs(ctx) -> dict:
@@ -80,18 +79,18 @@ def cli(ctx):
 @model_option
 @click.pass_context
 def save(ctx, model):
-    with open(f"{model.name}.json", mode='w') as fp:
-        materialize(model=model,
-                    builder=builders.D3Builder,
-                    builder_output_handler=functools.partial(json.dump, fp=fp, default=str),
-                    **_get_kwargs(ctx))
+    kwargs = _get_kwargs(ctx)
+    with open(f"{model.name}.d3_graph.json", mode='w') as fp:
+        graph = builders.D3Builder(model, **kwargs).build()
+        json.dump(graph, fp=fp, default=str, **kwargs)
 
 
 @cli.command()
 @model_option
 @click.option('-p', '--port', type=int, default=DEFAULT_PORT, help='Port number.')
+@click.option('-b', '--browse', type=bool, default=False, help='Open server address in browser.')
 @click.pass_context
-def server(ctx, model, port):
+def server(ctx, model: GraphModel, port: int, browse: bool):
     message = """
      ██████╗ ██████╗  █████╗ ██████╗ ██╗  ██╗██╗███╗   ██╗ █████╗ ████████╗███████╗
     ██╔════╝ ██╔══██╗██╔══██╗██╔══██╗██║  ██║██║████╗  ██║██╔══██╗╚══██╔══╝██╔════╝
@@ -100,7 +99,5 @@ def server(ctx, model, port):
     ╚██████╔╝██║  ██║██║  ██║██║     ██║  ██║██║██║ ╚████║██║  ██║   ██║   ███████╗
      ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝   ╚══════╝"""
     click.echo(message)
-    materialize(model=model,
-                builder=builders.GraphQLBuilder,
-                builder_output_handler=functools.partial(graphql, port=port),
-                **_get_kwargs(ctx))
+    schema = builders.GraphQLBuilder(model).build()
+    graphql(schema, port=port, browse=browse, **_get_kwargs(ctx))

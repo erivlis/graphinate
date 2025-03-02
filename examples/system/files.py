@@ -74,8 +74,6 @@ if __name__ == '__main__':
     input_folder = '..'  # Default to the current folder
     ignore_files = ['.ignore', '.gitignore']  # Example list of ignore files
     filesystem_model = create_filesystem_graph_model(input_folder, ignore_files)
-    graphinate.materialize(
-        filesystem_model,
-        builder=graphinate.builders.GraphQLBuilder,
-        builder_output_handler=graphinate.graphql
-    )
+
+    schema = graphinate.builders.GraphQLBuilder(filesystem_model).build()
+    graphinate.graphql(schema)

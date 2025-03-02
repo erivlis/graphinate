@@ -4,7 +4,6 @@ The 'ast_graph_model' function parses the AST of a specified class and creates n
 The nodes represent AST nodes with their type and label, while the edges represent relationships between AST nodes.
 """
 
-
 import ast
 import hashlib
 import inspect
@@ -32,7 +31,7 @@ def _ast_edge(parsed_ast: AST):
                 for field_name, value
                 in ast.iter_fields(parsed_ast)
                 if child_ast == value
-                or (child_ast in value if isinstance(value, list) else False)
+                   or (child_ast in value if isinstance(value, list) else False)
             )
             edge_type = next(edge_types, None)
             if edge_type:
@@ -98,8 +97,5 @@ def ast_graph_model():
 
 if __name__ == '__main__':
     ast_model = ast_graph_model()
-    graphinate.materialize(
-        ast_model,
-        builder=graphinate.builders.GraphQLBuilder,
-        builder_output_handler=graphinate.graphql
-    )
+    schema = graphinate.builders.GraphQLBuilder(ast_model).build()
+    graphinate.graphql(schema)

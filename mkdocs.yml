@@ -32,7 +32,6 @@ theme:
     - search.share
     - search.suggest
     - toc.follow
-    - toc.integrate
   font: false
   palette:
     # Palette toggle for dark mode

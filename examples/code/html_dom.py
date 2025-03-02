@@ -53,9 +53,5 @@ def html_dom_graph_model(html_content):
 if __name__ == '__main__':
     html_content = load_html_from_url()
     dom_model = html_dom_graph_model(html_content)
-    graphinate.materialize(
-        dom_model,
-        builder=graphinate.builders.GraphQLBuilder,
-        builder_output_handler=graphinate.graphql
-    )
-
+    schema = graphinate.builders.GraphQLBuilder(dom_model).build()
+    graphinate.graphql(schema)

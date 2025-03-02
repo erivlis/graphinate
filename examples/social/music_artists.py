@@ -142,8 +142,5 @@ if __name__ == '__main__':
 
     model = reduce(operator.add, models)
 
-    graphinate.materialize(
-        model,
-        builder=graphinate.builders.GraphQLBuilder,
-        builder_output_handler=graphinate.graphql
-    )
+    schema = graphinate.builders.GraphQLBuilder(model).build()
+    graphinate.graphql(schema)

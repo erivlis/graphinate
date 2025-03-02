@@ -48,30 +48,17 @@ def processes_graph_model():
 model = processes_graph_model()
 
 if __name__ == '__main__':
-    use_materialize = True
+    # 1. Define Graph Builder
+    builder = graphinate.builders.NetworkxBuilder(model=model)
 
-    if use_materialize:
-        # Materialize the GraphModel
-        graphinate.materialize(
-            model,
-            builder=graphinate.builders.GraphQLBuilder,
-            builder_output_handler=graphinate.graphql
-        )
+    # Then
+    # 2. Build the Graph object
+    graph: nx.Graph = builder.build()
 
-    else:
-        # Or
+    # Then
+    # 3. Option A - Output to console
+    print(graph)
 
-        # 1. Define Graph Builder
-        builder = graphinate.builders.NetworkxBuilder(model=model)
-
-        # Then
-        # 2. Build the Graph object
-        graph: nx.Graph = builder.build()
-
-        # Then
-        # 3. Option A - Output to console
-        print(graph)
-
-        # Or
-        # 3. Option B - Output as a plot
-        graphinate.materializers.plot(graph)
+    # Or
+    # 3. Option B - Output as a plot
+    graphinate.materializers.plot(graph)

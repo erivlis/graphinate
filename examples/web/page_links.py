@@ -62,11 +62,6 @@ if __name__ == '__main__':
         'url': 'https://erivlis.github.io/graphinate/'
     }
 
-    graphinate.materialize(
-        model=model,
-        graph_type=graphinate.GraphType.DiGraph,
-        default_node_attributes={'type': 'url'},
-        builder=graphinate.builders.GraphQLBuilder,
-        builder_output_handler=graphinate.graphql,
-        **params
-    )
+    builder = graphinate.builders.GraphQLBuilder(model, graph_type=graphinate.GraphType.DiGraph)
+    schema = builder.build(default_node_attributes={'type': 'url'}, **params)
+    graphinate.graphql(schema)

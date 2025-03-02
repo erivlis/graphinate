@@ -46,8 +46,5 @@ if __name__ == '__main__':
 
     file_path = sys.argv[1]
     token_model = token_graph_model(file_path)
-    graphinate.materialize(
-        token_model,
-        builder=graphinate.builders.GraphQLBuilder,
-        builder_output_handler=graphinate.graphql
-    )
+    schema = graphinate.builders.GraphQLBuilder(token_model).build()
+    graphinate.graphql(schema)

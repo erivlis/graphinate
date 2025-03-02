@@ -6,7 +6,8 @@ from ..color import node_color_mapping
 
 def draw(graph: nx.Graph,
          with_node_labels: bool = True,
-         with_edge_labels: bool = False):
+         with_edge_labels: bool = False,
+         **kwargs):
     """
     Draws the given networkx graph with optional node and edge labels.
 
@@ -53,7 +54,8 @@ def draw(graph: nx.Graph,
 
 def plot(graph: nx.Graph,
          with_node_labels: bool = True,
-         with_edge_labels: bool = False):
+         with_edge_labels: bool = False,
+         **kwargs):
     """
     Plots the given networkx graph with optional node and edge labels.
 
@@ -65,7 +67,7 @@ def plot(graph: nx.Graph,
     Returns:
         None
     """
-    draw(graph, with_node_labels, with_edge_labels)
+    draw(graph, with_node_labels, with_edge_labels, **kwargs)
 
     ax = pyplot.gca()
     ax.margins(0.10)

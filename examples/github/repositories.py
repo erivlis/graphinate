@@ -122,5 +122,5 @@ if __name__ == '__main__':
         # 'user_id' "strawberry-graphql"
     }
 
-    builder, handler = graphinate.materializers.Materializers.GraphQL.value
-    graphinate.materialize(repo_model, builder=builder, builder_output_handler=handler, **params)
+    schema = graphinate.builders.GraphQLBuilder(repo_model).build(**params)
+    graphinate.graphql(schema)
