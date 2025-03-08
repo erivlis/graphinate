@@ -111,10 +111,6 @@ exclude_also = [
     "@(abc\\.)?abstractmethod"
 ]
 
-[tool.coverage.run]
-branch = true
-relative_files = true
-
 
 [tool.black]
 line-length = 120
