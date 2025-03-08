@@ -5,7 +5,7 @@ from typing import Any
 import click
 
 from graphinate import GraphModel, builders, graphql
-from graphinate.materializers.graphql import DEFAULT_PORT
+from graphinate.renderers.graphql import DEFAULT_PORT
 
 
 def _get_kwargs(ctx) -> dict:

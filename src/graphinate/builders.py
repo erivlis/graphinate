@@ -17,12 +17,11 @@ from typing import Any, Optional, Union
 
 import inflect
 import networkx as nx
+import networkx_mermaid as nxm
 import strawberry
 from loguru import logger
 from mappingtools.transformers import simplify
 from strawberry.extensions import ParserCache, QueryDepthLimiter, ValidationCache
-
-import networkx_mermaid as nxm
 
 from . import color, converters
 from .converters import decode_edge_id, decode_id, edge_label_converter, encode_edge_id, encode_id, node_label_converter
@@ -30,7 +29,7 @@ from .modeling import GraphModel, Multiplicity
 from .tools import utcnow
 from .typing import NodeTypeAbsoluteId, UniverseNode
 
-GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema, str]  # noqa: UP007
+GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema, nxm.typing.MermaidDiagram, str]  # noqa: UP007
 
 
 class GraphType(Enum):
@@ -323,9 +322,9 @@ class MermaidBuilder(NetworkxBuilder):
         super().__init__(model, graph_type)
 
     def build(self,
-              orientation: nxm.Orientation = nxm.Orientation.LEFT_RIGHT,
-              node_shape: nxm.NodeShape = nxm.NodeShape.DEFAULT,
-              **kwargs) -> GraphRepresentation:
+              orientation: nxm.DiagramOrientation = nxm.DiagramOrientation.LEFT_RIGHT,
+              node_shape: nxm.DiagramNodeShape = nxm.DiagramNodeShape.DEFAULT,
+              **kwargs) -> nxm.typing.MermaidDiagram:
         """
         Build a Mermaid Graph
 
@@ -340,7 +339,8 @@ class MermaidBuilder(NetworkxBuilder):
             Mermaid Graph
         """
         super().build(**kwargs)
-        return nxm.mermaid(self._graph, orientation=orientation, node_shape=node_shape)
+        color.convert_colors_to_hex(self._graph)
+        return nxm.DiagramBuilder(orientation=orientation, node_shape=node_shape).build(self._graph)
 
 
 class GraphQLBuilder(NetworkxBuilder):

@@ -43,7 +43,7 @@ def _openapi_schema(request: Request) -> ASGIApp:
     return schema.OpenAPIResponse(request=request)
 
 
-def graphql(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT, **kwargs):
+def server(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT, **kwargs):
     """
     Args:
         graphql_schema: The Strawberry GraphQL schema.

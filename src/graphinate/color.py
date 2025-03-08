@@ -51,3 +51,8 @@ def color_hex(color: Union[str, Sequence[Union[float, int]]]) -> Union[str, Sequ
 
     else:
         return color
+
+def convert_colors_to_hex(graph: nx.Graph):
+    """Convert all color labels in the graph to hexadecimal format."""
+    color_values = {node: color_hex(data['color']) for node, data in graph.nodes(data=True) if 'color' in data}
+    nx.set_node_attributes(graph, values=color_values, name='color')

@@ -43,6 +43,10 @@
     "created": "2023-10-05T11:43:30.550657",
     "modified": "2025-03-07T10:25:30.054257"
   },
+  "reference\\SUMMARY.md": {
+    "created": "2025-03-08T20:51:52.801367",
+    "modified": "2025-03-08T20:51:52.807370"
+  },
   "usage\\cli.md": {
     "created": "2023-09-27T21:23:44.140564",
     "modified": "2025-03-01T23:56:33.595498"
@@ -50,5 +54,33 @@
   "usage\\lib.md": {
     "created": "2023-09-27T21:23:44.133584",
     "modified": "2025-03-07T12:07:02.708943"
+  },
+  "reference\\graphinate\\builders.md": {
+    "created": "2025-03-08T20:51:52.788270",
+    "modified": "2025-03-08T20:51:52.792269"
+  },
+  "reference\\graphinate\\index.md": {
+    "created": "2025-03-08T20:51:52.786270",
+    "modified": "2025-03-08T20:51:52.788270"
+  },
+  "reference\\graphinate\\modeling.md": {
+    "created": "2025-03-08T20:51:52.792269",
+    "modified": "2025-03-08T20:51:52.795269"
+  },
+  "reference\\graphinate\\typing.md": {
+    "created": "2025-03-08T20:51:52.800360",
+    "modified": "2025-03-08T20:51:52.805368"
+  },
+  "reference\\graphinate\\renderers\\graphql.md": {
+    "created": "2025-03-08T20:51:52.796358",
+    "modified": "2025-03-08T20:51:52.800360"
+  },
+  "reference\\graphinate\\renderers\\index.md": {
+    "created": "2025-03-08T20:51:52.794269",
+    "modified": "2025-03-08T20:51:52.798361"
+  },
+  "reference\\graphinate\\renderers\\matplotlib.md": {
+    "created": "2025-03-08T20:51:52.798361",
+    "modified": "2025-03-08T20:51:52.803367"
   }
 }

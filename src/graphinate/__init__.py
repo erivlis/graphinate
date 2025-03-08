@@ -1,7 +1,8 @@
-from graphinate import builders
 from graphinate.builders import GraphType, build
-from graphinate.materializers import graphql, plot
 from graphinate.modeling import GraphModel, Multiplicity, model
+from graphinate.renderers import graphql, matplotlib, mermaid
+
+from . import builders, renderers
 
 __all__ = (
     'GraphModel',
@@ -10,6 +11,8 @@ __all__ = (
     'build',
     'builders',
     'graphql',
+    'matplotlib',
+    'mermaid',
     'model',
-    'plot'
+    'renderers'
 )
