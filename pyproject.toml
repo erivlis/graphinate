@@ -110,26 +110,11 @@ exclude_also = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod"
 ]
-omit = [
-    # omit anything in a .venv directory anywhere
-    "*/.venv/*",
-    # omit everything in /tests
-    "/tests/*",
-    # omit this single file
-    # "utils/tirefire.py",
-]
 
 [tool.coverage.run]
-branch = false
-relative_files = false
-omit = [
-    # omit anything in a .venv directory anywhere
-    "*/.venv/*",
-    # omit everything in /tests
-    "/tests/*",
-    # omit this single file
-    # "utils/tirefire.py",
-]
+branch = true
+relative_files = true
+
 
 [tool.black]
 line-length = 120
