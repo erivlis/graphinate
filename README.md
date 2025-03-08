@@ -342,7 +342,11 @@ python -m mkdocs build
 
 <a href="https://www.jetbrains.com/pycharm/"><img height="60" style="background: linear-gradient(-45deg, #FCF84A, #3DEA62, #21D789);" src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm.png" alt="PyCharm logo"></a>
 
----------------------
+--------------------------------
+
+![Alt](https://repobeats.axiom.co/api/embed/683f50f1d2de0e13e468c34a692612c2de4d56bd.svg "Repobeats analytics image")
+
+--------------------------------
 
 <img alt="Star Chart" src="https://forthebadge.com/images/badges/works-on-my-machine.svg">
 
