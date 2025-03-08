@@ -114,17 +114,6 @@ exclude_also = [
 [tool.coverage.run]
 relative_files = true
 branch = true
-omit = [
-    # omit anything in a .local directory anywhere
-    # "*/.local/*",
-    # omit everything in /usr
-    "examples/*",
-    "playground/*",
-    "tests/*",
-    # omit this single file
-    # "utils/tirefire.py",
-]
-
 
 [tool.black]
 line-length = 120
