@@ -7,20 +7,22 @@ site_description: >-
 
 repo_url: https://github.com/erivlis/graphinate
 repo_name: erivlis/graphinate
-
+edit_uri: edit/main/docs/
 
 # Copyright
-copyright: Copyright &copy; 2023 Eran Rivlis
+copyright: Copyright &copy; 2023-2025 Eran Rivlis
 
 theme:
   name: material
   features:
+    - content.action.edit
+    - content.action.view
     - content.code.annotate
     - content.code.copy
     - content.code.select
-#    - navigation.tabs
-#    - navigation.path
-#    - navigation.sections
+    - navigation.tabs
+    - navigation.path
+    - navigation.sections
     - navigation.footer
     - navigation.indexes
     - navigation.instant
@@ -61,7 +63,7 @@ markdown_extensions:
   - md_in_html
   - pymdownx.details
   - pymdownx.highlight:
-#      auto_title: true
+      #      auto_title: true
       anchor_linenums: true
       line_spans: __span
       use_pygments: true
@@ -83,7 +85,7 @@ markdown_extensions:
 
 
 nav:
-  - Home: index.md
+  #  - Home: index.md
   - Introduction: intro.md
   - Quick Start: start.md
   - Tutorial: tutorial.md
@@ -92,7 +94,6 @@ nav:
   # - Gallery: gallery/
   # defer to gen-files + literate-nav
   - Reference: reference/
-  - Developers: dev.md
   - Acknowledgements: acknowledge.md
 
 
@@ -117,22 +118,25 @@ plugins:
   - search
   - gen-files:
       scripts:
-      - docs/gen_ref_pages.py
+        - docs/gen_ref_pages.py
   - glightbox
   - literate-nav:
       nav_file: SUMMARY.md
+  - git-committers:
+      repository: erivlis/graphinate
+      branch: main
   - git-revision-date-localized:
       enable_creation_date: true
   - mkdocstrings:
       default_handler: python
       handlers:
         python:
-          paths: [src]
+          paths: [ src ]
           options:
             allow_inspection: true
             show_source: false
             heading_level: 3
-  #          show_root_heading: false
+            #          show_root_heading: false
             show_category_heading: true
             show_symbol_type_heading: true
             show_symbol_type_toc: true

@@ -1,5 +1,18 @@
 # Introduction
 
+## Why?
+
+### Why Graphs?
+
+Graphs are a powerful data structure that can be used to model a wide range of problems.
+They are used in many fields, such as computer science, mathematics, physics, biology, and social sciences.
+
+### Why Graphinate?
+
+Usually the creation phase of a Graph is a tedious and error-prone process.
+It requires a lot of boilerplate code to transform data into a Graph.
+This process can be automated and simplified. This is where **Graphinate** comes in.
+
 ## What?
 
 ### What is Graphinate?

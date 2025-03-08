@@ -1,10 +1,20 @@
 # Code
 
+## GIT Commits
+
+=== "GIT Commits"
+
+    ``` python title="examples/code/git_commits.py" linenums="1"
+     --8<-- "examples/code/git_commits.py"
+    ```
+
+---
+
 ## Python AST
 
 === "Python AST"
 
-    ``` python title="examples/code/python_ast.py" linenums="1"
+    ```python title="examples/code/python_ast.py" linenums="1"
      --8<-- "examples/code/python_ast.py"
     ```
 
@@ -24,12 +34,7 @@
 
 === "Python Dependencies"
 
-    ``` python title="examples/code/python_dependencies.py" linenums="1"
+    ```python title="examples/code/python_dependencies.py" linenums="1"
      --8<-- "examples/code/python_dependencies.py"
     ```
 
-=== "Requirements"
-
-    ``` text title="examples/code/requirements.txt" linenums="1"
-    --8<-- "examples/code/requirements.txt"
-    ```

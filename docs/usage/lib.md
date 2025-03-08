@@ -39,10 +39,3 @@
 * [`graphinate.builders.GraphQLBuilder`](/reference/graphinate/builders/#graphinate.builders.GraphQLBuilder) - Generates
   a Strawberry GraphQL Schema instance
 
-### Actualize
-
-> TBD
-
-### Materialize
-
-> TBD

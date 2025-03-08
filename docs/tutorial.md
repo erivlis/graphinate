@@ -298,7 +298,7 @@ builder = graphinate.builders.GraphQLBuilder(graph_model)
 schema = builder.build()
 
 # plot the graph using matplotlib
-graphinate.graphql(schema)
+graphinate.server(schema)
 ```
 
 ### Step 4.6: Putting it all together
@@ -326,12 +326,12 @@ if __name__ == '__main__':
 
     # Use the GraphQLBuilder Builder
     builder = graphinate.builders.GraphQLBuilder(graph_model)
-    
+
     # build the strawberry-graphql schema
     schema = builder.build()
-    
+
     # plot the graph using matplotlib
-    graphinate.graphql(schema)
+    graphinate.server(schema)
 ```
 
 ## Step 5: Run the Script
