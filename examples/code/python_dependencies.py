@@ -32,4 +32,4 @@ def dependency_graph_model():
 if __name__ == '__main__':
     dependency_model = dependency_graph_model()
     schema = graphinate.builders.GraphQLBuilder(dependency_model).build()
-    graphinate.graphql(schema)
+    graphinate.graphql.server(schema)

@@ -123,4 +123,4 @@ if __name__ == '__main__':
     }
 
     schema = graphinate.builders.GraphQLBuilder(repo_model).build(**params)
-    graphinate.graphql(schema)
+    graphinate.graphql.server(schema)

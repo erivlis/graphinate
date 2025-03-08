@@ -9,8 +9,11 @@ import hashlib
 import inspect
 import operator
 import pickle
+import threading
+import webbrowser
 from _ast import AST
 from collections.abc import Iterable
+from tempfile import TemporaryDirectory
 
 import graphinate
 
@@ -95,7 +98,49 @@ def ast_graph_model():
     return graph_model
 
 
+def create_server(port: int, root_directory: str, open_browser: bool = True) -> threading.Thread:
+    import http.server
+    import socketserver
+
+    url = f"http://localhost:{port}"
+
+    class Handler(http.server.SimpleHTTPRequestHandler):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, directory=root_directory, **kwargs)
+
+    def serve():
+        with socketserver.TCPServer(('', port), Handler) as httpd:
+            print("Serving at:", url)
+            httpd.serve_forever()
+
+    server_thread = threading.Thread(target=serve)
+    server_thread.daemon = True
+    server_thread.start()
+
+    if open_browser:
+        webbrowser.open(url)
+
+
 if __name__ == '__main__':
     ast_model = ast_graph_model()
-    schema = graphinate.builders.GraphQLBuilder(ast_model).build()
-    graphinate.graphql(schema)
+    # schema = graphinate.builders.GraphQLBuilder(ast_model).build()
+    # graphinate.graphql.server(schema)
+
+    diagram = graphinate.builders.MermaidBuilder(ast_model).build()
+
+    html_diagram = graphinate.mermaid.html(diagram)
+
+    ## Save the HTML diagram to a file and serve it
+    with TemporaryDirectory() as temp_dir:
+        with open(f"{temp_dir}/index.html", 'w') as f:
+            f.write(html_diagram)
+
+        # Serve the HTML diagram
+        create_server(port=8077, root_directory=temp_dir, open_browser=True)
+
+        # Keep the main thread alive to allow the server to run
+        try:
+            while True:
+                pass
+        except KeyboardInterrupt:
+            print("Server stopped")

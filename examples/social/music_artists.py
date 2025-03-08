@@ -143,4 +143,4 @@ if __name__ == '__main__':
     model = reduce(operator.add, models)
 
     schema = graphinate.builders.GraphQLBuilder(model).build()
-    graphinate.graphql(schema)
+    graphinate.graphql.server(schema)

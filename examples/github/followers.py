@@ -51,4 +51,4 @@ if __name__ == '__main__':
 
     builder = graphinate.builders.GraphQLBuilder(followers_model, graph_type=graphinate.GraphType.DiGraph)
     schema = builder.build(default_node_attributes={'type': 'user'}, **params)
-    graphinate.graphql(schema)
+    graphinate.graphql.server(schema)

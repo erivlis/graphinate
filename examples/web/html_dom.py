@@ -54,4 +54,4 @@ if __name__ == '__main__':
     html_content = load_html_from_url()
     dom_model = html_dom_graph_model(html_content)
     schema = graphinate.builders.GraphQLBuilder(dom_model).build()
-    graphinate.graphql(schema)
+    graphinate.graphql.server(schema)

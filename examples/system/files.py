@@ -76,4 +76,4 @@ if __name__ == '__main__':
     filesystem_model = create_filesystem_graph_model(input_folder, ignore_files)
 
     schema = graphinate.builders.GraphQLBuilder(filesystem_model).build()
-    graphinate.graphql(schema)
+    graphinate.graphql.server(schema)

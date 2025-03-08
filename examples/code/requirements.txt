@@ -1,2 +1,3 @@
+GitPython
 graphinate
 pipdeptree
