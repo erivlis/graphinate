@@ -147,7 +147,6 @@ pip install graphinate[server]
 ### Example
 
 ```python title="Octagonal Graph"
-import examples.math.materializers
 import graphinate
 
 N: int = 8
@@ -164,25 +163,34 @@ def edge():
     yield {'source': N, 'target': 0}
 
 
-# Choose builder and handler
-builder, handler = examples.math.materializers.Materializers.NetworkX_with_edge_labels.value
-
 # Use the NetworkX Builder
 builder = graphinate.builders.NetworkxBuilder(graph_model)
 
 # build the NetworkX graph
 graph = builder.build()
 
-# plot the graph using matplotlib
-graphinate.plot(graph, with_edge_labels=True)
+# and plot the graph using matplotlib
+graphinate.matplotlib.plot(graph, with_edge_labels=True)
+
+# or use the Mermaid Builder
+builder = graphinate.builders.MermaidBuilder(graph_model)
+
+# build the Mermaid diagram
+diagram: str = builder.build()
+
+# and get the diagram as Markdown or as a single page HTML
+mermaid_markdown: str = graphinate.mermaid.markdown(diagram)
+mermaid_html: str = graphinate.mermaid.html(diagram, title=graph_model.name)
+
+# or Use the GraphQL Builder
+builder = graphinate.builders.GraphQLBuilder(graph_model)
+
+# build the Strawberry GraphQL schema
+schema = builder.build()
+
+# and serve it using a Uvicorn web server
+graphinate.graphql.server(schema)
 ```
-
-#### `graphinate.model` function
-
-> [!NOTE]
-> This function creates `GraphModel` class that is used to declaratively register _Edge_ and/or _Node_ data
-> supplier functions by using the `GraphModel.node()` and `GraphModel.edge()` decorators.
-
 ## CLI
 
 ### Commands
@@ -229,21 +237,24 @@ Options:
 
 ## Gallery
 
-### Python AST
+### Python Class AST
 
-![d3_graph_ast](https://github.com/erivlis/graphinate/assets/9897520/9e7e1ed2-3a5c-41fe-8c5f-999da4b741ff)
+#### matplotlib
 
-### GitHub Repository
+![graph_ast](https://github.com/erivlis/graphinate/assets/9897520/9e7e1ed2-3a5c-41fe-8c5f-999da4b741ff)
 
-![repo_graph](https://github.com/erivlis/graphinate/assets/9897520/9c044bbe-1f21-41b8-b879-95b8362ad48d)
-
-### Python AST - 3D Force-Directed Animation
+#### 3D Force-Directed Animation
 
 <video width="400"  controls>
   <source src="https://github.com/erivlis/graphinate/assets/9897520/2e9a53b1-5686-4683-a0e4-fbffa850a27b" type="video/mp4">
 </video>
 
-### Web Page Links
+### GitHub Repository
+
+![repo_graph](https://github.com/erivlis/graphinate/assets/9897520/9c044bbe-1f21-41b8-b879-95b8362ad48d)
+
+
+### Web Links
 
 ![Web Page Links](https://github.com/erivlis/graphinate/assets/9897520/ea5b00a2-75d1-4d0e-86af-272f20973149)
 
@@ -283,19 +294,19 @@ ruff check src --fix
 #### Standard (cobertura) XML Coverage Report
 
 ```shell
- python -m pytest tests -n auto --cov=src --cov-branch --doctest-modules --cov-report=xml --junitxml=test_results.xml
+ python -m pytest tests -n auto --cov=src --cov-branch --doctest-modules --cov-report=xml --junitxml=junit.xml
 ```
 
 #### HTML Coverage Report
 
 ```shell
-python -m pytest tests -n auto --cov=src --cov-branch --doctest-modules --cov-report=html --junitxml=test_results.xml
+python -m pytest tests -n auto --cov=src --cov-branch --doctest-modules --cov-report=html --junitxml=junit.xml
 ```
 
 #### Terminal Coverage Report
 
 ```shell
-python -m pytest tests -n auto --cov=src --cov-branch --doctest-modules --cov-report=term --junitxml=test_results.xml
+python -m pytest tests -n auto --cov=src --cov-branch --doctest-modules --cov-report=term --junitxml=junit.xml
 ```
 
 ### Docs
@@ -340,7 +351,7 @@ python -m mkdocs build
 
 ### IDE
 
-<a href="https://www.jetbrains.com/pycharm/"><img height="60" style="background: linear-gradient(-45deg, #FCF84A, #3DEA62, #21D789);" src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm.png" alt="PyCharm logo"></a>
+<a href="https://www.jetbrains.com/pycharm/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FCF84A, #3DEA62, #21D789);" src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm.png" alt="PyCharm logo"></a>
 
 --------------------------------
 
@@ -348,6 +359,6 @@ python -m mkdocs build
 
 --------------------------------
 
-<img alt="Star Chart" src="https://forthebadge.com/images/badges/works-on-my-machine.svg">
+<img alt="Work on my Machine" src="https://forthebadge.com/images/badges/works-on-my-machine.svg">
 
 Copyright © 2023-2025 Eran Rivlis
