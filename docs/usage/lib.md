@@ -6,15 +6,8 @@
   Create a [`GraphModel`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel)
 
 * [`build`](/reference/graphinate/#graphinate.build) -
-  Generate a Graph from a [`GraphModel`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel)
-
-* [`plot`](/reference/graphinate/#graphinate.plot) - Generate a matplotlib plot
-
-* [`graphql`](/reference/graphinate/#graphinate.graphql) - Run a GraphQL Server
-
-* [`materialize`](/reference/graphinate/#graphinate.materialize) -
-  Generate an output from a [`GraphModel`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel) instance.
-  By default, the user will be prompted to choose the output format, using a popup GUI dialog box.
+  Generate a [`GraphRepresentation`](/ref) from a [
+  `GraphModel`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel)
 
 ## SDK
 
@@ -26,9 +19,7 @@
       Using the [`GraphModel.node()`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel.node)
       and [`GraphMode.edge()`](/reference/graphinate/modeling/#graphinate.modeling.GraphModel.edge) decorators.
 
-* [`graphinate.NodeModel`](/reference/graphinate/modeling/#graphinate.modeling.NodeModel) - TBD
-
-### Build
+### Builders
 
 * [`graphinate.builders.NetworkxBuilder`](/reference/graphinate/builders/#graphinate.builders.NetworkxBuilder) -
   Generates a NetworkX Graph instance.
@@ -39,3 +30,5 @@
 * [`graphinate.builders.GraphQLBuilder`](/reference/graphinate/builders/#graphinate.builders.GraphQLBuilder) - Generates
   a Strawberry GraphQL Schema instance
 
+* [`graphinate.builders.MermaidBuilder`](/reference/graphinate/builders/#graphinate.builders.MermaidBuilder) - Generates
+  a Mermaid Diagram

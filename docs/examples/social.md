@@ -1,11 +1,11 @@
 # Social
 
-## Music
+## Music Artists
 
-=== "Music"
+=== "Music Artists"
 
-    ``` python title="examples/social/music.py" linenums="1"
-    --8<-- "examples/social/music.py"
+    ``` python title="examples/social/music_artists.py" linenums="1"
+    --8<-- "examples/social/music_artists.py"
     ```
 
 === "Dependencies"

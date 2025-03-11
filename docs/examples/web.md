@@ -25,7 +25,7 @@
 === "HTML DOM"
 
     ``` python title="examples/web/html_dom.py" linenums="1"
-    --8<-- "examples/web/html_page_dom.py"
+    --8<-- "examples/web/html_dom.py"
     ```
 
 === "Dependencies"

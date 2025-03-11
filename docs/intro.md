@@ -4,27 +4,16 @@
 
 ### Why Graphs?
 
-Graphs are a powerful data structure that can be used to model a wide range of problems.
-They are used in many fields, such as computer science, mathematics, physics, biology, and social sciences.
+A Graph is a powerful data structure, that can be used to model a wide range of problems.
+Graphs are used in many fields, such as computer science, mathematics, physics, biology, social sciences and more.
 
 ### Why Graphinate?
 
-Usually the creation phase of a Graph is a tedious and error-prone process.
+Usually the creation of a Graph is a tedious and error-prone process.
 It requires a lot of boilerplate code to transform data into a Graph.
 This process can be automated and simplified. This is where **Graphinate** comes in.
 
 ## What?
-
-### What is Graphinate?
-
-**Graphinate** is a python library that can be used to generate Graph Data Structures from Data Sources.
-
-It can help create an efficient retrieval pipeline from a given data source, while also enabling the developer to map
-data payloads and hierarchies to a Graph.
-
-In addition, there are several modes of output to enable examination of the Graph and its content.
-
-**Graphinate** uses and is built upon the excellent [**_NetworkX_**](https://networkx.org/).
 
 ### What is a Graph?
 
@@ -47,6 +36,17 @@ In addition, there are several modes of output to enable examination of the Grap
     formally.”
    
     &mdash; [https://en.wikipedia.org/wiki/Data](https://en.wikipedia.org/wiki/Data)
+
+### What is Graphinate?
+
+**Graphinate** is a python library that helps generate and populate Graph Data Structures from Data Sources.
+
+It can help create an efficient retrieval pipeline from a given data source, while also enabling the developer to map
+data payloads and hierarchies to a Graph.
+
+There are several modes of building and rendering to facilitate examination of the Graph and its content.
+
+**Graphinate** uses and is built upon the excellent [**_NetworkX_**](https://networkx.org/).
 
 ## How?
 
@@ -104,30 +104,37 @@ Such a graph may have a focus primarily on the nodes, and then only if needed on
 
 ### Graphinate
 
-Graphinate helps to generate graphs from data sources ("Hydrate" a Graph from a Data Source.)
+Graphinate helps to generate graphs from data sources ("Hydrate" a Graph Model from a Data Source.)
 It supports both *Edge First* and *Node First* creation scenarios.
 
 This is achieved the following way:
 
 #### Source
 
-It is required to represent the data sources, as an Iterable of items that will be transformed, to graph edges
-and/or nodes.
-It is recommended to use Generators as the items Iterables. This way, the data source can be lazy-loaded.
-The Iterables or Generators can be anything, from a simple list of dictionaries to a complex database query.
+First, it is required to represent the data sources, as an `Iterable` of items.
+It will be supply the data items that will be used to create the graph edges and/or nodes.
+It is recommended to use a `Generator`  as the items Iterable. This way, the data source can be
+lazily-loaded.
+Such an `Iterable` or `Generator` can be, anything from a simple list of dictionaries, to a complex database query.
 
 #### Model
 
-Graphinate introduces the concept of a Graph Model.
-A Graph Model is a set of rules, that define how to transform the data source item into Graph elements (i.e. nodes and
-edges). The GraphModel registers the sources using node and edge decorators.
+Graphinate introduces the concept of a `GraphModel`.
+A GraphModel embodies a set of rules which define how to use a data source item in creating a Graph element (i.e.,
+either a node or an edges). The `GraphModel` registers the sources using `GraphModel.node` and `GraphModel.edge`
+decorators. These decorators define how to extract both mandatory and optional aspects of information, which then are
+used to generate each Graph element.
 
-#### Build
+#### Builders
 
-A Graph Model can be used to generate an actual instance of a Graph that contains the transformed source data.
-Graphinate provides several GraphBuilder classes, that can be used to build the Graph from the Graph Model.
+A `GraphModel` can be used to generate an actual instance of a `GraphRepresentation`.
+Such a `GraphRepresentation` will contain the actual Graph data structure, populated with the data items obtained from
+the source.
+Graphinate provides several `GraphBuilder` classes that can be used to build the `GraphRepresentation` from
+a `GraphModel`. The actual nature of the `GraphRepresentation` will depend on the `GraphBuilder` used.
 
-#### Materialize
+#### Renderers
 
-Finally, we can use the builders to Materialize the graph in several ways that support different use cases
-(i.e., visualizing, querying, reporting, etc.).
+Finally, we can render a builder's output `GraphRepresentation`. The Renderers chosen depends on the actual type of the
+`GraphRepresentaion` and the desired rendering output format. Graphinate provides several Renderer classes that can be
+used for different use cases such as visualizing, querying, reporting, etc.

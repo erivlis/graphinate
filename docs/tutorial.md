@@ -1,12 +1,13 @@
 # Tutorial
 
-This tutorial will guide you through the steps to create a music artist graph using the `music_artists.py` example.
+This tutorial will guide you through the steps to create a **Music Artists Graph**.
+(It is based on the [Music Artists](/examples/social/#music-artists) example).
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
+Before you begin, please ensure you have installed the following dependencies:
 
-- Python 3.x
+- Python 3.10 or above
 - `pip` (Python package installer)
 - Required Python packages: `diskcache`, `musicbrainzngs`, `graphinate`
 
@@ -18,7 +19,7 @@ pip install diskcache musicbrainzngs graphinate
 
 ## Step 1: Initialize MusicBrainz
 
-First, we need to initialize the MusicBrainz client with a user agent. This helps identify our application when making
+First, we need to initialize the MusicBrainz client with a user agent. This helps identify the application when making
 requests to the MusicBrainz API.
 
 ```python
@@ -39,6 +40,7 @@ initialize_musicbrainz()
 ## Step 2: Set Up Caching
 
 We will use `diskcache` to cache artist data to avoid redundant API calls.
+(A prefilled cache may be available in the GitHub repo).
 
 ```python
 import pathlib
@@ -64,15 +66,15 @@ We need to import the necessary modules for creating the graph model.
 import graphinate
 from time import sleep
 import operator
-
 ```
 
 ### Step 3.2: Define the Music Graph Model Function
 
 We will create a function `music_graph_model` that takes an artist's name and a maximum depth of recursion.
+This function will be used to create a Graph Model.
 
 ```python
-def music_graph_model(name: str, max_depth: int = 0):
+def music_graph_model(name: str, max_depth: int = 0) -> graphinate.GraphModel:
     graph_model = graphinate.model(f"{name.capitalize()} Graph")
 ```
 
@@ -82,8 +84,8 @@ We will search for the root artist using the MusicBrainz API.
 
 ```python
     result = musicbrainzngs.search_artists(query=name, strict=True, artist=name)
-    sleep(1) # Sleep for 1 second to avoid rate limiting
-    root_artist = result.get('artist-list', [])[0] if result else None
+sleep(1)  # Sleep for 1 second to avoid rate limiting
+root_artist = result.get('artist-list', [])[0] if result else None
 ```
 
 ### Step 3.4: Define the Artists Generator Function
@@ -95,14 +97,15 @@ yield artists for each related artist as a starting point.
 
 ```python
     def artists(parent_artist, artist, depth):
-        artist_id = artist.get('id')
-        if artist_id not in artists_cache:
-            artists_cache[artist_id] = musicbrainzngs.get_artist_by_id(id=artist_id, includes=['artist-rels']).get('artist')
-            sleep(0.1) # Sleep for 0.1 second to avoid rate limiting
-        
+    artist_id = artist.get('id')
+    if artist_id not in artists_cache:
+        artists_cache[artist_id] = musicbrainzngs.get_artist_by_id(id=artist_id, includes=['artist-rels']).get('artist')
+        sleep(0.1)  # Sleep for 0.1 second to avoid rate limiting
+
         artist = artists_cache.get(artist_id)
+
         yield parent_artist, artist
-        
+
         if depth < max_depth:
             related_artist_ids = set()
             for item in artist.get('artist-relation-list', []):
@@ -115,34 +118,33 @@ yield artists for each related artist as a starting point.
 
 ### Step 3.5: Define the Artist Type Function
 
-We will define a function to get the type of an artist.
+We will define a function to get the type of an artist. We'll use it in the next step
 
 ```python
     def artist_type(value):
-        return value.get('type', '_UNKNOWN_')
+    return value.get('type', '_UNKNOWN_')
 ```
 
 ### Step 3.6: Define the Node Model
 
-We will define the node model for the graph using the `graphinate` library.
+We will define the node model for the graph using the `node` decorator.
 Using the musicbrainz artist type as the node type, the artist ID as the node key, and the artist name as the label.
-The `Multiplicity.FIRST` option to ensures that only the first occurrence of an artist is included in the graph.
-
+The `Multiplicity.FIRST` option ensures that only the first occurrence of an artist is included in the graph.
 
 ```python
     @graph_model.node(artist_type,
                       key=operator.itemgetter('id'),
                       label=operator.itemgetter('name'),
                       multiplicity=graphinate.Multiplicity.FIRST)
-    def node():
-        yielded = set()
-        for a, b in artists(None, root_artist, 0):
-            if a and ((a_id := a.get('id')) not in yielded):
-                yielded.add(a_id)
-                yield a
-            if b and ((b_id := b.get('id')) not in yielded):
-                yielded.add(b_id)
-                yield b
+def node():
+    yielded = set()
+    for a, b in artists(None, root_artist, 0):
+        if a and ((a_id := a.get('id')) not in yielded):
+            yielded.add(a_id)
+            yield a
+        if b and ((b_id := b.get('id')) not in yielded):
+            yielded.add(b_id)
+            yield b
 ```
 
 ### Step 3.7: Define the Edge Model
@@ -151,21 +153,15 @@ We will define the edge model for the graph to represent relationships between a
 
 ```python
     @graph_model.edge()
-    def edge():
-        for a, b in artists(None, root_artist, 0):
-            if a:
-                yield {'source': a.get('id'), 'target': b.get('id')}
+def edge():
+    for a, b in artists(None, root_artist, 0):
+        if a:
+            yield {'source': a.get('id'), 'target': b.get('id')}
 ```
 
 ### Step 3.8: Return the Graph Model
 
-Finally, we will return the created graph model.
-
-```python
-    return graph_model
-```
-
-Putting it all together:
+Putting it all together and, Finally, return the created graph model.
 
 ```python
 import graphinate
@@ -189,7 +185,7 @@ def music_graph_model(name: str, max_depth: int = 0):
     graph_model = graphinate.model(f"{name.capitalize()} Graph")
 
     result = musicbrainzngs.search_artists(query=name, strict=True, artist=name)
-    sleep(1) # Sleep for 1 second to avoid rate limiting
+    sleep(1)  # Sleep for 1 second to avoid rate limiting
     root_artist = result.get('artist-list', [])[0] if result else None
 
     def artists(parent_artist, artist, depth):
@@ -197,7 +193,7 @@ def music_graph_model(name: str, max_depth: int = 0):
         if artist_id not in artists_cache:
             artists_cache[artist_id] = musicbrainzngs.get_artist_by_id(id=artist_id, includes=['artist-rels']).get(
                 'artist')
-            sleep(0.1) # Sleep for 0.1 second to avoid rate limiting
+            sleep(0.1)  # Sleep for 0.1 second to avoid rate limiting
 
         artist = artists_cache.get(artist_id)
         yield parent_artist, artist
@@ -240,7 +236,7 @@ def music_graph_model(name: str, max_depth: int = 0):
 ### Step 4.1: Import Required Modules
 
 We will use `tkinter` to create a simple GUI for selecting artists.
-Implemented before hand in the `gui.py` file.
+Implemented before hand in the `gui.py` file located in the example folder.
 
 ```python
 from gui import ListboxChooser
@@ -276,8 +272,8 @@ listbox_chooser = ListboxChooser('Choose Artist/s', {name: name for name in arti
 
 We will generate the GraphModel for the selected artists.
 First creating a GraphModel for each artist and then combining them into a single model.
-In this case, we will use the `reduce` function from the `operator` module to combine the models.
-Leveraging the GrapModel support of the + operation. 
+In this case, we will use the `reduce` function from the `functools` module to combine the models using the
+`operator.add` function. It leverages the GrapModel support of the + operation.
 
 ```python
 models = (music_graph_model(a, 2) for _, a in listbox_chooser.get_choices())
@@ -286,9 +282,8 @@ model = reduce(operator.add, models)
 
 ### Step 4.5: Materialize the Graph
 
-We will materialize the GraphModel using the `graphinate` library.
-Using the `GraphQLBuilder` to generate a GraphQL Schema (i.e. strawberry-graphql schema)
-and use the `graphql` function to create and run the GraphQL server.
+Using the `GraphQLBuilder` we generate a GraphQL Schema (i.e. strawberry-graphql schema)
+and use the `graphql.server` function to create and run the GraphQL server.
 
 ```python
 # Use the GraphQLBuilder Builder
@@ -298,10 +293,10 @@ builder = graphinate.builders.GraphQLBuilder(graph_model)
 schema = builder.build()
 
 # plot the graph using matplotlib
-graphinate.server(schema)
+graphinate.graphql.server(schema)
 ```
 
-### Step 4.6: Putting it all together
+### Step 4.6: Putting everything together
 
 ```python
 if __name__ == '__main__':
