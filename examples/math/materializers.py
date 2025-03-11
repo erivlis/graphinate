@@ -20,6 +20,7 @@ class Materializers(Enum):
     GraphQL: tuple = (builders.GraphQLBuilder, graphql)
     NetworkX: tuple = (builders.NetworkxBuilder, plot)
     NetworkX_with_edge_labels: tuple = (builders.NetworkxBuilder, functools.partial(plot, with_edge_labels=True))
+    Mermaid: tuple = (builders.MermaidBuilder, print)
 
 
 def materialize(model: GraphModel,

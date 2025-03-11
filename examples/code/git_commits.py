@@ -46,7 +46,7 @@ def create_graph_model(repo: git.Repo):
 
 def git_commits(repo_url: str):
     with TemporaryDirectory() as temp_dir:
-        repo_path = Path(temp_dir) / 'magika'
+        repo_path = Path(temp_dir)
 
         with git.Repo.clone_from(repo_url, repo_path) as repo:
             model = create_graph_model(repo)
