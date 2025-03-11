@@ -1,9 +1,9 @@
+import ast
 import base64
 import decimal
-import json
 import math
 from types import MappingProxyType
-from typing import NewType, Union
+from typing import Any, NewType, Union
 
 import strawberry
 
@@ -59,26 +59,30 @@ def edge_label_converter(value):
     return label_converter(tuple(node_label_converter(n) for n in value), delimiter=DEFAULT_EDGE_DELIMITER)
 
 
-def encode_id(graph_node_id: tuple,
-              encoding: str = 'utf-8',
-              delimiter: str = DEFAULT_NODE_DELIMITER) -> str:
-    # obj_s: str = delimiter.join(map(str,graph_node_id))
-    obj_s: str = json.dumps(graph_node_id)
+def encode(value: Any, encoding: str = 'utf-8') -> str:
+    obj_s: str = repr(value)
     obj_b: bytes = obj_s.encode(encoding)
-    enc_b: bytes = base64.b64encode(obj_b)
+    enc_b: bytes = base64.urlsafe_b64encode(obj_b)
     enc_s: str = enc_b.decode(encoding)
     return enc_s
 
 
-def decode_id(graphql_node_id: strawberry.ID,
-              encoding: str = 'utf-8',
-              delimiter: str = DEFAULT_NODE_DELIMITER) -> tuple[str, ...]:
-    enc_b: bytes = graphql_node_id.encode(encoding)
-    obj_b: bytes = base64.b64decode(enc_b)
+def decode(value: str, encoding: str = 'utf-8') -> Any:
+    enc_b: bytes = value.encode(encoding)
+    obj_b: bytes = base64.urlsafe_b64decode(enc_b)
     obj_s: str = obj_b.decode(encoding)
-    obj: tuple = tuple(json.loads(obj_s))
-    # obj: tuple = tuple(obj_s.split(delimiter))
+    obj: Any = ast.literal_eval(obj_s)
     return obj
+
+
+def encode_id(graph_node_id: tuple,
+              encoding: str = 'utf-8') -> str:
+    return encode(graph_node_id, encoding)
+
+
+def decode_id(graphql_node_id: strawberry.ID,
+              encoding: str = 'utf-8') -> tuple[str, ...]:
+    return decode(graphql_node_id, encoding)
 
 
 def encode_edge_id(edge: tuple, encoding: str = 'utf-8'):
