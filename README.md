@@ -151,11 +151,11 @@ import graphinate
 
 N: int = 8
 
-# Define a GraphModel
+# First Define a GraphModel instance.
+# It will be used to hold the graph definitions
 graph_model: graphinate.GraphModel = graphinate.model(name="Octagonal Graph")
 
-
-# Register in the Graph Model the edges' supplier function
+# Register in the Graph Model the edges' supplier generator function
 @graph_model.edge()
 def edge():
     for i in range(N):
@@ -166,29 +166,30 @@ def edge():
 # Use the NetworkX Builder
 builder = graphinate.builders.NetworkxBuilder(graph_model)
 
-# build the NetworkX graph
+# build the NetworkX GraphRepresentation
+# the output in this case is a nx.Graph instance
 graph = builder.build()
 
-# and plot the graph using matplotlib
+# this supplied plot method uses matplotlib to display the graph
 graphinate.matplotlib.plot(graph, with_edge_labels=True)
 
 # or use the Mermaid Builder
 builder = graphinate.builders.MermaidBuilder(graph_model)
 
-# build the Mermaid diagram
+# to create a Mermaid diagram
 diagram: str = builder.build()
 
-# and get the diagram as Markdown or as a single page HTML
+# and get Markdown or single page HTML to display it
 mermaid_markdown: str = graphinate.mermaid.markdown(diagram)
 mermaid_html: str = graphinate.mermaid.html(diagram, title=graph_model.name)
 
-# or Use the GraphQL Builder
+# or use the GraphQL Builder
 builder = graphinate.builders.GraphQLBuilder(graph_model)
 
-# build the Strawberry GraphQL schema
+# to create a Strawberry GraphQL schema
 schema = builder.build()
 
-# and serve it using a Uvicorn web server
+# and serve it using Uvicorn web server
 graphinate.graphql.server(schema)
 ```
 ## CLI
