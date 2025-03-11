@@ -1,5 +1,7 @@
-"""
-Builder classes that generate graph data structures from a GraphModel
+"""Builder classes that generate graph data structures from a GraphModel
+
+  Attributes:
+      GraphRepresentation (GraphRepresentation): GraphRepresentation Type
 """
 import functools
 import importlib
@@ -39,10 +41,10 @@ class GraphType(Enum):
 
     | **Graph Type** | **Type**   | **Self-loops allowed** | **Parallel edges allowed** |
     |----------------|------------|:----------------------:|:--------------------------:|
-    | Graph          | undirected | Yes                    | No                         |
-    | DiGraph        | directed   | Yes                    | No                         |
-    | MultiGraph     | undirected | Yes                    | Yes                        |
-    | MultiDiGraph   | directed   | Yes                    | Yes                        |
+    | Graph          | Undirected | Yes                    | No                         |
+    | DiGraph        | Directed   | Yes                    | No                         |
+    | MultiGraph     | Undirected | Yes                    | Yes                        |
+    | MultiDiGraph   | Directed   | Yes                    | Yes                        |
 
     See more here: [NetworkX Reference](https://networkx.org/documentation/stable/reference/classes)
     """
@@ -807,4 +809,4 @@ def build(builder_cls: type[Builder],
     return materialized_graph
 
 
-__all__ = ('D3Builder', 'GraphQLBuilder', 'GraphType', 'NetworkxBuilder', 'build')
+__all__ = ('D3Builder', 'GraphQLBuilder','GraphRepresentation', 'GraphType', 'NetworkxBuilder', 'build')

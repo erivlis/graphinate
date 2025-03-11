@@ -84,3 +84,6 @@ def server(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT, **kwargs
 
     import uvicorn
     uvicorn.run(app, host='0.0.0.0', port=port)
+
+
+__all__ = ['server']

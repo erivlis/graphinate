@@ -1,10 +1,10 @@
 """Typing Module
 
   Attributes:
-    Node (Node): Node Type
-    Edge (Edge): Edge Type
-    Element (Element): Element Type
-    Extractor (Extractor): Source of data for an Element
+      Node (Node): Node Type
+      Edge (Edge): Edge Type
+      Element (Element): Element Type
+      Extractor (Extractor): Source of data for an Element
 """
 
 from collections.abc import Callable, Iterable

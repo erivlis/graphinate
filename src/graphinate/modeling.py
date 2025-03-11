@@ -111,11 +111,11 @@ class NodeModel:
 class GraphModel:
     """A Graph Model
 
-       Used to declaratively register Edge and/or Node data supplier functions by using
-       decorators.
+    Used to declaratively register Edge and/or Node data supplier functions by using
+    decorators.
 
-   Parameters:
-       name: the archetype name for Graphs generated based on the GraphModel.
+    Parameters:
+        name: the archetype name for Graphs generated based on the GraphModel.
     """
 
     def __init__(self, name: str):
