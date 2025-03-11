@@ -189,6 +189,11 @@ def test_graphql_builder__map_graph_model(execution_number, map_graph_model, gra
     execution_result = schema.execute_sync(graphql_query)
     actual_graph = execution_result.data
 
+    node_ids: set = {v['id'] for v in actual_graph['nodes']}
+    edges = actual_graph['edges']
+    edges_source_ids: set = {v['source']['id'] for v in edges}
+    edges_targets_ids: set = {v['target']['id'] for v in edges}
+
     # assert
     assert actual_graph
     assert actual_graph['graph']
@@ -199,6 +204,10 @@ def test_graphql_builder__map_graph_model(execution_number, map_graph_model, gra
     assert node_types_counts['country'] == expected_country_count
     assert node_types_counts['city'] == expected_city_count
     assert len(actual_graph['nodes']) == expected_country_count + expected_city_count + expected_person_count
+    assert edges_source_ids.issubset(node_ids)
+    assert edges_targets_ids.issubset(node_ids)
+    assert node_ids.issuperset(edges_source_ids)
+    assert node_ids.issuperset(edges_targets_ids)
 
 
 graphql_operations_cases = [
@@ -237,7 +246,12 @@ graphql_operations_cases = [
             "value": 0
         }
     }),
-    ("""query Graph {nodes(nodeId: "WzBd") {type label} edges(edgeId: "WyJXekJkIiwgIld6RmQiXQ==") {type label}}""",
+    ((
+         'query Graph {\n'
+         'nodes(nodeId: "KDAsKQ==") {type label}\n'
+         'edges(edgeId: "KCdLREFzS1E9PScsICdLREVzS1E9PScp") {type label}\n'
+         '}'
+     ),
      # noqa: E501
      {
          "nodes": [
