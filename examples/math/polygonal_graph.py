@@ -34,9 +34,10 @@ def polygonal_graph_model(name: str, number_of_sides: int) -> graphinate.GraphMo
 
     return graph_model
 
+# instantiated here to be used to cli serving
+model = polygonal_graph_model("Octagonal Graph", 8)
 
 if __name__ == '__main__':
-    model = polygonal_graph_model("Octagonal Graph", 8)
 
     # 1. Define Graph Builder
     builder = graphinate.builders.NetworkxBuilder(model)
