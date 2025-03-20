@@ -35,11 +35,11 @@ def polygonal_graph_model(name: str, number_of_sides: int) -> graphinate.GraphMo
     return graph_model
 
 
-model = polygonal_graph_model("Octagonal Graph", 8)
-
 if __name__ == '__main__':
+    model = polygonal_graph_model("Octagonal Graph", 8)
+
     # 1. Define Graph Builder
-    builder = graphinate.builders.NetworkxBuilder(model=model)
+    builder = graphinate.builders.NetworkxBuilder(model)
 
     # Then
     # 2. Build the Graph object
@@ -51,4 +51,12 @@ if __name__ == '__main__':
 
     # Or
     # 3. Option B - Output as a plot
-    graphinate.materializers.plot(graph)
+    graphinate.renderers.matplotlib.plot(graph)
+
+    # Alternatively,
+    # 4. Define a GraphQL Builder
+    builder = graphinate.builders.GraphQLBuilder(model)
+
+    schema = builder.build()
+
+    graphinate.graphql.server(schema, port=9077)

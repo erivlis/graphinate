@@ -4,7 +4,7 @@ from collections.abc import Callable, Mapping
 from enum import Enum
 from typing import Optional
 
-from graphinate import GraphModel, GraphType, builders, graphql, plot
+from graphinate import GraphModel, GraphType, builders, graphql, matplotlib
 
 
 class Materializers(Enum):
@@ -17,9 +17,10 @@ class Materializers(Enum):
         NetworkX_with_edge_labels: create a NetworkX Graph and plot+show it with matplotlib
     """
     D3Graph: tuple = (builders.D3Builder, lambda d: print(json.dumps(d, indent=2, default=str)))
-    GraphQL: tuple = (builders.GraphQLBuilder, graphql)
-    NetworkX: tuple = (builders.NetworkxBuilder, plot)
-    NetworkX_with_edge_labels: tuple = (builders.NetworkxBuilder, functools.partial(plot, with_edge_labels=True))
+    GraphQL: tuple = (builders.GraphQLBuilder, graphql.server)
+    NetworkX: tuple = (builders.NetworkxBuilder, matplotlib.plot)
+    NetworkX_with_edge_labels: tuple = (builders.NetworkxBuilder,
+                                        functools.partial(matplotlib.plot, with_edge_labels=True))
     Mermaid: tuple = (builders.MermaidBuilder, print)
 
 

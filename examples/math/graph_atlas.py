@@ -2,10 +2,9 @@ import operator
 
 import graphs
 import networkx as nx
+from materializers import Materializers, materialize
 
 import graphinate
-
-from .materializers import Materializers, materialize
 
 
 def model(items: list[tuple[str, nx.Graph]]) -> graphinate.GraphModel:
