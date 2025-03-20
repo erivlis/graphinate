@@ -2,9 +2,15 @@
 <html lang="">
 <head>
     <title>Graphinate Viewer</title>
-    <script type="module"
-            integrity="sha384-Dt9sd/AA7KNs3M8XRJs7rNwUZ9bRWhsKjVz4UpCle+pCI/lqdylOH3mcYcKRBPKF"
-            crossorigin="anonymous">
+    <link rel="modulepreload"
+          href="https://unpkg.com/tweakpane@4.0.5/dist/tweakpane.min.js"
+          integrity="sha384-Dt9sd/AA7KNs3M8XRJs7rNwUZ9bRWhsKjVz4UpCle+pCI/lqdylOH3mcYcKRBPKF"
+          crossorigin="anonymous">
+    <link rel="modulepreload"
+          href="https://unpkg.com/@tweakpane/plugin-essentials@0.2.1/dist/tweakpane-plugin-essentials.min.js"
+          integrity="sha384-q0QZoZn8RhBcEJYEcp7qn991YSevEjaL/GJwbQyuY0FlicmHWZmA384DCVgumN4u"
+          crossorigin="anonymous">
+    <script type="module">
         // Import ES module
         import * as Tweakpane from 'https://unpkg.com/tweakpane@4.0.5/dist/tweakpane.min.js';
         import * as TweakpaneEssentialsPlugin
@@ -13,10 +19,8 @@
         window.Tweakpane = Tweakpane;
         window.TweakpaneEssentialsPlugin = TweakpaneEssentialsPlugin;
     </script>
-
-
     <script src="https://unpkg.com/3d-force-graph@1.76.1/dist/3d-force-graph.min.js"
-            integrity="sha384-7PiolihqoWLaY+8+zoccK5LLtWiGzovYvg5gjpKkQYhL51yq4JYt6owMj3bzQFBc"
+            integrity="sha384-hNwCF3Cb+c2HRg4oybw2YGB80Ytiml/p9GEMz87Ac4SiSMF4lZ/uywlTqHH+zWx0"
             crossorigin="anonymous"></script>
     <script src="https://unpkg.com/murmurhash-js@1.0.0/murmurhash3_gc.js"
             integrity="sha384-g+j9YCPmBDu4mlFm1UGyQFBh5P7x/xYGJvqbX/WFbzJC2V/wwBRCorSlQ1UaAED0"
