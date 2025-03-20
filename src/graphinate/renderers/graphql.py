@@ -29,7 +29,7 @@ def _openapi_schema(request: Request) -> ASGIApp:
     """
     schema_data = {
         'openapi': '3.0.0',
-        'info': {'title': 'Graphinate API', 'version': '0.8.1'},
+        'info': {'title': 'Graphinate API', 'version': '0.8.2'},
         'paths': {
             '/graphql': {'get': {'responses': {200: {'description': 'GraphQL'}}}},
             '/graphiql': {'get': {'responses': {200: {'description': 'GraphiQL UI.'}}}},
