@@ -19,13 +19,12 @@
         window.Tweakpane = Tweakpane;
         window.TweakpaneEssentialsPlugin = TweakpaneEssentialsPlugin;
     </script>
-    <script src="https://unpkg.com/3d-force-graph@1.76.1/dist/3d-force-graph.min.js"
-            integrity="sha384-hNwCF3Cb+c2HRg4oybw2YGB80Ytiml/p9GEMz87Ac4SiSMF4lZ/uywlTqHH+zWx0"
+    <script src="https://cdn.jsdelivr.net/npm/3d-force-graph@1.76.2/dist/3d-force-graph.min.js"
+            integrity="sha384-zSKZ615fogcuRjUjE+0YstAo3N/t7PzUvtQu5KGA1iqkmHXsTRst7zP+6573D+hK"
             crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/murmurhash-js@1.0.0/murmurhash3_gc.js"
-            integrity="sha384-g+j9YCPmBDu4mlFm1UGyQFBh5P7x/xYGJvqbX/WFbzJC2V/wwBRCorSlQ1UaAED0"
+    <script src="https://cdn.jsdelivr.net/npm/murmurhash-js@1.0.0/murmurhash3_gc.min.js"
+            integrity="sha384-RTcg9S2mr/vVW+vsvQZB7G2cYWnhkBdsMvqKzHxL41KG4zTgrMSzGfm7mzw0aYU2"
             crossorigin="anonymous"></script>
-
     <!-- Append this element into the head element to apply the theme -->
     <style>
         body {
@@ -319,7 +318,7 @@
         return `<div style="color: ${gEl.color}; font-family: 'Consolas', 'Menlo', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace; outline-color: ${gEl.color}">${gEl.type}<br>'${gEl.label}'</div>`
     }
 
-    const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
+    const Graph = new ForceGraph3D(document.getElementById('3d-graph'))
         .nodeColor('color')
         .nodeVal(node => graphParams.nodeVal)
         .nodeLabel(node => createLabel(node))
