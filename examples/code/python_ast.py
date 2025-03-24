@@ -126,7 +126,7 @@ if __name__ == '__main__':
     # schema = graphinate.builders.GraphQLBuilder(ast_model).build()
     # graphinate.graphql.server(schema)
 
-    diagram = graphinate.builders.MermaidBuilder(ast_model).build()
+    diagram = graphinate.builders.MermaidBuilder(ast_model).build(with_edge_labels=False)
 
     html_diagram = graphinate.mermaid.html(diagram)
 

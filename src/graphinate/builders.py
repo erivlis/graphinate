@@ -326,6 +326,7 @@ class MermaidBuilder(NetworkxBuilder):
     def build(self,
               orientation: nxm.DiagramOrientation = nxm.DiagramOrientation.LEFT_RIGHT,
               node_shape: nxm.DiagramNodeShape = nxm.DiagramNodeShape.DEFAULT,
+              with_edge_labels: bool = False,
               **kwargs) -> nxm.typing.MermaidDiagram:
         """
         Build a Mermaid Graph
@@ -335,6 +336,8 @@ class MermaidBuilder(NetworkxBuilder):
             The orientation of the graph, by default Orientation.LEFT_RIGHT.
           node_shape : NodeShape, optional
             The shape of the nodes, by default NodeShape.DEFAULT.
+          with_edge_labels:
+            Whether to include edge labels, by default False.
           **kwargs: additional inputs to the node and edge generator functions
 
         Returns:
@@ -342,7 +345,8 @@ class MermaidBuilder(NetworkxBuilder):
         """
         super().build(**kwargs)
         color.convert_colors_to_hex(self._graph)
-        return nxm.DiagramBuilder(orientation=orientation, node_shape=node_shape).build(self._graph)
+        nxm_builder = nxm.DiagramBuilder(orientation=orientation, node_shape=node_shape)
+        return nxm_builder.build(self._graph, with_edge_labels=with_edge_labels)
 
 
 class GraphQLBuilder(NetworkxBuilder):
@@ -809,4 +813,4 @@ def build(builder_cls: type[Builder],
     return materialized_graph
 
 
-__all__ = ('D3Builder', 'GraphQLBuilder','GraphRepresentation', 'GraphType', 'NetworkxBuilder', 'build')
+__all__ = ('D3Builder', 'GraphQLBuilder', 'GraphRepresentation', 'GraphType', 'NetworkxBuilder', 'build')
