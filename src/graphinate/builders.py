@@ -15,9 +15,10 @@ from collections.abc import Callable, Hashable, Mapping
 from datetime import datetime
 from enum import Enum
 from types import MappingProxyType
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, Literal
 
 import inflect
+import mappingtools
 import networkx as nx
 import networkx_mermaid as nxm
 import strawberry
@@ -299,17 +300,26 @@ class D3Builder(NetworkxBuilder):
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
         super().__init__(model, graph_type)
 
-    def build(self, **kwargs) -> GraphRepresentation:
+    def build(self, values_format: Literal['json', 'python'] = 'python', **kwargs) -> GraphRepresentation:
         """
 
         Args:
+            values_format: Literal['python', 'json'] - The format of the values
             **kwargs:
 
         Returns:
             D3 Graph
         """
         super().build(**kwargs)
-        return self.from_networkx(self._graph)
+        d3graph = self.from_networkx(self._graph)
+
+        match values_format:
+            case 'json':
+                return mappingtools.transformers.strictify(d3graph, value_converter=json.dumps)
+            case 'python':
+                return d3graph
+            case _:
+                raise ValueError(f"Invalid values format: {values_format}")
 
     @staticmethod
     def from_networkx(nx_graph: nx.Graph):
