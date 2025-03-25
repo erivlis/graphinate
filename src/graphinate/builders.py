@@ -15,7 +15,7 @@ from collections.abc import Callable, Hashable, Mapping
 from datetime import datetime
 from enum import Enum
 from types import MappingProxyType
-from typing import Any, Optional, Union, Literal
+from typing import Any, Literal, Optional, Union
 
 import inflect
 import mappingtools
@@ -336,6 +336,7 @@ class MermaidBuilder(NetworkxBuilder):
     def build(self,
               orientation: nxm.DiagramOrientation = nxm.DiagramOrientation.LEFT_RIGHT,
               node_shape: nxm.DiagramNodeShape = nxm.DiagramNodeShape.DEFAULT,
+              title: str | None = None,
               with_edge_labels: bool = False,
               **kwargs) -> nxm.typing.MermaidDiagram:
         """
@@ -346,6 +347,10 @@ class MermaidBuilder(NetworkxBuilder):
             The orientation of the graph, by default Orientation.LEFT_RIGHT.
           node_shape : NodeShape, optional
             The shape of the nodes, by default NodeShape.DEFAULT.
+          title: str, optional
+            The title of the graph (default: None).
+            If None, the graph name will be used if available.
+            Supplying and empty string will remove the title.
           with_edge_labels:
             Whether to include edge labels, by default False.
           **kwargs: additional inputs to the node and edge generator functions
@@ -356,7 +361,7 @@ class MermaidBuilder(NetworkxBuilder):
         super().build(**kwargs)
         color.convert_colors_to_hex(self._graph)
         nxm_builder = nxm.DiagramBuilder(orientation=orientation, node_shape=node_shape)
-        return nxm_builder.build(self._graph, with_edge_labels=with_edge_labels)
+        return nxm_builder.build(self._graph, title=title, with_edge_labels=with_edge_labels)
 
 
 class GraphQLBuilder(NetworkxBuilder):
