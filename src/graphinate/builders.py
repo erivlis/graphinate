@@ -311,6 +311,7 @@ class D3Builder(NetworkxBuilder):
             D3 Graph
         """
         super().build(**kwargs)
+        color.convert_colors_to_hex(self._graph)
         d3graph = self.from_networkx(self._graph)
 
         match values_format:

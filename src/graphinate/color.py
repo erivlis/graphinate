@@ -15,7 +15,17 @@ def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = 
               Default is "tab20".
     Returns:
         Mapping - A dictionary mapping nodes to their corresponding RGBA colors based on the colormap.
+
+    .. note::
+        The graph should have a 'node_types' attribute containing the types of nodes.
+        The colormap can be specified as a string or a matplotlib colormap object.
     """
+
+    node_types = graph.graph.get('node_types', {})
+
+    if len(node_types) > 1 and 'node' in node_types:
+        node_types.pop('node')
+
     type_lookup = {t: i for i, t in enumerate(graph.graph['node_types'].keys())}
     color_lookup = {node: type_lookup.get(data.get('type'), 0) for node, data in graph.nodes.data()}
     if len(color_lookup) > 1:
@@ -56,7 +66,20 @@ def color_hex(color: Union[str, Sequence[Union[float, int]]]) -> Union[str, Sequ
     else:
         return color
 
-def convert_colors_to_hex(graph: nx.Graph):
-    """Convert all color labels in the graph to hexadecimal format."""
-    color_values = {node: color_hex(data['color']) for node, data in graph.nodes(data=True) if 'color' in data}
-    nx.set_node_attributes(graph, values=color_values, name='color')
+
+def convert_colors_to_hex(graph: nx.Graph, color: str = 'color') -> None:
+    """Convert all color labels in the graph to hexadecimal format.
+
+    Args:
+        graph (nx.Graph): The input graph with node attributes.
+        color (str): The attribute name for the color. Default is 'color'.
+
+    Returns:
+        None: The function modifies the graph in place.
+
+    .. note::
+       This function assumes that the color attribute is present in the node data.
+    """
+
+    color_values = {node: color_hex(data[color]) for node, data in graph.nodes(data=True) if color in data}
+    nx.set_node_attributes(graph, values=color_values, name=color)
