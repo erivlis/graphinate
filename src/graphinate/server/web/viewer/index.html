@@ -65,24 +65,6 @@
 <body>
 <div id="3d-graph"></div>
 <script>
-    // region GraphQL
-
-    const graphQuery = `query GenericGraph{nodes{...Details} links: edges{source{...Details} target{...Details} ...Details}} fragment Details on GraphElement {id label type color}`;
-    const nodeTypesQuery = `query GraphTypes{graph{name nodeTypes: nodeTypeCounts{name count: value} edgeTypes: edgeTypeCounts{name count: value}}}`;
-
-    function fetchGraphQL(payload) {
-        return fetch(
-            '/graphql',
-            {
-                method: 'post',
-                headers: {Accept: 'application/json', 'Content-Type': 'application/json'},
-                body: JSON.stringify(payload),
-                credentials: 'include',
-            }).then((response) => response.json());
-    }
-
-    // endregion GraphQL
-
     // region FloatingIFramePanel
     let highestZIndex = 0;
     let lastPanelPosition = {top: 50, left: 50};
@@ -299,6 +281,25 @@
 
     // endregion FloatingIFramePanel
 
+    // region GraphQL
+
+    const graphQuery = `query GenericGraph{nodes{...Details} links: edges{source{...Details} target{...Details} ...Details}} fragment Details on GraphElement {id label type color}`;
+    const nodeTypesQuery = `query GraphTypes{graph{name nodeTypes: nodeTypeCounts{name count: value} edgeTypes: edgeTypeCounts{name count: value}}}`;
+
+    function fetchGraphQL(payload) {
+        return fetch(
+            '/graphql',
+            {
+                method: 'post',
+                headers: {Accept: 'application/json', 'Content-Type': 'application/json'},
+                body: JSON.stringify(payload),
+                credentials: 'include',
+            }).then((response) => response.json());
+    }
+
+    // endregion GraphQL
+
+    // region ForceGraph3D
     const nodeTypeColor = {}
     const nodeTypeVisibility = {};
     let graphParams = {
@@ -659,6 +660,8 @@
                     createGraphControlPanel(data.graph, gData);
                 });
         });
+
+    // endregion ForceGraph3D
 </script>
 </body>
 </html>
