@@ -34,7 +34,7 @@ dependencies = [
     "mappingtools",
     "matplotlib",
     "networkx",
-    "networkx-mermaid>=0.1.0",
+    "networkx-mermaid",
     "strawberry-graphql[asgi,opentelemetry]",
 ]
 
