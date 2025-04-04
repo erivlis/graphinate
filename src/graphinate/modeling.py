@@ -114,7 +114,7 @@ class GraphModel:
     Used to declaratively register Edge and/or Node data supplier functions by using
     decorators.
 
-    Parameters:
+    Args:
         name: the archetype name for Graphs generated based on the GraphModel.
     """
 
@@ -166,7 +166,7 @@ class GraphModel:
     def node_children_types(self, _type: str = UniverseNode) -> dict[str, list[str]]:
         """Children Node Types for given input Node Type
 
-        Parameters:
+        Args:
             _type:  Node Type. Default value is UNIVERSE_NODE.
 
         Returns:
@@ -200,7 +200,7 @@ class GraphModel:
         """Decorator to Register a Generator of node payloads as a source for Graph Nodes.
         It creates a NodeModel object.
 
-        Parameters:
+        Args:
             type_: Optional source for the Node Type. Defaults to use Generator function
                    name as the Node Type.
             parent_type: Optional parent Node Type. Defaults to UNIVERSE_NODE
@@ -253,7 +253,7 @@ class GraphModel:
         """Decorator to Register a generator of edge payloads as a source of Graph Edges.
          It creates an Edge generator function.
 
-        Parameters:
+        Args:
             type_: Optional source for the Edge Type. Defaults to use Generator function
                    name as the Edge Type.
             source: Source for edge source Node ID.
@@ -296,7 +296,7 @@ class GraphModel:
         """Rectify the model.
            Add a default NodeModel in case of having just edge supplier/s and no node supplier/s.
 
-           Parameters:
+           Args:
                _type
                parent_type
                key

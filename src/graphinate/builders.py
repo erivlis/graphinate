@@ -812,7 +812,7 @@ def build(builder_cls: type[Builder],
     """
     Build a graph from a graph model
 
-    Parameters:
+    Args:
         builder_cls: builder class type
         graph_model: a GraphModel instance
         graph_type: type of the generated graph

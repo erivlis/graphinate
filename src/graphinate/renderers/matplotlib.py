@@ -11,7 +11,7 @@ def draw(graph: nx.Graph,
     """
     Draws the given networkx graph with optional node and edge labels.
 
-    Parameters:
+    Args:
         graph (nx.Graph): The input graph to be drawn.
         with_node_labels (bool): Whether to display node labels. Default is True.
         with_edge_labels (bool): Whether to display edge labels. Default is False.

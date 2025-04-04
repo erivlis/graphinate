@@ -8,8 +8,8 @@ import networkx as nx
 
 @functools.lru_cache
 def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = "tab20") -> Mapping:
-    """
-    Parameters:
+    """Map node types to RGBA colors based on a colormap.
+    Args:
         graph: nx.Graph - The input graph for which node colors need to be mapped.
         cmap: Union[str, mpl.colors.Colormap], optional - The colormap used to map values to RGBA colors.
               Default is "tab20".
@@ -31,10 +31,14 @@ def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = 
 def color_hex(color: Union[str, Sequence[Union[float, int]]]) -> Union[str, Sequence[Union[float, int]]]:
     """Get HEX color code
 
-    Parameters:
+    Args:
         color: input color
     Returns:
          Color HEX code
+
+    .. note::
+        If the input is a tuple or list, it should contain either three floats (0-1) or three ints (0-255).
+        The function will convert these to a HEX color code.
     """
     if isinstance(color, (tuple, list)):  # noqa: UP038
         rgb = color[:3]

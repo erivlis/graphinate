@@ -30,7 +30,7 @@ def github_user(user_id: Optional[str] = None) -> Union[NamedUser, Authenticated
     """
     Get the GitHub user object for the specified user ID or the authenticated user.
 
-    Parameters:
+    Args:
         user_id (Optional[str]): The ID of the user to retrieve.
                                  If not provided, retrieve the authenticated user.
 
@@ -51,7 +51,7 @@ def github_repositories(
     """
     Get the GitHub repositories for the specified user ID or the authenticated user.
 
-    Parameters:
+    Args:
         user_id (Optional[str]): The ID of the user whose repositories to retrieve.
                                  If not provided, retrieve repositories of the authenticated user.
         repo_id (Optional[str]): The ID of the repository to retrieve.
@@ -78,7 +78,7 @@ def github_commits(
     """
     Retrieve commits from a GitHub repository.
 
-    Parameters:
+    Args:
         repo (Repository): The GitHub repository object from which to retrieve commits.
         commit_id (str, optional): The ID of the commit to retrieve.
                                    If provided, only that commit will be returned.
@@ -115,7 +115,7 @@ def github_files(
     """
     Retrieves Files from a GitHub Commit
 
-    Parameters:
+    Args:
         commit (Commit): A Commit object from the GitHub API.
         file_id (Optional[str]): An optional parameter specifying the filename to filter the files. Default is None.
 
