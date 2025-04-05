@@ -3,18 +3,18 @@
 <head>
     <title>Graphinate Viewer</title>
     <link rel="modulepreload"
-          href="https://unpkg.com/tweakpane@4.0.5/dist/tweakpane.min.js"
-          integrity="sha384-Dt9sd/AA7KNs3M8XRJs7rNwUZ9bRWhsKjVz4UpCle+pCI/lqdylOH3mcYcKRBPKF"
+          href="https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/dist/tweakpane.min.js"
+          integrity="sha256-DN53dubYps0y0SjSHj8gO34VKtxaXqipuG/3jAJ2aWw="
           crossorigin="anonymous">
     <link rel="modulepreload"
-          href="https://unpkg.com/@tweakpane/plugin-essentials@0.2.1/dist/tweakpane-plugin-essentials.min.js"
-          integrity="sha384-q0QZoZn8RhBcEJYEcp7qn991YSevEjaL/GJwbQyuY0FlicmHWZmA384DCVgumN4u"
+          href="https://cdn.jsdelivr.net/npm/@tweakpane/plugin-essentials@0.2.1/dist/tweakpane-plugin-essentials.min.js"
+          integrity="sha256-VYrWNKBoz1vsS026wJe4Zvb5/r8kGOSTfIBcmLdOA1g="
           crossorigin="anonymous">
     <script type="module">
         // Import ES module
-        import * as Tweakpane from 'https://unpkg.com/tweakpane@4.0.5/dist/tweakpane.min.js';
+        import * as Tweakpane from 'https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/dist/tweakpane.min.js';
         import * as TweakpaneEssentialsPlugin
-            from 'https://unpkg.com/@tweakpane/plugin-essentials@0.2.1/dist/tweakpane-plugin-essentials.min.js';
+            from 'https://cdn.jsdelivr.net/npm/@tweakpane/plugin-essentials@0.2.1/dist/tweakpane-plugin-essentials.min.js';
         // Export it as a global variable
         window.Tweakpane = Tweakpane;
         window.TweakpaneEssentialsPlugin = TweakpaneEssentialsPlugin;
@@ -64,7 +64,10 @@
 </head>
 <body>
 <div id="3d-graph"></div>
-<script>
+<script type="module">
+    import * as THREE from 'https://esm.sh/three';
+    import {scaleLinear, interpolateRgb, color as d3Color} from 'https://esm.sh/d3';
+
     // region FloatingIFramePanel
     let highestZIndex = 0;
     let lastPanelPosition = {top: 50, left: 50};
@@ -305,6 +308,7 @@
     let graphParams = {
         nodeVal: 8,
         linkWidth: 0,
+        useLinkColorGradient: false,
         linkCurvature: 0,
         linkCurveRotation: 0,
         linkDirectionalArrowLength: 0, // 0 hides
@@ -312,7 +316,8 @@
         linkDirectionalParticles: 0,
         linkDirectionalParticleSpeed: 0.002,
         linkDirectionalParticleWidth: 1.5,
-        linkDirectionalParticleColor: '#ffff00'
+        linkDirectionalParticleColor: '#ffff00',
+
     }
 
     function createLabel(gEl) {
@@ -334,13 +339,57 @@
         .linkDirectionalParticleSpeed(link => graphParams.linkDirectionalParticleSpeed / 10000.0)
         .linkDirectionalParticleWidth(link => graphParams.linkDirectionalParticleWidth)
         .linkDirectionalParticleColor(link => graphParams.linkDirectionalParticleColor)
-        .onEngineStop(() => Graph.zoomToFit(400));
+        .cooldownTicks(100);
+
+
+    if (graphParams.useLinkColorGradient) {
+        Graph
+            .linkThreeObject(link => {
+                // 2 (nodes) x 3 (r+g+b) bytes between [0, 1]
+                // For example:
+                // new Float32Array([
+                //   1, 0, 0,  // source node: red
+                //   0, 1, 0   // target node: green
+                // ]);
+                const nodeColorScale = scaleLinear()
+                    .domain([0, 1]) //Define the domain of the scale
+                    .interpolate(interpolateRgb) // Use interpolateRgb to create a color scale
+                    .range([link.colors.source, link.colors.target]); // Define the range of colors
+
+                const colors = new Float32Array([].concat(
+                    ...[0, 1]
+                        .map(nodeColorScale)
+                        .map(d3Color)
+                        .map(({r, g, b}) => [r, g, b].map(v => v / 255)
+                        )));
+
+                const material = new THREE.LineBasicMaterial({vertexColors: true});
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(2 * 3), 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+                return new THREE.Line(geometry, material);
+            })
+            .linkPositionUpdate((line, {start, end}) => {
+                const startR = Graph.nodeRelSize();
+                const endR = Graph.nodeRelSize();
+                const lineLen = Math.sqrt(['x', 'y', 'z'].map(dim => Math.pow((end[dim] || 0) - (start[dim] || 0), 2)).reduce((acc, v) => acc + v, 0));
+
+                const linePos = line.geometry.getAttribute('position');
+
+                // calculate coordinate on the node's surface instead of center
+                linePos.set([startR / lineLen, 1 - endR / lineLen].map(t =>
+                    ['x', 'y', 'z'].map(dim => start[dim] + (end[dim] - start[dim]) * t)
+                ).flat());
+                linePos.needsUpdate = true;
+                return true;
+            });
+    }
 
 
     function updateGraph(gData) {
         Graph.graphData(gData).zoomToFit(400);
     }
-
 
     function getVisible(gData) {
         const visibleNodes = []
@@ -372,7 +421,6 @@
             }
         });
     }
-
 
     function refreshGraph(gData) {
         const visibleGData = getVisible(gData);
@@ -445,8 +493,8 @@
         const legendTab = tab.pages[0];
 
         graph.nodeTypes.forEach(nodeType => {
-            info = `V: ${nodeType.count}`
-            edgeType = graph.edgeTypes.find((t) => t.name === nodeType.name);
+            let info = `V: ${nodeType.count}`
+            const edgeType = graph.edgeTypes.find((t) => t.name === nodeType.name);
             if (edgeType) {
                 info += `, E: ${edgeType.count}`;
             }
@@ -646,19 +694,20 @@
             });
             gData.links = gData.links.map((link) => {
                 return {
-                    "source": murmurhash3_32_gc(link.source.id, 1),
-                    "target": murmurhash3_32_gc(link.target.id, 1),
-                    "color": link.color ? link.color : link.source.color,
-                    "label": link.label,
-                    "type": link.type
+                    source: murmurhash3_32_gc(link.source.id, 1),
+                    target: murmurhash3_32_gc(link.target.id, 1),
+                    color: link.color ? link.color : link.source.color,
+                    colors: {source: link.source.color, target: link.target.color},
+                    label: link.label,
+                    type: link.type
                 };
             });
-            updateGraph(gData);
+
             fetchGraphQL({query: nodeTypesQuery})
                 .then((responseJson) => responseJson.data)
-                .then((data) => {
-                    createGraphControlPanel(data.graph, gData);
-                });
+                .then((data) => createGraphControlPanel(data.graph, gData));
+
+            updateGraph(gData);
         });
 
     // endregion ForceGraph3D
