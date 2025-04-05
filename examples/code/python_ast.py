@@ -51,7 +51,9 @@ def ast_graph_model():
         GraphModel: A graph model representing the AST nodes and their relationships.
     """
 
-    graph_model = graphinate.model(name='AST Graph')
+    code_object = graphinate.builders.D3Builder
+
+    graph_model = graphinate.model(name=f'AST Graph - {code_object.__qualname__}',)
 
     root_ast_node = ast.parse(inspect.getsource(graphinate.builders.D3Builder))
 
