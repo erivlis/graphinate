@@ -324,7 +324,7 @@ class D3Builder(NetworkxBuilder):
 
     @staticmethod
     def from_networkx(nx_graph: nx.Graph):
-        d3_graph = nx.node_link_data(nx_graph)
+        d3_graph = nx.node_link_data(nx_graph, nodes='nodes', edges='links')
         return d3_graph
 
 
