@@ -155,6 +155,7 @@ N: int = 8
 # It will be used to hold the graph definitions
 graph_model: graphinate.GraphModel = graphinate.model(name="Octagonal Graph")
 
+
 # Register in the Graph Model the edges' supplier generator function
 @graph_model.edge()
 def edge():
@@ -192,6 +193,7 @@ schema = builder.build()
 # and serve it using Uvicorn web server
 graphinate.graphql.server(schema)
 ```
+
 ## CLI
 
 ### Commands
@@ -253,7 +255,6 @@ Options:
 ### GitHub Repository
 
 ![repo_graph](https://github.com/erivlis/graphinate/assets/9897520/9c044bbe-1f21-41b8-b879-95b8362ad48d)
-
 
 ### Web Links
 
@@ -354,11 +355,11 @@ python -m mkdocs build
 
 <a href="https://www.jetbrains.com/pycharm/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FCF84A, #3DEA62, #21D789);" src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm.png" alt="PyCharm logo"></a>
 
---------------------------------
+______________________________________________________________________
 
 ![Alt](https://repobeats.axiom.co/api/embed/683f50f1d2de0e13e468c34a692612c2de4d56bd.svg "Repobeats analytics image")
 
---------------------------------
+______________________________________________________________________
 
 <img alt="Work on my Machine" src="https://forthebadge.com/images/badges/works-on-my-machine.svg">
 
