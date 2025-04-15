@@ -1,0 +1,64 @@
+/* extra.css */
+
+/*
+:root {
+  --md-primary-fg-color:        #E3963E;
+  --md-primary-fg-color--dark:  #FFBF00;
+  --md-primary-fg-color--light: #EBA937;
+}
+*/
+
+:root {
+    --md-primary-fg-color: rebeccapurple;
+    --md-primary-fg-color--dark: midnight;
+    --md-primary-fg-color--light: silver;
+}
+
+
+/* Title levels */
+h1 {
+    color: royalblue;
+}
+
+h2 {
+    color: slateblue;
+}
+
+h3 {
+    color: mediumslateblue;
+}
+
+h4, h5, h6 {
+    color: steelblue;
+}
+
+/* Blockquotes */
+/*blockquote {*/
+/*    border-left: 4px solid #bdc3c7; !* Light gray *!*/
+/*    color: #7f8c8d; !* Gray *!*/
+/*    !*background-color: #ecf0f1; !* Very light gray *!*!*/
+/*    padding: 10px;*/
+/*}*/
+
+/* Code blocks */
+/*pre, code {*/
+/*    background-color: #f8f9fa; !* Very light gray *!*/
+/*    color: #2c3e50; !* Dark blue *!*/
+/*}*/
+
+/* Tables */
+/*table {*/
+/*    border-collapse: collapse;*/
+/*    width: 100%;*/
+/*}*/
+
+/*th, td {*/
+/*    border: 1px solid #bdc3c7; !* Light gray *!*/
+/*    padding: 8px;*/
+/*    text-align: left;*/
+/*}*/
+
+/*th {*/
+/*    background-color: #ecf0f1; !* Very light gray *!*/
+/*    color: #2c3e50; !* Dark blue *!*/
+/*}*/
