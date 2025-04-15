@@ -37,7 +37,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest
         run: |
-          python -m pip install faker pytest pytest-asyncio pytest-cov pytest-randomly pytest-xdist starlette-prometheus uvicorn[standard]
+          python -m pip install faker pytest pytest-asyncio pytest-cov pytest-mock pytest-randomly pytest-xdist starlette-prometheus uvicorn[standard]
           pytest tests --cov=src --cov-branch --cov-report=xml --junitxml=junit.xml -o junit_family=legacy -n auto
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
