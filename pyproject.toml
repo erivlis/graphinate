@@ -56,9 +56,20 @@ server = [
 
 [dependency-groups]
 dev = [
-    "uv",
+    "pipdeptree",
     "ruff",
-    "pipdeptree"
+    "uv"
+]
+mdformat = [
+    "mdformat",
+    "mdformat-admon",
+    "mdformat-config",
+    "mdformat-footnote",
+    "mdformat-frontmatter",
+    "mdformat-gfm",
+    "mdformat-gfm-alerts",
+    "mdformat-ruff",
+    "mdformat-tables"
 ]
 docs = [
     "mkdocs-material",
