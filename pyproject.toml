@@ -80,6 +80,7 @@ docs = [
     "mkdocs-glightbox",
     "mkdocs-literate-nav",
     "mkdocs-section-index",
+    "mike"
 ]
 test = [
     "faker",

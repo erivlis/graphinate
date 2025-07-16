@@ -20,10 +20,10 @@
 
 <a href="https://astral.sh/uv"><img style="height: 50px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://avatars.githubusercontent.com/u/115962839" alt="uv logo."></a>
 <a href="https://astral.sh/ruff"><img style="height: 50px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://astralcms.wpengine.com/wp-content/uploads/2023/03/Ruff-Logo.svg" alt="Ruff logo."></a>
+<a href="https://mdformat.readthedocs.io"><img style="height: 50px; width: 50px; aspect-ratio: auto; padding: 4px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://mdformat.readthedocs.io/en/stable/_static/logo-150px.png" alt="mdformat"></a>
 <a href="https://squidfunk.github.io/mkdocs-material/"><img style="height: 50px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://raw.githubusercontent.com/squidfunk/mkdocs-material/master/.github/assets/logo.svg" alt="Material for MkDocs"></a>
 <a href="https://pytest.org"><img style="height: 50px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://docs.pytest.org/en/7.4.x/_static/pytest_logo_curves.svg" alt="pytest logo."></a>
 <a href="https://hatch.pypa.io/"><img style="height: 50px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://hatch.pypa.io/latest/assets/images/logo.svg" alt="Hatch logo."></a>
-
 
 
 ## IDE

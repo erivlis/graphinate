@@ -3,7 +3,7 @@
 site_name: "Graphinate"
 site_author: Eran Rivlis
 site_description: >-
-  Data to Graphs.
+  Graphinate. Data to Graphs. A Python library for creating and manipulating graphs from various data sources.
 
 repo_url: https://github.com/erivlis/graphinate
 repo_name: erivlis/graphinate
@@ -20,6 +20,8 @@ theme:
     - content.code.annotate
     - content.code.copy
     - content.code.select
+    - content.tooltips
+    - navigation.expand
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.path
@@ -69,6 +71,8 @@ markdown_extensions:
       line_spans: __span
       use_pygments: true
       pygments_lang_class: true
+      linenums: true
+      linenums_style: table
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
@@ -81,8 +85,12 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - toc:
       permalink: true
+      toc_depth: 3
+      separator: "_"
 
 
 nav:
@@ -113,10 +121,15 @@ extra:
       link: https://x.com/erivlis
     - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/in/eranrivlis
+  version:
+    provider: mike
 
 
 plugins:
-  - search
+  - search:
+      lang: en
+      separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
+      min_search_length: 3
   - gen-files:
       scripts:
         - docs/gen_ref_pages.py
@@ -128,6 +141,11 @@ plugins:
       branch: main
   - git-revision-date-localized:
       enable_creation_date: true
+  - mike:
+      # configure version selector
+      version_selector: true
+      # set the default version
+      canonical_version: latest
   - mkdocstrings:
       default_handler: python
       handlers:
@@ -141,3 +159,7 @@ plugins:
             show_category_heading: true
             show_symbol_type_heading: true
             show_symbol_type_toc: true
+            docstring_style: google  # or numpy, depending on your preference
+            docstring_section_style: table
+            members_order: alphabetical
+            show_signature_annotations: true
