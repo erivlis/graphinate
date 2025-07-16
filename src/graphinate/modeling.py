@@ -4,7 +4,7 @@ from collections import defaultdict, namedtuple
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Any, Optional, Union
+from typing import Any, Union
 
 from .typing import Edge, Element, Extractor, Items, Node, NodeTypeAbsoluteId, UniverseNode
 
@@ -13,7 +13,7 @@ class GraphModelError(Exception):
     pass
 
 
-def element(element_type: Optional[str], field_names: Optional[Iterable[str]] = None) -> Callable[[...], Element]:
+def element(element_type: str | None, field_names: Iterable[str] | None = None) -> Callable[[...], Element]:
     """Graph Element Supplier Callable
 
     Args:
@@ -26,7 +26,7 @@ def element(element_type: Optional[str], field_names: Optional[Iterable[str]] = 
     return namedtuple(element_type, field_names) if element_type and field_names else tuple
 
 
-def extractor(obj: Any, key: Optional[Extractor] = None) -> Optional[str]:
+def extractor(obj: Any, key: Extractor | None = None) -> str | None:
     """Extract data item from Element
 
     Args:
@@ -49,7 +49,7 @@ def extractor(obj: Any, key: Optional[Extractor] = None) -> Optional[str]:
 
 
 def elements(iterable: Iterable[Any],
-             element_type: Optional[Extractor] = None,
+             element_type: Extractor | None = None,
              **getters: Extractor) -> Iterable[Element]:
     """Abstract Generator of Graph elements (nodes or edges)
 
@@ -96,7 +96,7 @@ class NodeModel:
     """
 
     type: str
-    parent_type: Optional[str] = UniverseNode
+    parent_type: str | None = UniverseNode
     parameters: set[str] | None = None
     label: Callable[[Any], str | None] = None
     uniqueness: bool = True
@@ -190,11 +190,11 @@ class GraphModel:
             raise GraphModelError(msg)
 
     def node(self,
-             type_: Optional[Extractor] = None,
-             parent_type: Optional[str] = UniverseNode,
-             key: Optional[Extractor] = None,
-             value: Optional[Extractor] = None,
-             label: Optional[Extractor] = None,
+             type_: Extractor | None = None,
+             parent_type: str | None = UniverseNode,
+             key: Extractor | None = None,
+             value: Extractor | None = None,
+             label: Extractor | None = None,
              unique: bool = True,
              multiplicity: Multiplicity = Multiplicity.ALL) -> Callable[[Items], None]:
         """Decorator to Register a Generator of node payloads as a source for Graph Nodes.
@@ -243,11 +243,11 @@ class GraphModel:
         return register_node
 
     def edge(self,
-             type_: Optional[Extractor] = None,
+             type_: Extractor | None = None,
              source: Extractor = 'source',
              target: Extractor = 'target',
-             label: Optional[Extractor] = str,
-             value: Optional[Extractor] = None,
+             label: Extractor | None = str,
+             value: Extractor | None = None,
              weight: Union[float, Callable[[Any], float]] = 1.0,
              ) -> Callable[[Items], None]:
         """Decorator to Register a generator of edge payloads as a source of Graph Edges.
@@ -288,11 +288,11 @@ class GraphModel:
 
         return register_edge
 
-    def rectify(self, _type: Optional[Extractor] = None,
-                parent_type: Optional[str] = UniverseNode,
-                key: Optional[Extractor] = None,
-                value: Optional[Extractor] = None,
-                label: Optional[Extractor] = None):
+    def rectify(self, _type: Extractor | None = None,
+                parent_type: str | None = UniverseNode,
+                key: Extractor | None = None,
+                value: Extractor | None = None,
+                label: Extractor | None = None):
         """Rectify the model.
            Add a default NodeModel in case of having just edge supplier/s and no node supplier/s.
 
