@@ -1,8 +1,23 @@
-"""Builder classes that generate graph data structures from a GraphModel
-
-  Attributes:
-      GraphRepresentation (GraphRepresentation): GraphRepresentation Type
 """
+Builder Classes: Abstraction Layer to Generate Graph Data Structures
+
+This module defines builder base classes and implementations that construct graph
+data structures from a `GraphModel`. It supports generating various graph formats,
+including NetworkX, D3, Mermaid, and GraphQL schema representations.
+
+Attributes:
+    - **GraphRepresentation:** Types of representations the builder can produce.
+    - **GraphType:** Enumeration for different graph types (directed, undirected, etc.).
+
+Main Classes:
+    - `GraphType`    : Enum defining networkx-compatible graph types.
+    - `Builder`      : Abstract base class for custom graph builders.
+    - `NetworkxBuilder` : A builder class for constructing Graph representations using NetworkX.
+    - `D3Builder`    : Builder class transforming graphs into D3-compatible structures.
+    - `MermaidBuilder`: Supports MermaidJS diagram generation.
+    - `GraphQLBuilder`: Constructs GraphQL schema representations of graphs.
+"""
+
 import functools
 import importlib
 import inspect
@@ -32,6 +47,7 @@ from .modeling import GraphModel, Multiplicity
 from .tools import utcnow
 from .typing import NodeTypeAbsoluteId, UniverseNode
 
+# Define main representation types supported by Builders
 GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema, nxm.typing.MermaidDiagram, str]  # noqa: UP007
 
 
@@ -56,6 +72,14 @@ class GraphType(Enum):
 
     @classmethod
     def of(cls, graph: nx.Graph):
+        """Determine the graph type based on structure and properties.
+
+        Args:
+            graph (nx.Graph): A NetworkX graph object.
+
+        Returns:
+            GraphType: An instance of this Enum matching the input graph.
+        """
         if graph.is_directed() and graph.is_multigraph():
             return cls.MultiDiGraph
         elif graph.is_directed():
@@ -67,7 +91,15 @@ class GraphType(Enum):
 
 
 class Builder(ABC):
-    """Builder abstract base class"""
+    """Abstract Base Class for Graph Builders.
+
+    This class acts as a blueprint for all concrete builders that generate graph-like
+    data structures from a given `GraphModel`.
+
+    Attributes:
+        default_node_attributes (Mapping): Default attributes for all nodes.
+        default_edge_attributes (Mapping): Default attributes for all edges.
+    """
 
     default_node_attributes: Mapping = MappingProxyType({
         'type': 'node',
@@ -84,19 +116,29 @@ class Builder(ABC):
     })
 
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
+        """Initialize a Builder instance with a specific graph model and type.
+
+        Args:
+            model (GraphModel): The model defining the graph's structure and data.
+            graph_type (GraphType): Enum specifying the type of the graph.
+        """
+
         self._cached_build_kwargs: dict[str, Any] = {}
         self.model = model
         self.graph_type = graph_type
 
     def build(self, **kwargs) -> GraphRepresentation:
-        """Build a graph
+        """Build the graph representation.
+
+        Subclasses must override this method to implement specific build logic.
 
         Args:
-            **kwargs:
+            **kwargs: Any additional parameters for the build process.
 
         Returns:
-            Any
+            GraphRepresentation: The constructed graph object.
         """
+
         self._cached_build_kwargs = kwargs
         return {}
 
@@ -108,6 +150,7 @@ class NetworkxBuilder(Builder):
         super().__init__(model, graph_type)
 
     def _initialize_graph(self):
+        """Initialize an empty NetworkX graph with metadata."""
         self._graph: nx.Graph = self.graph_type.value(name=self.model.name,
                                                       node_types=Counter(),
                                                       edge_types=Counter())
@@ -140,6 +183,7 @@ class NetworkxBuilder(Builder):
         return tuple(ids)
 
     def _populate_nodes(self, node_type_absolute_id: NodeTypeAbsoluteId, **kwargs):
+        """Populate graph nodes based on the provided model and ID."""
         for node_model in self.model.node_models[node_type_absolute_id]:
             unique = node_model.uniqueness
             for node in node_model.generator(**kwargs):
@@ -193,6 +237,7 @@ class NetworkxBuilder(Builder):
                 self._populate_node_type(node_model.type, **new_kwargs)
 
     def _populate_edges(self, **kwargs):
+        """Populate graph edges based on defined connections."""
         for edge_model, edge_generators in self.model.edge_generators.items():
             for edge_generator in edge_generators:
                 for edge in edge_generator(**kwargs):
@@ -271,7 +316,7 @@ class NetworkxBuilder(Builder):
         self._graph.graph['created'] = utcnow()
 
     def build(self, **kwargs) -> GraphRepresentation:
-        """
+        """Build a NetworkX graph representation.
 
         Args:
             **kwargs:
@@ -387,10 +432,10 @@ class GraphQLBuilder(NetworkxBuilder):
         id: strawberry.ID
         type: str
         label: str
-        value: Optional[list[strawberry.scalars.JSON]]
-        color: Optional[str] = None
-        created: Optional[datetime]
-        updated: Optional[datetime]
+        value: list[strawberry.scalars.JSON] | None
+        color: str | None = None
+        created: datetime | None
+        updated: datetime | None
 
     @strawberry.interface(description="Represents a Graph Node")
     class GraphNode(GraphElement):
@@ -531,7 +576,7 @@ class GraphQLBuilder(NetworkxBuilder):
         super().__init__(model, graph_type)
 
     @staticmethod
-    def add_field_resolver(class_dict: dict, field_name: str, resolver: Callable, graphql_type: Optional[Any] = None):
+    def add_field_resolver(class_dict: dict, field_name: str, resolver: Callable, graphql_type: Any | None = None):
         class_dict[field_name] = strawberry.field(resolver=resolver, graphql_type=graphql_type)
         class_dict['__annotations__'][field_name] = inspect.getfullargspec(resolver).annotations['return']
 
@@ -597,7 +642,7 @@ class GraphQLBuilder(NetworkxBuilder):
 
             children_types = set(self._children_types(self.model, node_type))
 
-            def node_neighbors(self, children: bool = False) -> list[Optional[GraphQLBuilder.GraphNode]]:
+            def node_neighbors(self, children: bool = False) -> list[GraphQLBuilder.GraphNode | None]:
                 node = decode_id(self.id)
                 items = (GraphQLBuilder._graph_node(graphql_types[d['type']], n, d) for n, d in graph.nodes(data=True)
                          if n in graph.neighbors(node))
@@ -613,7 +658,7 @@ class GraphQLBuilder(NetworkxBuilder):
             graph: nx.Graph = self._graph
             graph_edge = self._graph_edge
 
-            def node_edges(self) -> list[Optional[GraphQLBuilder.GraphEdge]]:
+            def node_edges(self) -> list[GraphQLBuilder.GraphEdge | None]:
                 node = decode_id(self.id)
                 return [graph_edge((source, target), data) for source, target, data in graph.edges(node, data=True)]
 
@@ -661,12 +706,12 @@ class GraphQLBuilder(NetworkxBuilder):
 
         # region - Defining GraphQL Query Class dict - nodes field
         def graph_nodes_resolver(
-                graphql_type: Optional[type[GraphQLBuilder.GraphNode]] = None,
-                node_type: Optional[str] = None
-        ) -> Callable[[Optional[strawberry.ID]], list[GraphQLBuilder.GraphNode]]:
+                graphql_type: type[GraphQLBuilder.GraphNode] | None = None,
+                node_type: str | None = None
+        ) -> Callable[[strawberry.ID | None], list[GraphQLBuilder.GraphNode]]:
 
             def graph_nodes(self,
-                            node_id: Optional[strawberry.ID] = strawberry.UNSET) -> list[GraphQLBuilder.GraphNode]:
+                            node_id: strawberry.ID | None = strawberry.UNSET) -> list[GraphQLBuilder.GraphNode]:
 
                 decoded_node_id = node_id and decode_id(node_id)
 
@@ -700,12 +745,12 @@ class GraphQLBuilder(NetworkxBuilder):
         # endregion
 
         # region - Defining GraphQL Query Class dict - edges field
-        def graph_edges_resolver() -> Callable[[Optional[strawberry.ID]], list[GraphQLBuilder.GraphEdge]]:
+        def graph_edges_resolver() -> Callable[[strawberry.ID | None], list[GraphQLBuilder.GraphEdge]]:
 
             graph_edge = self._graph_edge
 
             def graph_edges(self,
-                            edge_id: Optional[strawberry.ID] = strawberry.UNSET) -> list[GraphQLBuilder.GraphEdge]:
+                            edge_id: strawberry.ID | None = strawberry.UNSET) -> list[GraphQLBuilder.GraphEdge]:
                 decoded_edge_id = edge_id and decode_edge_id(edge_id)
 
                 graph = get_graph()
@@ -808,7 +853,7 @@ class GraphQLBuilder(NetworkxBuilder):
 def build(builder_cls: type[Builder],
           graph_model: GraphModel,
           graph_type: GraphType = GraphType.Graph,
-          default_node_attributes: Optional[Mapping] = None,
+          default_node_attributes: Mapping | None = None,
           **kwargs) -> Any:
     """
     Build a graph from a graph model
