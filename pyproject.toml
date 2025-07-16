@@ -35,6 +35,7 @@ dependencies = [
     "matplotlib",
     "networkx",
     "networkx-mermaid",
+    "networkx-query>=2.1.3",
     "strawberry-graphql[asgi,opentelemetry]",
 ]
 
