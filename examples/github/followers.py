@@ -4,7 +4,6 @@ It recursively fetches followers of a given user up to a specified maximum depth
 The function yields edges between users in the graph.
 """
 
-from typing import Optional
 
 from _client import github_user  # see _client.py
 
@@ -26,7 +25,7 @@ def followers_graph_model(max_depth: int = DEPTH):
 
     graph_model = graphinate.model(name='Github Followers Graph')
 
-    def _followers(user_id: Optional[str] = None, depth: int = 0, **kwargs):
+    def _followers(user_id: str | None = None, depth: int = 0, **kwargs):
         user = github_user(user_id)
         for follower in user.get_followers():
             yield {'source': user.login, 'target': follower.login}
@@ -34,7 +33,7 @@ def followers_graph_model(max_depth: int = DEPTH):
                 yield from _followers(follower.login, depth=depth + 1, **kwargs)
 
     @graph_model.edge()
-    def followed_by(user_id: Optional[str] = None, **kwargs):
+    def followed_by(user_id: str | None = None, **kwargs):
         yield from _followers(user_id, **kwargs)
 
     return graph_model

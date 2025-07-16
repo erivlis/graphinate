@@ -1,7 +1,7 @@
 import functools
 import os
 from collections.abc import Iterable
-from typing import Optional, Union
+from typing import Union
 
 # see requirements.txt
 from github import Auth, Github
@@ -26,7 +26,7 @@ client = Github(auth=auth)
 
 
 @functools.lru_cache
-def github_user(user_id: Optional[str] = None) -> Union[NamedUser, AuthenticatedUser]:
+def github_user(user_id: str | None = None) -> Union[NamedUser, AuthenticatedUser]:
     """
     Get the GitHub user object for the specified user ID or the authenticated user.
 
@@ -46,8 +46,8 @@ def github_user(user_id: Optional[str] = None) -> Union[NamedUser, Authenticated
 
 @functools.lru_cache
 def github_repositories(
-        user_id: Optional[str] = None,
-        repo_id: Optional[str] = None) -> Iterable[Repository]:
+        user_id: str | None = None,
+        repo_id: str | None = None) -> Iterable[Repository]:
     """
     Get the GitHub repositories for the specified user ID or the authenticated user.
 
@@ -74,7 +74,7 @@ def github_repositories(
 
 def github_commits(
         repo: Repository,
-        commit_id: Optional[str] = None) -> Iterable[Commit]:
+        commit_id: str | None = None) -> Iterable[Commit]:
     """
     Retrieve commits from a GitHub repository.
 
@@ -111,7 +111,7 @@ def github_commits(
 
 def github_files(
         commit: Commit,
-        file_id: Optional[str] = None) -> Iterable[File]:
+        file_id: str | None = None) -> Iterable[File]:
     """
     Retrieves Files from a GitHub Commit
 

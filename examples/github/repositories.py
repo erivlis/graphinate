@@ -1,7 +1,6 @@
 import itertools
 import operator
 import pathlib
-from typing import Optional
 
 from _client import github_commits, github_files, github_repositories, github_user  # see _client.py
 
@@ -19,10 +18,10 @@ def repo_graph_model():  # noqa: C901
     graph_model = graphinate.model(name='GitHub Repository Graph')
 
     @graph_model.edge()
-    def github(user_id: Optional[str] = None,
-               repository_id: Optional[str] = None,
-               commit_id: Optional[str] = None,
-               file_id: Optional[str] = None,
+    def github(user_id: str | None = None,
+               repository_id: str | None = None,
+               commit_id: str | None = None,
+               file_id: str | None = None,
                **kwargs):
         user = github_user(user_id)
         for repo in github_repositories(user_id, repository_id):
@@ -62,28 +61,28 @@ def repo_graph_model():  # noqa: C901
                                  label=operator.itemgetter('filename'))
 
     @user_node
-    def user(user_id: Optional[str] = None, **kwargs):
+    def user(user_id: str | None = None, **kwargs):
         yield github_user(user_id)
 
     @repository_node
-    def repository(user_id: Optional[str] = None,
-                   repository_id: Optional[str] = None,
+    def repository(user_id: str | None = None,
+                   repository_id: str | None = None,
                    **kwargs):
         repos = github_repositories(user_id, repository_id)
         yield from repos
 
     @commit_node
-    def commit(user_id: Optional[str] = None,
-               repository_id: Optional[str] = None,
-               commit_id: Optional[str] = None,
+    def commit(user_id: str | None = None,
+               repository_id: str | None = None,
+               commit_id: str | None = None,
                **kwargs):
         for repo in github_repositories(user_id, repository_id):
             yield from github_commits(repo, commit_id)
 
-    def file_type(user_id: Optional[str] = None,
-                  repository_id: Optional[str] = None,
-                  commit_id: Optional[str] = None,
-                  file_type_id: Optional[str] = None,
+    def file_type(user_id: str | None = None,
+                  repository_id: str | None = None,
+                  commit_id: str | None = None,
+                  file_type_id: str | None = None,
                   **kwargs):
         def group_key(file):
             return pathlib.PurePath(file).suffix
@@ -97,10 +96,10 @@ def repo_graph_model():  # noqa: C901
                             ))
 
     @file_node
-    def file(user_id: Optional[str] = None,
-             repository_id: Optional[str] = None,
-             commit_id: Optional[str] = None,
-             file_id: Optional[str] = None,
+    def file(user_id: str | None = None,
+             repository_id: str | None = None,
+             commit_id: str | None = None,
+             file_id: str | None = None,
              **kwargs):
         for repo in github_repositories(user_id, repository_id):
             for commit in github_commits(repo, commit_id):

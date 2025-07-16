@@ -2,7 +2,6 @@ import functools
 import json
 from collections.abc import Callable, Mapping
 from enum import Enum
-from typing import Optional
 
 from graphinate import GraphModel, GraphType, builders, graphql, matplotlib
 
@@ -26,9 +25,9 @@ class Materializers(Enum):
 
 def materialize(model: GraphModel,
                 graph_type: GraphType = GraphType.Graph,
-                default_node_attributes: Optional[Mapping] = None,
-                builder: Optional[type[builders.Builder]] = None,
-                builder_output_handler: Optional[Callable] = None,
+                default_node_attributes: Mapping | None = None,
+                builder: type[builders.Builder] | None = None,
+                builder_output_handler: Callable | None = None,
                 **kwargs):
     """
     Materialize a GraphModel using a Builder and an Actualizer
