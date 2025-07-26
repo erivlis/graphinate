@@ -4,11 +4,12 @@
 
 ### Python
 
-<a href="https://palletsprojects.com/p/click/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://click.palletsprojects.com/en/7.x/_images/click-logo.png" alt="Click Logo."></a>
-<a href="https://github.com/Delgan/loguru"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://raw.githubusercontent.com/Delgan/loguru/master/docs/_static/img/logo.png" alt="Loguru Logo."></a>
-<a href="https://matplotlib.org/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://matplotlib.org/_static/logo_dark.svg" alt="matplotlib Logo."></a>
-<a href="https://networkx.org/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://networkx.org/_static/networkx_logo.svg" alt="NetworkX Logo."></a>
-<a href="https://strawberry.rocks/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://github.com/strawberry-graphql/strawberry/raw/main/.github/logo.png" alt="Strawberry GraphQL Logo."></a>
+<a href="https://palletsprojects.com/projects/click/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://palletsprojects.com/static/content/projects/click-name.svg" alt="Click Logo"></a>
+<a href="https://github.com/Delgan/loguru"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://raw.githubusercontent.com/Delgan/loguru/master/docs/_static/img/logo.png" alt="Loguru Logo"></a>
+<a href="https://matplotlib.org/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://matplotlib.org/_static/logo_dark.svg" alt="matplotlib Logo"></a>
+<a href="https://networkx.org/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://networkx.org/_static/networkx_logo.svg" alt="NetworkX Logo"></a>
+<a href="https://www.starlette.io/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://www.starlette.io/img/starlette.svg" alt="Starlette Logo"></a>
+<a href="https://strawberry.rocks/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://github.com/strawberry-graphql/strawberry/raw/main/.github/logo.png" alt="Strawberry GraphQL Logo"></a>
 
 ### Javascript and HTML
 
@@ -24,7 +25,6 @@
 <a href="https://squidfunk.github.io/mkdocs-material/"><img style="height: 50px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://raw.githubusercontent.com/squidfunk/mkdocs-material/master/.github/assets/logo.svg" alt="Material for MkDocs"></a>
 <a href="https://pytest.org"><img style="height: 50px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://docs.pytest.org/en/7.4.x/_static/pytest_logo_curves.svg" alt="pytest logo."></a>
 <a href="https://hatch.pypa.io/"><img style="height: 50px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://hatch.pypa.io/latest/assets/images/logo.svg" alt="Hatch logo."></a>
-
 
 ## IDE
 

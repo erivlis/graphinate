@@ -95,7 +95,7 @@ markdown_extensions:
 
 nav:
   #  - Home: index.md
-  - Introduction: intro.md
+  - Introduction: introduction.md
   - Quick Start: start.md
   - Tutorial: tutorial.md
   - Usage: usage/
@@ -103,7 +103,7 @@ nav:
   # - Gallery: gallery/
   # defer to gen-files + literate-nav
   - Reference: reference/
-  - Acknowledgements: acknowledge.md
+  - Acknowledgements: acknowledgements.md
 
 
 extra:

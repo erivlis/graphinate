@@ -336,10 +336,11 @@ python -m mkdocs build
 
 #### Python
 
-<a href="https://palletsprojects.com/p/click/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://click.palletsprojects.com/en/7.x/_images/click-logo.png" alt="Click Logo"></a>
+<a href="https://palletsprojects.com/projects/click/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://palletsprojects.com/static/content/projects/click-name.svg" alt="Click Logo"></a>
 <a href="https://github.com/Delgan/loguru"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://raw.githubusercontent.com/Delgan/loguru/master/docs/_static/img/logo.png" alt="Loguru Logo"></a>
-<a href="https://matplotlib.org/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://matplotlib.org/_static/logo_dark.svg" alt="matplotlib Logo."></a>
-<a href="https://networkx.org/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://networkx.org/_static/networkx_logo.svg" alt="NetworkX Logo."></a>
+<a href="https://matplotlib.org/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://matplotlib.org/_static/logo_dark.svg" alt="matplotlib Logo"></a>
+<a href="https://networkx.org/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://networkx.org/_static/networkx_logo.svg" alt="NetworkX Logo"></a>
+<a href="https://www.starlette.io/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://www.starlette.io/img/starlette.svg#only-light" alt="Starlette Logo"></a>
 <a href="https://strawberry.rocks/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://github.com/strawberry-graphql/strawberry/raw/main/.github/logo.png" alt="Strawberry GraphQL Logo"></a>
 
 #### Javascript and HTML
