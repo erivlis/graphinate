@@ -1,6 +1,6 @@
 [project]
 name = "Graphinate"
-version = "0.8.5"
+version = "0.8.6"
 description = "Graphinate. Data to Graphs."
 authors = [
     { name = "Eran Rivlis", email = "eran@rivlis.info" },
@@ -76,7 +76,7 @@ docs = [
     "mkdocs-material",
     "mkdocstrings-python",
     "mkdocs-git-committers-plugin-2",
-    "mkdocs-git-revision-date-localized-plugin<1.4.0",
+    "mkdocs-git-revision-date-localized-plugin",
     "mkdocs-gen-files",
     "mkdocs-glightbox",
     "mkdocs-literate-nav",
