@@ -5,26 +5,29 @@
       Edge (Edge): Edge Type
       Element (Element): Element Type
       Extractor (Extractor): Source of data for an Element
+      UniverseNode (UniverseNode): The Universe Node Type. All Node Types are the implicit children of the Universe Node Type.
 """
 
 from collections.abc import Callable, Iterable
 from types import NoneType
-from typing import Any, NamedTuple, NewType, Protocol, TypeVar, Union
+from typing import Any, NamedTuple, NewType, Protocol, TypeVar, Union, TypeAlias
+
+NodeTuple: TypeAlias = tuple[str, Any]
+EdgeTuple: TypeAlias = tuple[str, str, Any]
 
 IdentifierStr = NewType('IdentifierStr', str)
 IdentifierStr.__doc__ = "A string that is a valid Python identifier (i.e., `isidentifier()` is True)."
 
-NodeTypeAbsoluteId = NewType("NodeTypeAbsoluteId", tuple[str, str])
+NodeTypeAbsoluteId = NewType('NodeTypeAbsoluteId', tuple[str, str])
 NodeTypeAbsoluteId.__doc__ = "A unique identifier for a node type."
-
 
 UniverseNode = NewType('UniverseNode', NoneType)
 UniverseNode.__doc__ = "The UniverseNode Type. All Node Types are the implicit children of the Universe Node Type."
 
-Node = Union[type[NamedTuple], tuple[str, Any]]  # noqa: UP007
+Node = Union[type[NamedTuple], NodeTuple]  # noqa: UP007
 Node.__doc__ = "A node in a graph."
 
-Edge = Union[type[NamedTuple], tuple[str, str, Any]]  # noqa: UP007
+Edge = Union[type[NamedTuple], EdgeTuple]  # noqa: UP007
 Edge.__doc__ = "An edge in a graph."
 
 Element = Union[Node, Edge]  # noqa: UP007
@@ -37,31 +40,35 @@ T = TypeVar("T")
 
 
 class Items(Protocol):
+    """Protocol for callable objects that return an iterable of items."""
+
     def __call__(self, **kwargs) -> Iterable[T]:
         ...  # pragma: no cover
 
 
 class Nodes(Protocol):
+    """Protocol for callable objects that return an iterable of nodes."""
+
     def __call__(self, **kwargs) -> Iterable[Node]:
         ...  # pragma: no cover
 
 
 class Edges(Protocol):
+    """Protocol for callable objects that return an iterable of edges."""
+
     def __call__(self, **kwargs) -> Iterable[Edge]:
         ...  # pragma: no cover
 
 
 class Predicate(Protocol):
+    """Protocol for callable objects that evaluate a condition."""
+
     def __call__(self, **kwargs) -> bool:
         ...  # pragma: no cover
 
 
 class Supplier(Protocol):
+    """Protocol for callable objects that supply a value."""
+
     def __call__(self) -> Any:
         ...  # pragma: no cover
-
-# ParametersId = frozenset
-
-
-# def parameters_id(mapping: Mapping) -> ParametersId:
-#     return frozenset(mapping.items())
