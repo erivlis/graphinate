@@ -8,6 +8,7 @@
 """
 
 from collections.abc import Callable, Iterable
+from types import NoneType
 from typing import Any, NamedTuple, NewType, Protocol, TypeVar, Union
 
 IdentifierStr = NewType('IdentifierStr', str)
@@ -16,7 +17,8 @@ IdentifierStr.__doc__ = "A string that is a valid Python identifier (i.e., `isid
 NodeTypeAbsoluteId = NewType("NodeTypeAbsoluteId", tuple[str, str])
 NodeTypeAbsoluteId.__doc__ = "A unique identifier for a node type."
 
-UniverseNode = NewType('UniverseNode', None)
+
+UniverseNode = NewType('UniverseNode', NoneType)
 UniverseNode.__doc__ = "The UniverseNode Type. All Node Types are the implicit children of the Universe Node Type."
 
 Node = Union[type[NamedTuple], tuple[str, Any]]  # noqa: UP007
