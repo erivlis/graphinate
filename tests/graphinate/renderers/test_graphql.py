@@ -15,20 +15,62 @@ from graphinate.renderers.graphql import (
     _starlette_app,
 )
 
+# region --- Helper Classes ---
 
-# --- Test Setup: A simple Strawberry schema for all tests ---
+
 @strawberry.type
 class Query:
+    """A simple GraphQL Query type for testing purposes."""
+
     @strawberry.field
     def hello(self) -> str:
         """A simple test field."""
         return "world"
 
 
-DUMMY_SCHEMA = strawberry.Schema(query=Query)
+# Create a fake schema for testing
+FAKE_SCHEMA = strawberry.Schema(query=Query)
 
 
-# --- Pytest Fixtures ---
+class ReceiveStub:
+    """A ASGI receive callable that does nothing."""
+
+    async def __call__(self):
+        return {}
+
+
+class SendStub:
+    """A ASGI send callable that does nothing."""
+
+    async def __call__(self, message):
+        pass
+
+
+class RequestStub(Request):
+    """A Starlette Request object for testing purposes."""
+
+    def __init__(self, method="GET", path="/openapi.json", query_string=b""):
+        scope = {
+            "type": "http",
+            "asgi.version": "3.0",
+            "asgi.spec_version": "2.1",
+            "method": method,
+            "path": path,
+            "raw_path": path.encode(),
+            "query_string": query_string,
+            "headers": [],
+            "client": ("testclient", 1234),
+            "server": ("testserver", 80),
+            "scheme": "http",
+            "root_path": "",
+            "app": None,
+        }
+        super().__init__(scope, ReceiveStub())
+
+
+# endregion --- Helper Classes ---
+
+# region --- Pytest Fixtures ---
 
 @pytest.fixture
 def client() -> Generator[TestClient, Any, None]:
@@ -37,13 +79,25 @@ def client() -> Generator[TestClient, Any, None]:
     with a dummy GraphQL schema.
     """
     # Arrange
-    graphql_app = _graphql_app(DUMMY_SCHEMA)
+    graphql_app = _graphql_app(FAKE_SCHEMA)
     app = _starlette_app(graphql_app)
     with TestClient(app) as test_client:
         yield test_client
 
 
-# --- Test Cases ---
+@pytest.fixture
+def fake_schema():
+    return FAKE_SCHEMA
+
+
+@pytest.fixture
+def request_stub():
+    return RequestStub()
+
+
+# endregion --- Pytest Fixtures ---
+
+# region --- Test Cases ---
 
 def test_graphql_query_success(client: TestClient):
     """
@@ -114,42 +168,7 @@ def test_browse_flag_opens_browser(mock_webbrowser_open: MagicMock):
     mock_webbrowser_open.assert_called_once_with('http://localhost:1234/viewer')
 
 
-class DummyReceive:
-    async def __call__(self):
-        return {}
-
-
-class DummySend:
-    async def __call__(self, message):
-        pass
-
-
-class DummyRequest(Request):
-    def __init__(self, method="GET", path="/openapi.json", query_string=b""):
-        scope = {
-            "type": "http",
-            "asgi.version": "3.0",
-            "asgi.spec_version": "2.1",
-            "method": method,
-            "path": path,
-            "raw_path": path.encode(),
-            "query_string": query_string,
-            "headers": [],
-            "client": ("testclient", 1234),
-            "server": ("testserver", 80),
-            "scheme": "http",
-            "root_path": "",
-            "app": None,
-        }
-        super().__init__(scope, DummyReceive())
-
-
-@pytest.fixture
-def dummy_request():
-    return DummyRequest()
-
-
-def test_schema_generator_or_response_error_handling(monkeypatch, dummy_request):
+def test_schema_generator_or_response_error_handling(monkeypatch, request_stub):
     from graphinate.renderers import graphql as graphql_mod
 
     # mock strawberry-graphql schema module
@@ -157,32 +176,21 @@ def test_schema_generator_or_response_error_handling(monkeypatch, dummy_request)
         def __init__(self, data):
             pass
 
-        def OpenAPIResponse(self, request): # noqa: N802
+        def OpenAPIResponse(self, request):  # noqa: N802
             raise RuntimeError("Schema generation failed")
 
     monkeypatch.setattr(graphql_mod, "SchemaGenerator", FailingSchemaGenerator)
     with pytest.raises(RuntimeError):
-        _openapi_schema(dummy_request)
+        _openapi_schema(request_stub)
 
 
-@pytest.fixture
-def dummy_schema():
-    @strawberry.type
-    class Query:
-        @strawberry.field
-        def hello(self) -> str:
-            return "world"
-
-    return strawberry.Schema(query=Query)
-
-
-def test_server_missing_required_arguments(mocker):
+def test_server_missing_required_arguments():
     # server requires at least graphql_schema
     with pytest.raises(TypeError):
         graphql.server()
 
 
-def test_server_uvicorn_import_or_runtime_error(mocker, dummy_schema):
+def test_server_uvicorn_import_or_runtime_error(mocker, fake_schema):
     mocker.patch("graphinate.renderers.graphql._graphql_app", autospec=True)
     mocker.patch("graphinate.renderers.graphql._starlette_app", autospec=True)
     import builtins
@@ -195,16 +203,23 @@ def test_server_uvicorn_import_or_runtime_error(mocker, dummy_schema):
 
     mocker.patch("builtins.__import__", side_effect=import_side_effect)
     with pytest.raises(ImportError, match="No module named 'uvicorn'"):
-        graphql.server(dummy_schema)
+        graphql.server(fake_schema)
 
 
-def test_server_prometheus_middleware_integration(mocker, dummy_schema):
+def test_server_prometheus_middleware_integration():
     # We'll check that PrometheusMiddleware is added to the app
-    from starlette.testclient import TestClient
+
+    # Arrange
     graphql_app = MagicMock()
+
+    # Act
     app = graphql._starlette_app(graphql_app)
     middleware_names = [mw.cls.__name__ for mw in app.user_middleware]
-    assert "PrometheusMiddleware" in middleware_names
     client = TestClient(app)
     response = client.get("/metrics")
+
+    # Assert
+    assert "PrometheusMiddleware" in middleware_names
     assert response.status_code == 200
+
+# endregion --- Test Cases ---
