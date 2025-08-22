@@ -5,12 +5,12 @@
       Edge (Edge): Edge Type
       Element (Element): Element Type
       Extractor (Extractor): Source of data for an Element
-      UniverseNode (UniverseNode): The Universe Node Type. All Node Types are the implicit children of the Universe Node Type.
+      UniverseNode (UniverseNode): The Universe Node Type. All Node Types are the implicit children UniverseNodeType.
 """
 
 from collections.abc import Callable, Iterable
 from types import NoneType
-from typing import Any, NamedTuple, NewType, Protocol, TypeVar, Union, TypeAlias
+from typing import Any, NamedTuple, NewType, Protocol, TypeAlias, TypeVar, Union
 
 NodeTuple: TypeAlias = tuple[str, Any]
 EdgeTuple: TypeAlias = tuple[str, str, Any]
