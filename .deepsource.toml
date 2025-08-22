@@ -1,10 +1,21 @@
 version = 1
 
+test_patterns = [
+    "tests/**",
+    "test_*.py"
+]
+
+exclude_patterns = [
+    "docs/**",
+    "examples/**",
+    "playground/**"
+]
+
 [[analyzers]]
 name = "javascript"
 
-  [analyzers.meta]
-  environment = ["browser"]
+    [analyzers.meta]
+    environment = ["browser"]
 
 [[analyzers]]
 name = "test-coverage"
@@ -12,5 +23,6 @@ name = "test-coverage"
 [[analyzers]]
 name = "python"
 
-  [analyzers.meta]
-  runtime_version = "3.x.x"
+    [analyzers.meta]
+    runtime_version = "3.x.x"
+
