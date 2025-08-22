@@ -8,7 +8,6 @@ from starlette.responses import RedirectResponse
 from starlette.schemas import SchemaGenerator
 from starlette.types import ASGIApp
 from strawberry.asgi import GraphQL
-from strawberry.extensions.tracing import OpenTelemetryExtension
 
 from graphinate.server.starlette import routes
 
@@ -44,7 +43,14 @@ def _openapi_schema(request: Request) -> ASGIApp:
 
 
 def _graphql_app(graphql_schema: strawberry.Schema) -> strawberry.asgi.GraphQL:
-    graphql_schema.extensions.append(OpenTelemetryExtension)
+    """
+    Creates a Strawberry GraphQL app with the provided schema.
+    Args:
+        graphql_schema:
+
+    Returns:
+        strawberry.asgi.GraphQL: The GraphQL app configured with the provided schema.
+    """
     graphql_app = GraphQL(graphql_schema, graphiql=True)
     return graphql_app
 
