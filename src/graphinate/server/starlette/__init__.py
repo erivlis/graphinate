@@ -5,6 +5,7 @@ from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
 
 from ..web import paths_mapping
+from .views import favicon_route
 
 
 def _mount_static_files(named_paths: Mapping[str, Path]) -> list[Mount]:
@@ -20,10 +21,7 @@ def _mount_static_files(named_paths: Mapping[str, Path]) -> list[Mount]:
 
 def routes():
     route_list = _mount_static_files(paths_mapping)
-
-    from .views import favicon_route
     route_list.append(favicon_route())
-
     return route_list
 
 
