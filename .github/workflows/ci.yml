@@ -1,0 +1,54 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up UV and Python ${{ matrix.python-version }}
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: uv sync
+      - name: Run Ruff Linter
+        run: uvx ruff check .
+      - name: Check Ruff Formatting
+        run: uvx ruff format --check .
+      - name: Test with pytest
+        run: |
+          uv sync --group test
+          uvx pytest tests --cov=src --cov-branch --cov-report=xml --junitxml=junit.xml -o junit_family=legacy -n auto
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@v1.3.0
+        with:
+          #project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          # or
+          api-token: ${{ secrets.CODACY_API_TOKEN }}
+          coverage-reports: coverage.xml
+          # or a comma-separated list for multiple reports
+          # coverage-reports: <PATH_TO_REPORT>, <PATH_TO_REPORT>
