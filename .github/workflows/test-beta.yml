@@ -16,9 +16,9 @@ jobs:
       fail-fast: false
       matrix:
         # https://github.com/actions/python-versions/blob/main/versions-manifest.json
-        python-version: [ "3.14.0-alpha.7" ]
+        python-version: [ "3.14.0-rc.2" ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
