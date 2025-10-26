@@ -1,11 +1,12 @@
-"""Typing Module
+"""
+Typing Module
 
-  Attributes:
-      Node (Node): Node Type
-      Edge (Edge): Edge Type
-      Element (Element): Element Type
-      Extractor (Extractor): Source of data for an Element
-      UniverseNode (UniverseNode): The Universe Node Type. All Node Types are the implicit children UniverseNodeType.
+Attributes:
+  Node (Node): Node Type
+  Edge (Edge): Edge Type
+  Element (Element): Element Type
+  Extractor (Extractor): Source of data for an Element
+  UniverseNode (UniverseNode): The Universe Node Type. All Node Types are the implicit children of UniverseNodeType.
 """
 
 from collections.abc import Callable, Iterable
@@ -16,59 +17,59 @@ NodeTuple: TypeAlias = tuple[str, Any]
 EdgeTuple: TypeAlias = tuple[str, str, Any]
 
 IdentifierStr = NewType('IdentifierStr', str)
-IdentifierStr.__doc__ = "A string that is a valid Python identifier (i.e., `isidentifier()` is True)."
+IdentifierStr.__doc__ = 'A string that is a valid Python identifier (i.e., `isidentifier()` is True).'
 
 NodeTypeAbsoluteId = NewType('NodeTypeAbsoluteId', tuple[str, str])
-NodeTypeAbsoluteId.__doc__ = "A unique identifier for a node type."
+NodeTypeAbsoluteId.__doc__ = 'A unique identifier for a node type.'
 
 UniverseNode = NewType('UniverseNode', NoneType)
-UniverseNode.__doc__ = "The UniverseNode Type. All Node Types are the implicit children of the Universe Node Type."
+UniverseNode.__doc__ = 'The UniverseNode Type. All Node Types are the implicit children of the Universe Node Type.'
 
 Node = Union[type[NamedTuple], NodeTuple]  # noqa: UP007
-Node.__doc__ = "A node in a graph."
+Node.__doc__ = 'A node in a graph.'
 
 Edge = Union[type[NamedTuple], EdgeTuple]  # noqa: UP007
-Edge.__doc__ = "An edge in a graph."
+Edge.__doc__ = 'An edge in a graph.'
 
 Element = Union[Node, Edge]  # noqa: UP007
-Element.__doc__ = "An element in a graph."
+Element.__doc__ = 'An element in a graph.'
 
 Extractor = Union[str, Callable[[Any], str]]  # noqa: UP007
-Extractor.__doc__ = "A source of data for an element."
+Extractor.__doc__ = 'A source of data for an element.'
 
-T = TypeVar("T")
+T = TypeVar('T')
 
 
 class Items(Protocol):
     """Protocol for callable objects that return an iterable of items."""
 
-    def __call__(self, **kwargs) -> Iterable[T]:
-        ...  # pragma: no cover
+    def __call__(self, **kwargs) -> Iterable[T]:  # pragma: no cover
+        ...
 
 
 class Nodes(Protocol):
     """Protocol for callable objects that return an iterable of nodes."""
 
-    def __call__(self, **kwargs) -> Iterable[Node]:
-        ...  # pragma: no cover
+    def __call__(self, **kwargs) -> Iterable[Node]:  # pragma: no cover
+        ...
 
 
 class Edges(Protocol):
     """Protocol for callable objects that return an iterable of edges."""
 
-    def __call__(self, **kwargs) -> Iterable[Edge]:
-        ...  # pragma: no cover
+    def __call__(self, **kwargs) -> Iterable[Edge]:  # pragma: no cover
+        ...
 
 
 class Predicate(Protocol):
     """Protocol for callable objects that evaluate a condition."""
 
-    def __call__(self, **kwargs) -> bool:
-        ...  # pragma: no cover
+    def __call__(self, **kwargs) -> bool:  # pragma: no cover
+        ...
 
 
 class Supplier(Protocol):
     """Protocol for callable objects that supply a value."""
 
-    def __call__(self) -> Any:
-        ...  # pragma: no cover
+    def __call__(self) -> Any:  # pragma: no cover
+        ...

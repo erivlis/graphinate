@@ -65,6 +65,7 @@ class GraphType(Enum):
 
     See more here: [NetworkX Reference](https://networkx.org/documentation/stable/reference/classes)
     """
+
     Graph = nx.Graph
     DiGraph = nx.DiGraph
     MultiDiGraph = nx.MultiDiGraph

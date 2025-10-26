@@ -293,18 +293,19 @@ class GraphModel:
                 key: Extractor | None = None,
                 value: Extractor | None = None,
                 label: Extractor | None = None):
-        """Rectify the model.
-           Add a default NodeModel in case of having just edge supplier/s and no node supplier/s.
+        """
+        Rectify the model.
+        Add a default NodeModel in case of having just edge supplier/s and no node supplier/s.
 
-           Args:
-               _type
-               parent_type
-               key
-               value
-               label
+       Args:
+           _type
+           parent_type
+           key
+           value
+           label
 
-           Returns:
-               None
+       Returns:
+           None
         """
         if self._edge_generators and not self._node_models:
             @self.node(
@@ -321,7 +322,8 @@ class GraphModel:
 
 
 def model(name: str):
-    """Create a graph model
+    """
+    Create a graph model
 
     Args:
         name: model name
