@@ -1,6 +1,6 @@
 [project]
 name = "Graphinate"
-version = "0.8.6"
+version = "0.9.0"
 description = "Graphinate. Data to Graphs."
 authors = [
     { name = "Eran Rivlis", email = "eran@rivlis.info" },
@@ -35,7 +35,7 @@ dependencies = [
     "mappingtools",
     "matplotlib",
     "networkx",
-    "networkx-mermaid",
+    "networkx-mermaid>=0.3.0",
     "networkx-query>=2.1.3",
     "strawberry-graphql[asgi,opentelemetry]",
 ]
@@ -74,7 +74,7 @@ mdformat = [
     "mdformat-tables"
 ]
 docs = [
-    "mkdocs-material",
+    "mkdocs-material>=9.6.22",
     "mkdocstrings-python",
     "mkdocs-git-committers-plugin-2",
     "mkdocs-git-revision-date-localized-plugin",
