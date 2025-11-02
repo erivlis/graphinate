@@ -490,8 +490,9 @@ def test_populate_nodes_empty_generator(builder_with_graph):
     node_type_absolute_id = ('parent', 'child')
 
     def generator(**kwargs):
-        return
-        yield
+        """Dummy generator that yields nothing"""
+        return  # NOSONAR
+        yield  # NOSONAR
 
     node_model = DummyNodeModel(generator=generator)
     builder_with_graph.model._node_models = {node_type_absolute_id: [node_model]}

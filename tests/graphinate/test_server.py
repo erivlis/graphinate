@@ -13,7 +13,7 @@ def test_get_static_path():
 
 @pytest.mark.asyncio
 async def test_favicon():
-    actual = await graphinate.server.starlette.views.favicon(None)
+    actual = graphinate.server.starlette.views.favicon(None)
 
     assert isinstance(actual, FileResponse)
     assert actual.media_type == 'image/png'

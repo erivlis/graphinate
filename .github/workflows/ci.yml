@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --only-group dev
       - name: Run Ruff Linter
         run: uvx ruff check .
       - name: Check Ruff Formatting

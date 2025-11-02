@@ -28,7 +28,7 @@ def _openapi_schema(request: Request) -> ASGIApp:
     """
     schema_data = {
         'openapi': '3.0.0',
-        'info': {'title': 'Graphinate API', 'version': '0.9.0'},
+        'info': {'title': 'Graphinate API', 'version': '0.9.1'},
         'paths': {
             '/graphql': {'get': {'responses': {200: {'description': 'GraphQL'}}}},
             '/graphiql': {'get': {'responses': {200: {'description': 'GraphiQL UI.'}}}},
@@ -80,7 +80,7 @@ def _starlette_app(graphql_app: strawberry.asgi.GraphQL | None = None, port: int
         app.add_route("/schema", route=_openapi_schema, include_in_schema=False)
         app.add_route("/openapi.json", route=_openapi_schema, include_in_schema=False)
 
-    async def redirect_to_viewer(request):
+    def redirect_to_viewer(request):
         return RedirectResponse(url='/viewer')
 
     app.add_route('/', redirect_to_viewer)

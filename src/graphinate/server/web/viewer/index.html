@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="en">
 <head>
     <title>Graphinate Viewer</title>
     <link rel="modulepreload"
@@ -16,8 +16,8 @@
         import * as TweakpaneEssentialsPlugin
             from 'https://cdn.jsdelivr.net/npm/@tweakpane/plugin-essentials@0.2.1/dist/tweakpane-plugin-essentials.min.js';
         // Export it as a global variable
-        window.Tweakpane = Tweakpane;
-        window.TweakpaneEssentialsPlugin = TweakpaneEssentialsPlugin;
+        globalThis.Tweakpane = Tweakpane;
+        globalThis.TweakpaneEssentialsPlugin = TweakpaneEssentialsPlugin;
     </script>
     <script src="https://cdn.jsdelivr.net/npm/3d-force-graph@1.76.2/dist/3d-force-graph.min.js"
             integrity="sha384-zSKZ615fogcuRjUjE+0YstAo3N/t7PzUvtQu5KGA1iqkmHXsTRst7zP+6573D+hK"
@@ -96,12 +96,12 @@
 
         function lowerZIndexForHigherPanels(panel) {
             const panels = document.querySelectorAll('.floating-panel');
-            panels.forEach(p => {
-                const zIndex = parseInt(window.getComputedStyle(p).zIndex, 10);
-                if (zIndex > parseInt(panel.style.zIndex, 10)) {
+            for (const p of panels) {
+                const zIndex = Number.parseInt(globalThis.getComputedStyle(p).zIndex, 10);
+                if (zIndex > Number.parseInt(panel.style.zIndex, 10)) {
                     p.style.zIndex = zIndex - 1;
                 }
-            });
+            }
         }
 
         // Function to bring the panel to the front
@@ -170,7 +170,7 @@
         closeButton.addEventListener('click', () => {
             lowerZIndexForHigherPanels(panel);
             highestZIndex--;
-            document.body.removeChild(panel);
+            panel.remove();
         });
 
         // Create the maximize toggle button
@@ -335,7 +335,7 @@
         .linkDirectionalArrowLength(link => graphParams.linkDirectionalArrowLength)
         .linkDirectionalArrowRelPos(link => graphParams.linkDirectionalArrowRelPos)
         .linkDirectionalParticles(link => graphParams.linkDirectionalParticles)
-        .linkDirectionalParticleSpeed(link => graphParams.linkDirectionalParticleSpeed / 10000.0)
+        .linkDirectionalParticleSpeed(link => graphParams.linkDirectionalParticleSpeed / 10000)
         .linkDirectionalParticleWidth(link => graphParams.linkDirectionalParticleWidth)
         .linkDirectionalParticleColor(link => graphParams.linkDirectionalParticleColor)
         .cooldownTicks(100);
@@ -377,9 +377,9 @@
                 const linePos = line.geometry.getAttribute('position');
 
                 // calculate coordinate on the node's surface instead of center
-                linePos.set([startR / lineLen, 1 - endR / lineLen].map(t =>
+                linePos.set([startR / lineLen, 1 - endR / lineLen].flatMap(t =>
                     ['x', 'y', 'z'].map(dim => start[dim] + (end[dim] - start[dim]) * t)
-                ).flat());
+                ));
                 linePos.needsUpdate = true;
                 return true;
             });
@@ -392,33 +392,34 @@
 
     function getVisible(gData) {
         const visibleNodes = []
-        gData.nodes.forEach((node) => {
+        for (const node of gData.nodes) {
             if (node.type in nodeTypeVisibility && nodeTypeVisibility[node.type]) {
                 visibleNodes.push(node);
             }
-        });
+        }
+
         const visibleLinks = [];
-        gData.links.forEach((link) => {
-            if (visibleNodes.find((node) => node.id === link.source.id) && visibleNodes.find((node) => node.id === link.target.id)) {
+        for (const link of gData.links) {
+           if (visibleNodes.find((node) => node.id === link.source.id) && visibleNodes.find((node) => node.id === link.target.id)) {
                 visibleLinks.push(link);
             }
-        });
+        }
 
         return {nodes: visibleNodes, links: visibleLinks};
     }
 
     function setAllNodeTypeVisibility(value) {
-        Object.keys(nodeTypeVisibility).forEach(key => {
+        for (const key of Object.keys(nodeTypeVisibility)) {
             nodeTypeVisibility[key] = value;
-        });
+        }
     }
 
     function updateNodeTypeColorMapping(nodes) {
-        nodes.forEach(node => {
+        for (const node of nodes) {
             if (!nodeTypeColor[node.type]) {
                 nodeTypeColor[node.type] = node.color;
             }
-        });
+        }
     }
 
     function refreshGraph(gData) {
@@ -451,17 +452,19 @@
             label: 'Visibility',
         }).on('click', (ev) => {
             switch (ev.cell.title) {
-                case 'All On':
+                case 'All On': {
                     setAllNodeTypeVisibility(true);
                     updateGraph(gData);
                     pane.refresh();
                     break;
-                case 'All Off':
+                }
+                case 'All Off': {
                     setAllNodeTypeVisibility(false);
                     const visibleGData = getVisible(gData);
                     updateGraph(visibleGData);
                     pane.refresh();
                     break;
+                }
                 default:
                     console.log('Unknown action');
             }
@@ -491,7 +494,7 @@
         // Legend tab
         const legendTab = tab.pages[0];
 
-        graph.nodeTypes.forEach(nodeType => {
+        for (const nodeType of graph.nodeTypes) {
             let info = `V: ${nodeType.count}`
             const edgeType = graph.edgeTypes.find((t) => t.name === nodeType.name);
             if (edgeType) {
@@ -502,11 +505,11 @@
 
             nodeTypeFolder.addBinding(nodeTypeColor, nodeType.name, {label: 'Color'})
                 .on('change', (ev) => {
-                    gData.nodes.forEach(node => {
+                    for (const node of gData.nodes) {
                         if (node.type === nodeType.name) {
                             node.color = ev.value;
                         }
-                    });
+                    }
                     refreshGraph(gData);
                 });
 
@@ -515,8 +518,7 @@
                 .on('change', (ev) => {
                     refreshGraph(gData);
                 });
-        });
-
+        }
 
         // Advanced tab
 

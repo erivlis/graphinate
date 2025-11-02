@@ -61,7 +61,8 @@ def color_hex(color: Union[str, Sequence[Union[float, int]]]) -> Union[str, Sequ
             msg = "Input values should either be a float between 0 and 1 or an int between 0 and 255"
             raise ValueError(msg)
 
-        return '#{:02x}{:02x}{:02x}'.format(*rgb)
+        r, g, b = rgb
+        return f'#{r:02x}{g:02x}{b:02x}'
 
     else:
         return color

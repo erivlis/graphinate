@@ -1,13 +1,14 @@
 import fnmatch
 import operator
 import pathlib
+from collections.abc import Iterable
 
 from magika import Magika
 
 import graphinate
 
 
-def load_ignore_patterns(ignore_files):
+def load_ignore_patterns(ignore_files: Iterable[str]) -> set[str]:
     patterns = set()
     for ignore_file in ignore_files:
         if pathlib.Path(ignore_file).exists():
@@ -19,17 +20,20 @@ def load_ignore_patterns(ignore_files):
     return patterns
 
 
-def is_ignored(path, patterns):
+def is_ignored(path: pathlib.Path, patterns: Iterable[str]) -> bool:
     return any(fnmatch.fnmatch(path.as_posix(), pattern) for pattern in patterns)
 
 
-def create_filesystem_graph_model(input_folder='.', ignore_files=['.ignore', '.gitignore', '.dockerignore']):
+def create_filesystem_graph_model(
+        input_folder: str = '.',
+        ignore_files: Iterable[str] = ('.ignore', '.gitignore', '.dockerignore')
+):
     """
     Create a graph model of the file system structure.
 
     Args:
         input_folder (str): The folder to start the traversal from. Defaults to the current folder.
-        ignore_files (list): A list of files containing ignore patterns.
+        ignore_files (Iterable): A list of files containing ignore patterns.
                              Defaults to ['.ignore', '.gitignore', '.dockerignore'].
 
     Returns:

@@ -9,7 +9,7 @@ from graphinate.renderers.graphql import DEFAULT_PORT
 
 
 def _get_kwargs(ctx) -> dict:
-    return dict([item.strip('--').split('=') for item in ctx.args if item.startswith("--")])
+    return dict([item.strip('--').split('=') for item in ctx.args if item.startswith("--")])  # NOSONAR
 
 
 def import_from_string(import_str: Any) -> Any:
