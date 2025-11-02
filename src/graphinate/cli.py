@@ -1,5 +1,6 @@
 import importlib
 import json
+from pathlib import Path
 from typing import Any
 
 import click
@@ -72,15 +73,26 @@ model_option = click.option('-m', '--model',
 @click.group()
 @click.pass_context
 def cli(ctx):
-    pass
+    ctx.ensure_object(dict)
 
 
 @cli.command()
 @model_option
 @click.pass_context
-def save(ctx, model):
+def save(ctx, model: GraphModel):
+    file_path = Path(f"{model.name}.d3_graph.json")
+
+    if file_path.is_absolute():
+        raise click.ClickException("Please provide a relative file path for saving the graph.")
+
+    if file_path.parent != Path('.'):
+        raise click.ClickException("Saving to subdirectories is not supported. Please provide a file name only.")
+
+    if file_path.exists():
+        click.confirm(f"The file '{file_path}' already exists. Do you want to overwrite it?", abort=True)
+
     kwargs = _get_kwargs(ctx)
-    with open(f"{model.name}.d3_graph.json", mode='w') as fp:
+    with open(file_path, mode='w') as fp:
         graph = builders.D3Builder(model, **kwargs).build()
         json.dump(graph, fp=fp, default=str, **kwargs)
 
@@ -100,4 +112,4 @@ def server(ctx, model: GraphModel, port: int, browse: bool):
      ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝   ╚══════╝"""
     click.echo(message)
     schema = builders.GraphQLBuilder(model).build()
-    graphql(schema, port=port, browse=browse, **_get_kwargs(ctx))
+    graphql.server(schema, port=port, browse=browse, **_get_kwargs(ctx))
