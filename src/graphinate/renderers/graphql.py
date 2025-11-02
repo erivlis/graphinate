@@ -51,7 +51,7 @@ def _graphql_app(graphql_schema: strawberry.Schema) -> strawberry.asgi.GraphQL:
     Returns:
         strawberry.asgi.GraphQL: The GraphQL app configured with the provided schema.
     """
-    graphql_app = GraphQL(graphql_schema, graphiql=True)
+    graphql_app = GraphQL(graphql_schema, graphql_ide='apollo-sandbox')
     return graphql_app
 
 

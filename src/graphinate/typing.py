@@ -25,17 +25,17 @@ NodeTypeAbsoluteId.__doc__ = 'A unique identifier for a node type.'
 UniverseNode = NewType('UniverseNode', NoneType)
 UniverseNode.__doc__ = 'The UniverseNode Type. All Node Types are the implicit children of the Universe Node Type.'
 
+# A node in a graph.
 Node = Union[type[NamedTuple], NodeTuple]  # noqa: UP007
-Node.__doc__ = 'A node in a graph.'
 
+# An edge in a graph.
 Edge = Union[type[NamedTuple], EdgeTuple]  # noqa: UP007
-Edge.__doc__ = 'An edge in a graph.'
 
+# An element in a graph.
 Element = Union[Node, Edge]  # noqa: UP007
-Element.__doc__ = 'An element in a graph.'
 
+# A source of data for an element.
 Extractor = Union[str, Callable[[Any], str]]  # noqa: UP007
-Extractor.__doc__ = 'A source of data for an element.'
 
 T = TypeVar('T')
 

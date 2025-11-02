@@ -52,7 +52,7 @@ def test_draw_with_node_labels_off(mocker):
     mock_node_color_mapping.assert_called_once_with(graph)
     mock_nx_draw.assert_called_once()
     # Check that 'with_labels' is not in the draw parameters
-    args, kwargs = mock_nx_draw.call_args
+    _args, kwargs = mock_nx_draw.call_args
     assert 'with_labels' not in kwargs
 
 
@@ -108,7 +108,7 @@ def test_draw_with_both_labels_on(mocker):
     mock_nx_draw_edge_labels.assert_called_once()
 
     # Check that node labels are enabled
-    args, kwargs = mock_nx_draw.call_args
+    _args, kwargs = mock_nx_draw.call_args
     assert kwargs.get('with_labels') is True
 
 
@@ -185,7 +185,7 @@ def test_draw_empty_graph(mocker):
     mock_nx_draw.assert_called_once()
 
     # Check that node_color is an empty list for empty graph
-    args, kwargs = mock_nx_draw.call_args
+    _args, kwargs = mock_nx_draw.call_args
     assert kwargs.get('node_color') == []
 
 
@@ -215,7 +215,7 @@ def test_draw_no_node_labels_attribute(mocker):
     mock_nx_draw.assert_called_once()
 
     # Check that labels parameter is empty dict
-    args, kwargs = mock_nx_draw.call_args
+    _args, kwargs = mock_nx_draw.call_args
     assert kwargs.get('labels') == {}
 
 
@@ -247,5 +247,5 @@ def test_draw_no_edge_labels_attribute(mocker):
     mock_nx_draw_edge_labels.assert_called_once()
 
     # Check that the edge_labels parameter is an empty dict
-    args, kwargs = mock_nx_draw_edge_labels.call_args
+    _args, kwargs = mock_nx_draw_edge_labels.call_args
     assert kwargs.get('edge_labels') == {}

@@ -678,7 +678,8 @@
         // Tools tab
         const toolsTab = tab.pages[2];
 
-        toolsTab.addButton({title: 'GraphiQL'}).on('click', () => createFloatingIFramePanel('/graphql', 'Graph<i>i</i>QL'));
+        toolsTab.addButton({title: 'GraphQL IDE'}).on('click', () => createFloatingIFramePanel('/graphql', 'GraphQL IDE'));
+        toolsTab.addButton({title: 'GraphiQL IDE'}).on('click', () => createFloatingIFramePanel('/graphiql', 'Graph<i>i</i>QL'));
         toolsTab.addButton({title: 'GraphQL Voyager'}).on('click', () => createFloatingIFramePanel('/voyager', 'GraphQL Voyager'));
         toolsTab.addButton({title: 'RapiDoc'}).on('click', () => createFloatingIFramePanel('/rapidoc', 'RapiDoc'));
         toolsTab.addButton({title: 'Metrics'}).on('click', () => createFloatingIFramePanel('/metrics', 'Metrics'));

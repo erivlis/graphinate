@@ -50,7 +50,7 @@ def color_hex(color: Union[str, Sequence[Union[float, int]]]) -> Union[str, Sequ
         If the input is a tuple or list, it should contain either three floats (0-1) or three ints (0-255).
         The function will convert these to a HEX color code.
     """
-    if isinstance(color, (tuple, list)):  # noqa: UP038
+    if isinstance(color, (tuple, list)):
         rgb = color[:3]
 
         if all(isinstance(c, float) and 0 <= c <= 1 for c in rgb):
