@@ -1,3 +1,9 @@
+"""
+Example: Processes Graph
+This example demonstrates how to create a graph model representing
+processes and their parent-child relationships using the `psutil` library.
+"""
+
 import operator
 from collections.abc import Iterable
 
@@ -61,4 +67,4 @@ if __name__ == '__main__':
 
     # Or
     # 3. Option B - Output as a plot
-    graphinate.materializers.plot(graph)
+    graphinate.renderers.matplotlib.plot(graph)
