@@ -10,7 +10,7 @@
           href="https://cdn.jsdelivr.net/npm/@tweakpane/plugin-essentials@0.2.1/dist/tweakpane-plugin-essentials.min.js"
           integrity="sha256-VYrWNKBoz1vsS026wJe4Zvb5/r8kGOSTfIBcmLdOA1g="
           crossorigin="anonymous">
-    <script type="module">
+    <script type="module" defer>
         // Import ES module
         import * as Tweakpane from 'https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/dist/tweakpane.min.js';
         import * as TweakpaneEssentialsPlugin
@@ -19,8 +19,8 @@
         globalThis.Tweakpane = Tweakpane;
         globalThis.TweakpaneEssentialsPlugin = TweakpaneEssentialsPlugin;
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/3d-force-graph@1.76.2/dist/3d-force-graph.min.js"
-            integrity="sha384-zSKZ615fogcuRjUjE+0YstAo3N/t7PzUvtQu5KGA1iqkmHXsTRst7zP+6573D+hK"
+    <script src="https://cdn.jsdelivr.net/npm/3d-force-graph@1.79.0/dist/3d-force-graph.min.js"
+            integrity="sha256-Khop08zFFZ8EobULFj/LkDMzwCaxIr/4WKcJZbLDjoc="
             crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/murmurhash-js@1.0.0/murmurhash3_gc.min.js"
             integrity="sha384-RTcg9S2mr/vVW+vsvQZB7G2cYWnhkBdsMvqKzHxL41KG4zTgrMSzGfm7mzw0aYU2"
@@ -81,7 +81,7 @@
         panel.style.left = `${lastPanelPosition.left}px`;
         panel.style.width = '800px';
         panel.style.height = '600px';
-        panel.style.border = '4px solid #b5b3b0';
+        panel.style.border = '4px solid var(--tp-container-background-color)';
         panel.style.borderBottom = 'none'; // Remove bottom border
         panel.style.borderRadius = '5px'; // Smaller rounded corners
         panel.style.backgroundColor = '#fff';
@@ -523,77 +523,6 @@
         // Advanced tab
 
         const advancedTab = tab.pages[1];
-
-        // const presets = () => JSON.parse(localStorage.getItem('graphPresets')) || {};
-        //
-        // function savePreset(name, settings) {
-        //     presets[name] = settings;
-        //     localStorage.setItem('graphPresets', JSON.stringify(presets()));
-        // }
-        //
-        //
-        // const presetFolder = advancedTab.addFolder({title: 'Presets'});
-        //
-        // presetFolder.addBlade({
-        //     view: 'buttongrid',
-        //     size: [2, 1],
-        //     cells: (x, y) => ({
-        //         title: [
-        //             ['Save', 'Delete'],
-        //         ][y][x],
-        //     }),
-        //     label: 'Preset',
-        // }).on('click', (ev) => {
-        //     switch (ev.cell.title) {
-        //         case 'Save':
-        //             const presetName = prompt('Enter preset name:');
-        //             if (presetName) {
-        //                 savePreset(presetName, {...graphParams});
-        //                 updatePresetDropdown();
-        //             }
-        //             break;
-        //         case 'Delete':
-        //             const selectedPresetName = presetDropdown.text;
-        //             if (selectedPresetName && presets()[selectedPresetName]) {
-        //                 const newPresets = presets()
-        //                 delete newPresets[selectedPresetName];
-        //                 localStorage.setItem('graphPresets', JSON.stringify(newPresets));
-        //                 updatePresetDropdown();
-        //             }
-        //             break;
-        //         default:
-        //             console.log('Unknown action');
-        //     }
-        // });
-        //
-        //
-        // presetFolder.addButton({title: 'Save Preset'}).on('click', () => {
-        //     const presetName = prompt('Enter preset name:');
-        //     if (presetName) {
-        //         savePreset(presetName, {...graphParams});
-        //         updatePresetDropdown();
-        //     }
-        // });
-        //
-        // const presetDropdown = presetFolder.addBlade({
-        //     view: 'list',
-        //     label: 'Presets',
-        //     options: Object.entries(presets()).map(([k, v]) => {
-        //             return {text: k, value: v};
-        //         }
-        //     ),
-        //     value: ''
-        // }).on('change', (ev) => {
-        //     Object.assign(graphParams, ev.value);
-        //     pane.refresh();
-        //     Graph.refresh();
-        // });
-        //
-        // function updatePresetDropdown() {
-        //     presetDropdown.options = Object.entries(presets()).map(([k, v]) => {
-        //             return {text: k, value: v};
-        //         }
-        //     );
         //     pane.refresh();
         // }
         //
