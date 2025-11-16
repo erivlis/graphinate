@@ -438,6 +438,10 @@ class GraphQLBuilder(NetworkxBuilder):
         created: datetime | None
         updated: datetime | None
 
+    @strawberry.enum
+    class GraphNodeType(Enum):
+        ...  # pragma: no cover
+
     @strawberry.interface(description="Represents a Graph Node")
     class GraphNode(GraphElement):
         node_id: strawberry.ID
@@ -445,7 +449,9 @@ class GraphQLBuilder(NetworkxBuilder):
         lineage: str
 
         @strawberry.field()
-        def neighbors(self, children: bool = False) -> list[Optional['GraphQLBuilder.GraphNode']]:
+        def neighbors(self,
+                      type: 'GraphQLBuilder.GraphNodeType | None' = None,
+                      children: bool = False) -> list[Optional['GraphQLBuilder.GraphNode']]:
             ...  # pragma: no cover
 
         @strawberry.field()
@@ -628,30 +634,63 @@ class GraphQLBuilder(NetworkxBuilder):
             description=f"Represents a {capitalized_name} Graph Node"
         )
 
+    @staticmethod
+    def _graphql_enum(name: str, values: list[str]) -> type[Enum]:
+        return strawberry.enum(
+            Enum(name, {v: v for v in values}),
+            name=name,
+            description=f"{name} Enumeration"
+        )
+
     @classmethod
     @functools.lru_cache
     def _children_types(cls, model: GraphModel, node_type: str):
         return model.node_children_types(node_type).get(node_type, [])
+
+    def _populate_graph_node_type_enum(self, node_types: list[str]):
+        from strawberry.types.enum import EnumValue
+
+        for v in node_types:
+            self.GraphNodeType._member_names_.append(v)
+            self.GraphNodeType._member_map_[v] = v
+            self.GraphNodeType._value2member_map_[v] = v
+
+            self.GraphNodeType._enum_definition.values.append(
+                EnumValue(
+                    name=v,
+                    value=v,
+                    description=f"Graph Node Type: {v}"
+                )
+            )
 
     @property
     @functools.lru_cache
     def _graphql_types(self) -> dict[str, type['GraphQLBuilder.GraphNode']]:
         node_types = list(self._graph.graph['node_types'].keys())
 
+        self._populate_graph_node_type_enum(node_types)
+
         def neighbors_resolver():
             graph = self._graph
 
             children_types = set(self._children_types(self.model, node_type))
 
-            def node_neighbors(self, children: bool = False) -> list[GraphQLBuilder.GraphNode | None]:
+            def node_neighbors(self,
+                               type: 'GraphQLBuilder.GraphNodeType | None' = None,
+                               children: bool = False) -> list['GraphQLBuilder.GraphNode']:
                 node = decode_id(self.id)
-                items = (GraphQLBuilder._graph_node(graphql_types[d['type']], n, d) for n, d in graph.nodes(data=True)
+                items = (GraphQLBuilder._graph_node(graphql_types[d['type']], n, d)
+                         for n, d in graph.nodes(data=True)
                          if n in graph.neighbors(node))
 
-                if children and children_types:
-                    return [item for item in items if item.type in children_types]
+                if type is not None:
+                    items = (item for item in items if item.type == type)
 
-                return list(items)
+                if children and children_types:
+                    items = (item for item in items if item.type in children_types)
+
+                items = list(items)
+                return items
 
             return node_neighbors
 
