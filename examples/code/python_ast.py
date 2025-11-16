@@ -55,7 +55,7 @@ def ast_graph_model():
 
     graph_model = graphinate.model(name=f'AST Graph - {code_object.__qualname__}',)
 
-    root_ast_node = ast.parse(inspect.getsource(graphinate.builders.D3Builder))
+    root_ast_node = ast.parse(inspect.getsource(code_object))
 
     def node_type(ast_node):
         return ast_node.__class__.__name__
