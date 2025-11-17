@@ -149,9 +149,10 @@ class NetworkxBuilder(Builder):
 
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
         super().__init__(model, graph_type)
+        self._graph: nx.Graph | None = None
 
     def _initialize_graph(self):
-        """Initialize an empty NetworkX graph with metadata."""
+        """Initialize an empty NetworkX graph with metadata and default attributes."""
         self._graph: nx.Graph = self.graph_type.value(name=self.model.name,
                                                       node_types=Counter(),
                                                       edge_types=Counter())
@@ -302,10 +303,10 @@ class NetworkxBuilder(Builder):
             if type_count:
                 self._graph.graph['edge_types'].update({default_type: type_count})
 
-    def _finalize_graph(self, **defaults):
-        self._rectify_node_attributes(**defaults)
+    def _finalize_graph(self, **node_attributes):
+        self._rectify_node_attributes(**node_attributes)
 
-        if 'color' not in defaults:
+        if 'color' not in node_attributes:
             self._rectify_node_attributes(color=color.node_color_mapping(self._graph))
 
         self._rectify_edge_attributes(**self.default_edge_attributes)
@@ -315,6 +316,26 @@ class NetworkxBuilder(Builder):
             self._graph.graph[counter_name] = simplify(counter)
 
         self._graph.graph['created'] = utcnow()
+
+    def _default_node_attributes(self, **kwargs) -> MappingProxyType:
+        if 'default_node_attributes' in kwargs:
+            default_node_attributes = dict(**self.default_node_attributes)
+            default_node_attributes.update(kwargs.pop('default_node_attributes') or {})
+            return MappingProxyType(default_node_attributes)
+
+        return MappingProxyType(self.default_node_attributes)
+
+
+    def _rectify_model(self, node_attributes: Mapping):
+        default_type = node_attributes.get('type')
+        default_label = node_attributes.get('label')
+        self.model.rectify(_type=default_type, parent_type=default_type, label=default_label)
+
+    def _build_graph(self, node_attributes: Mapping, **kwargs):
+        self._initialize_graph()
+        self._populate_node_type(**kwargs)
+        self._populate_edges(**kwargs)
+        self._finalize_graph(**node_attributes)
 
     def build(self, **kwargs) -> GraphRepresentation:
         """Build a NetworkX graph representation.
@@ -326,17 +347,9 @@ class NetworkxBuilder(Builder):
             NetworkX Graph
         """
         super().build(**kwargs)
-        default_node_attributes = dict(**self.default_node_attributes)
-        if 'default_node_attributes' in kwargs:
-            default_node_attributes.update(kwargs.pop('default_node_attributes') or {})
-
-        default_type = default_node_attributes.get('type')
-        default_label = default_node_attributes.get('label')
-        self.model.rectify(_type=default_type, parent_type=default_type, label=default_label)
-        self._initialize_graph()
-        self._populate_node_type(**kwargs)
-        self._populate_edges(**kwargs)
-        self._finalize_graph(**default_node_attributes)
+        node_attributes = self._default_node_attributes(**kwargs)
+        self._rectify_model(node_attributes)
+        self._build_graph(node_attributes, **kwargs)
         return self._graph
 
 
