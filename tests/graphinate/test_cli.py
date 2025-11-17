@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 
 import pytest
 from click.testing import CliRunner
@@ -21,8 +22,15 @@ def test_save_model(octagonal_graph_model, runner):
 
 
 def test_save_model_reference(runner):
-    sys.path.append('examples/math')
+    # Arrange
+    sys.path.append(EXAMPLES_MATH)
+    if (saved_file := Path('Octagonal Graph.d3_graph.json')).exists():
+        saved_file.unlink()
+
+    # Act
     result = runner.invoke(cli, ['save', '-m', "polygonal_graph:model"])
+
+    # Assert
     assert result.exit_code == 0
 
 
