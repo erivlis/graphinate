@@ -1,5 +1,4 @@
-"""
-Builder Classes: Abstraction Layer to Generate Graph Data Structures
+"""Builder Classes: Abstraction Layer to Generate Graph Data Structures
 
 This module defines builder base classes and implementations that construct graph
 data structures from a `GraphModel`. It supports generating various graph formats,
@@ -39,6 +38,7 @@ import networkx_mermaid as nxm
 import strawberry
 from loguru import logger
 from mappingtools.transformers import simplify
+from networkx.classes.reportviews import EdgeDataView, EdgeView, NodeDataView, NodeView
 from strawberry.extensions import ParserCache, QueryDepthLimiter, ValidationCache
 
 from . import color, converters
@@ -262,19 +262,31 @@ class NetworkxBuilder(Builder):
                         self._graph.edges[edge_id]['weight'] += edge_weight
                         self._graph.edges[edge_id]['updated'] = utcnow()
 
+    @staticmethod
+    def _rectified_values(name: str, default: Any, elements: Callable[
+        [str, Any], NodeView[Any] | EdgeView[Any] | NodeDataView[Any] | EdgeDataView], k: Callable[[Any], Any],
+                          v: Callable[[Any], Any]) -> dict:
+        if callable(default):
+            elem = elements(data=name, default=None)
+            return {k(e): default(k(e))
+                    for e in elem
+                    if (v(e) is None if isinstance(elem, NodeDataView) else v(e) is not None)}
+        elif isinstance(default, dict):
+            return default
+        elif default:
+            return {k(e): v(e) for e in elements(data=name, default=default) if v(e) == default}
+        else:  # default is None or empty collection
+            return {k(e): k(e) for e in elements(data=name, default=default) if v(e) is default}
+
     def _rectify_node_attributes(self, **defaults):
-
         for name, default in defaults.items():
-            if callable(default):
-                values = {n: default(n) for n, a in self._graph.nodes(data=name, default=None) if a is None}
-            elif isinstance(default, dict):
-                values = default
-            elif default:
-                values = {n: a for n, a in self._graph.nodes(data=name, default=default) if a == default}
-            else:
-                values = {n: n for n, a in self._graph.nodes(data=name, default=default) if a is default}
-
-            if values:
+            if values := self._rectified_values(
+                    name,
+                    default,
+                    self._graph.nodes,
+                    operator.itemgetter(0),
+                    operator.itemgetter(1),
+            ):
                 nx.set_node_attributes(self._graph, values=values, name=name)
 
         if default_type := defaults.get('type'):
@@ -283,19 +295,14 @@ class NetworkxBuilder(Builder):
                 self._graph.graph['node_types'].update({default_type: type_count})
 
     def _rectify_edge_attributes(self, **defaults):
-
         for name, default in defaults.items():
-            if callable(default):
-                values = {tuple(e): default(tuple(e)) for *e, a in self._graph_edges(data=name, default=None)
-                          if a is not None}
-            elif isinstance(default, dict):
-                values = default
-            elif default:
-                values = {tuple(e): a for *e, a in self._graph_edges(data=name, default=default) if a == default}
-            else:
-                values = {tuple(e): tuple(e) for *e, a in self._graph_edges(data=name, default=default) if a is default}
-
-            if values:
+            if values := self._rectified_values(
+                    name,
+                    default,
+                    self._graph_edges,
+                    lambda x: tuple(x[:-1]),
+                    lambda x: x[-1]
+            ):
                 nx.set_edge_attributes(self._graph, values=values, name=name)
 
         if default_type := defaults.get('type'):
@@ -316,15 +323,6 @@ class NetworkxBuilder(Builder):
             self._graph.graph[counter_name] = simplify(counter)
 
         self._graph.graph['created'] = utcnow()
-
-    def _default_node_attributes(self, **kwargs) -> Mapping:
-        if 'default_node_attributes' in kwargs:
-            default_node_attributes = dict(**self.default_node_attributes)
-            default_node_attributes.update(kwargs.pop('default_node_attributes') or {})
-            return MappingProxyType(default_node_attributes)
-
-        return self.default_node_attributes
-
 
     def _rectify_model(self, node_attributes: Mapping):
         default_type = node_attributes.get('type')
@@ -347,9 +345,13 @@ class NetworkxBuilder(Builder):
             NetworkX Graph
         """
         super().build(**kwargs)
-        node_attributes = self._default_node_attributes(**kwargs)
-        self._rectify_model(node_attributes)
-        self._build_graph(node_attributes, **kwargs)
+
+        default_node_attributes = dict(**self.default_node_attributes)
+        if 'default_node_attributes' in kwargs:
+            default_node_attributes.update(kwargs.pop('default_node_attributes') or {})
+
+        self._rectify_model(default_node_attributes)
+        self._build_graph(default_node_attributes, **kwargs)
         return self._graph
 
 
