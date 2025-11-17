@@ -317,13 +317,13 @@ class NetworkxBuilder(Builder):
 
         self._graph.graph['created'] = utcnow()
 
-    def _default_node_attributes(self, **kwargs) -> MappingProxyType:
+    def _default_node_attributes(self, **kwargs) -> Mapping:
         if 'default_node_attributes' in kwargs:
             default_node_attributes = dict(**self.default_node_attributes)
             default_node_attributes.update(kwargs.pop('default_node_attributes') or {})
             return MappingProxyType(default_node_attributes)
 
-        return MappingProxyType(self.default_node_attributes)
+        return self.default_node_attributes
 
 
     def _rectify_model(self, node_attributes: Mapping):
