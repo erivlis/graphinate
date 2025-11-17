@@ -64,7 +64,7 @@
 </head>
 <body>
 <div id="3d-graph"></div>
-<script type="module">
+<script type="module" lang="javascript">
     import * as THREE from 'https://esm.sh/three';
     import {scaleLinear, interpolateRgb, color as d3Color} from 'https://esm.sh/d3';
 
@@ -523,6 +523,78 @@
         // Advanced tab
 
         const advancedTab = tab.pages[1];
+
+        // TODO: Complete Preset Implementation
+        // const presets = () => JSON.parse(localStorage.getItem('graphPresets')) || {};
+        //
+        // function savePreset(name, settings) {
+        //     presets[name] = settings;
+        //     localStorage.setItem('graphPresets', JSON.stringify(presets()));
+        // }
+        //
+        //
+        // const presetFolder = advancedTab.addFolder({title: 'Presets'});
+        //
+        // presetFolder.addBlade({
+        //     view: 'buttongrid',
+        //     size: [2, 1],
+        //     cells: (x, y) => ({
+        //         title: [
+        //             ['Save', 'Delete'],
+        //         ][y][x],
+        //     }),
+        //     label: 'Preset',
+        // }).on('click', (ev) => {
+        //     switch (ev.cell.title) {
+        //         case 'Save':
+        //             const presetName = prompt('Enter preset name:');
+        //             if (presetName) {
+        //                 savePreset(presetName, {...graphParams});
+        //                 updatePresetDropdown();
+        //             }
+        //             break;
+        //         case 'Delete':
+        //             const selectedPresetName = presetDropdown.text;
+        //             if (selectedPresetName && presets()[selectedPresetName]) {
+        //                 const newPresets = presets()
+        //                 delete newPresets[selectedPresetName];
+        //                 localStorage.setItem('graphPresets', JSON.stringify(newPresets));
+        //                 updatePresetDropdown();
+        //             }
+        //             break;
+        //         default:
+        //             console.log('Unknown action');
+        //     }
+        // });
+        //
+        //
+        // presetFolder.addButton({title: 'Save Preset'}).on('click', () => {
+        //     const presetName = prompt('Enter preset name:');
+        //     if (presetName) {
+        //         savePreset(presetName, {...graphParams});
+        //         updatePresetDropdown();
+        //     }
+        // });
+        //
+        // const presetDropdown = presetFolder.addBlade({
+        //     view: 'list',
+        //     label: 'Presets',
+        //     options: Object.entries(presets()).map(([k, v]) => {
+        //             return {text: k, value: v};
+        //         }
+        //     ),
+        //     value: ''
+        // }).on('change', (ev) => {
+        //     Object.assign(graphParams, ev.value);
+        //     pane.refresh();
+        //     Graph.refresh();
+        // });
+        //
+        // function updatePresetDropdown() {
+        //     presetDropdown.options = Object.entries(presets()).map(([k, v]) => {
+        //             return {text: k, value: v};
+        //         }
+        //     );
         //     pane.refresh();
         // }
         //
