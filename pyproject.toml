@@ -1,6 +1,6 @@
 [project]
 name = "Graphinate"
-version = "0.10.0"
+version = "0.10.1"
 description = "Graphinate. Data to Graphs."
 authors = [
     { name = "Eran Rivlis", email = "eran@rivlis.info" },
