@@ -1,13 +1,12 @@
 import itertools
 from collections.abc import Iterable
-from typing import Optional
 
 import more_itertools
 import networkx as nx
 from matplotlib import pyplot
 
 
-def sliding_window_visibility_graph(series: Iterable[float], window_size: Optional[int] = None):
+def sliding_window_visibility_graph(series: Iterable[float], window_size: int | None = None):
     if window_size:
         yield from itertools.chain(
             visibility_graph(subseries) for subseries in more_itertools.sliding_window(series, window_size))

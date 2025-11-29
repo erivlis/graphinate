@@ -3,15 +3,14 @@ https://www.pnas.org/doi/10.1073/pnas.0709247105
 """
 
 from datetime import timedelta
-from typing import Optional
 
 from _client import github_commits, github_repositories, github_user
 from github.GitCommit import GitCommit
 
 
-def commit_interval(user_id: Optional[str] = None,
-                    repository_id: Optional[str] = None,
-                    commit_id: Optional[str] = None):
+def commit_interval(user_id: str | None = None,
+                    repository_id: str | None = None,
+                    commit_id: str | None = None):
     github_user(user_id)
     for repo in github_repositories(user_id, repository_id):
         for commit in github_commits(repo, commit_id):
