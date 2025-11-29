@@ -79,37 +79,15 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
-  - [What is Graphinate?](#what-is-graphinate)
-  - [Links](#links)
+    - [What is Graphinate?](#what-is-graphinate)
+    - [Links](#links)
 - [Quick Start](#quick-start)
-  - [Install](#install)
-  - [Example](#example)
+    - [Install](#install)
+    - [Example](#example)
 - [CLI](#cli)
-  - [Commands](#commands)
-    - [Save](#save)
-    - [Server](#server)
 - [Gallery](#gallery)
-  - [Python AST](#python-ast)
-  - [GitHub Repository](#github-repository)
-  - [Python AST - 3D Force-Directed Animation](#python-ast---3d-force-directed-animation)
-  - [Web Page Links](#web-page-links)
 - [Development](#development)
-  - [Install dependencies](#install-dependencies)
-  - [Update dependencies](#update-dependencies)
-  - [Ruff](#ruff)
-  - [Test](#test)
-    - [Standard (cobertura) XML Coverage Report](#standard-cobertura-xml-coverage-report)
-    - [HTML Coverage Report](#html-coverage-report)
-    - [Terminal Coverage Report](#terminal-coverage-report)
-  - [Docs](#docs)
-    - [test](#test-1)
-    - [build](#build)
 - [Acknowledgements](#acknowledgements)
-  - [Dependencies](#dependencies)
-    - [Python](#python)
-    - [Javascript and HTML](#javascript-and-html)
-  - [Dev Tools](#dev-tools)
-  - [IDE](#ide)
 
 ## Introduction
 
@@ -140,10 +118,22 @@ In addition, there are several modes of output to enable examination of the Grap
 pip install graphinate
 ```
 
+or
+
+```shell
+uv add graphinate
+```
+
 To install with server support
 
 ```shell
 pip install graphinate[server]
+```
+
+or
+
+```shell
+uv add graphinate[server] 
 ```
 
 **Graphinate** officially supports Python >= 3.10.
@@ -200,47 +190,8 @@ graphinate.graphql.server(schema)
 
 ## CLI
 
-### Commands
-
-```text
-Usage: python -m graphinate [OPTIONS] COMMAND [ARGS]...
-
-Options:
-  --help  Show this message and exit.
-
-Commands:
-  save
-  server
-```
-
-#### Save
-
-```text
-Usage: python -m graphinate save [OPTIONS]
-
-Options:
-  -m, --model MODEL  A GraphModel instance reference {module-
-                     name}:{GraphModel-instance-variable-name} For example,
-                     given var `model=GraphModel()` defined in app.py file,
-                     then the  reference should be app:model
-  --help             Show this message and exit.
-```
-
-#### Server
-
-> TIP: requires the `server` extra to be installed. e.g., `pip install graphinate[server]`
-
-```text
-Usage: python -m graphinate server [OPTIONS]
-
-Options:
-  -m, --model MODEL   A GraphModel instance reference {module-
-                      name}:{GraphModel-instance-variable-name} For example,
-                      given var `model=GraphModel()` defined in app.py file,
-                      then the  reference should be app:model
-  -p, --port INTEGER  Port number.
-  --help              Show this message and exit.
-```
+For detailed information on the command-line interface, please see
+the [CLI Usage Guide](https://erivlis.github.io/graphinate/usage/cli/) in the official documentation.
 
 ## Gallery
 
@@ -266,103 +217,13 @@ Options:
 
 ## Development
 
-### Install dependencies
-
-Use UV to install all dependencies
-
-```shell
-uv sync --all-extras --all-groups
-```
-
-### Update dependencies
-
-```shell
-uv lock --upgrade
-uv sync --all-extras --all-groups
-```
-
-
-### Ruff
-
-#### Report issues
-
-```shell
-ruff check src
-```
-
-#### Fix issues
-
-```shell
-ruff check src --fix
-```
-
-### Test
-
-#### Standard (cobertura) XML Coverage Report
-
-```shell
- python -m pytest tests -n auto --cov=src --cov-branch --doctest-modules --cov-report=xml --junitxml=junit.xml
-```
-
-#### HTML Coverage Report
-
-```shell
-python -m pytest tests -n auto --cov=src --cov-branch --doctest-modules --cov-report=html --junitxml=junit.xml
-```
-
-#### Terminal Coverage Report
-
-```shell
-python -m pytest tests -n auto --cov=src --cov-branch --doctest-modules --cov-report=term --junitxml=junit.xml
-```
-
-### Docs
-
-#### test
-
-```shell
-python -m mkdocs serve
-```
-
-#### build
-
-```shell
-python -m mkdocs build
-```
+For instructions on how to set up your development environment, run tests, and contribute to the project, please see
+the [Development Guide](https://erivlis.github.io/graphinate/development/) in the official documentation.
 
 ## Acknowledgements
 
-### Dependencies
-
-#### Python
-
-<a href="https://palletsprojects.com/projects/click/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://palletsprojects.com/static/content/projects/click-name.svg" alt="Click Logo"></a>
-<a href="https://github.com/Delgan/loguru"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://raw.githubusercontent.com/Delgan/loguru/master/docs/_static/img/logo.png" alt="Loguru Logo"></a>
-<a href="https://matplotlib.org/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://matplotlib.org/_static/logo_dark.svg" alt="matplotlib Logo"></a>
-<a href="https://networkx.org/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://networkx.org/_static/networkx_logo.svg" alt="NetworkX Logo"></a>
-<a href="https://www.starlette.io/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://www.starlette.io/img/starlette.svg#only-light" alt="Starlette Logo"></a>
-<a href="https://strawberry.rocks/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://github.com/strawberry-graphql/strawberry/raw/main/.github/logo.png" alt="Strawberry GraphQL Logo"></a>
-
-#### Javascript and HTML
-
-<a href="https://vasturiano.github.io/3d-force-graph/"><img height="60" style="background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="http://gist.github.com/vasturiano/02affe306ce445e423f992faeea13521/raw/preview.png" alt="3D Force-Directed Graph"></a>
-<a href="https://github.com/graphql-kit/graphql-voyager"><img height="60" style="background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://github.com/graphql-kit/graphql-voyager/raw/main/docs/cover.png" alt="Graphql Voyager Logo"></a>
-<a href="https://github.com/cocopon/tweakpane"><img height="60" style="background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://user-images.githubusercontent.com/602961/184479032-38f50be3-e235-4914-85c0-dce316b33ed2.png" alt="Tweakpane"></a>
-
-### Dev Tools
-
-<a href="https://astral.sh/uv"><img height="60" style="padding: 16px; background: #261230;" src="https://docs.astral.sh/uv/assets/logo-letter.svg" alt="uv logo"></a>
-<a href="https://astral.sh/ruff"><img height="60" style="background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://astralcms.wpengine.com/wp-content/uploads/2023/03/Ruff-Logo.svg" alt="Ruff logo"></a>
-<a href="https://mdformat.readthedocs.io"><img height="60" width="60" style="aspect-ratio: auto; padding: 4px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://mdformat.readthedocs.io/en/stable/_static/logo-150px.png" alt="mdformat"></a>
-<a href="https://squidfunk.github.io/mkdocs-material/"><img height="60" style="background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://raw.githubusercontent.com/squidfunk/mkdocs-material/master/.github/assets/logo.svg" alt="Material for MkDocs"></a>
-<a href="https://pytest.org"><img height="60" style="background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://docs.pytest.org/en/7.4.x/_static/pytest_logo_curves.svg" alt="pytest logo"></a>
-<a href="https://hatch.pypa.io/"><img height="60" style="background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://hatch.pypa.io/latest/assets/images/logo.svg" alt="Hatch logo."></a>
-
-
-
-### IDE
-
-<a href="https://www.jetbrains.com/pycharm/"><img height="60" style="padding: 5px; background: linear-gradient(-45deg, #FCF84A, #3DEA62, #21D789);" src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm.png" alt="PyCharm logo"></a>
+For a list of the dependencies and tools that make Graphinate possible, please see
+the [Acknowledgements](https://erivlis.github.io/graphinate/acknowledgements/) page in the official documentation.
 
 ______________________________________________________________________
 
