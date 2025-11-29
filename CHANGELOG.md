@@ -1,4 +1,19 @@
-## Unreleased
+## v0.11.0 (2025-11-30)
+
+### Feat
+
+- Adds numpy, configures MyPy type checking and Commitizen.
+
+### Fix
+
+- **visibility_graph**: Simplifies type hints using T | None syntax.
+- **tests**: Updates CI to run pytest tests sequentially.
+
+### Refactor
+
+- Abstracts `Builder`, refines typing, and improves GraphQL value resolution.
+- Optimizes node color mapping with NumPy and refines default type logic.
+- Refactors documentation into dedicated pages and updates image attributes.
 
 ## v0.10.1 (2025-11-17)
 
