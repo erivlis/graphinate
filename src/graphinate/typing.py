@@ -10,7 +10,6 @@ Attributes:
 """
 
 from collections.abc import Callable, Iterable
-from types import NoneType
 from typing import Any, NamedTuple, NewType, Protocol, TypeAlias, TypeVar, Union
 
 NodeTuple: TypeAlias = tuple[str, Any]
@@ -22,8 +21,10 @@ IdentifierStr.__doc__ = 'A string that is a valid Python identifier (i.e., `isid
 NodeTypeAbsoluteId = NewType('NodeTypeAbsoluteId', tuple[str, str])
 NodeTypeAbsoluteId.__doc__ = 'A unique identifier for a node type.'
 
-UniverseNode = NewType('UniverseNode', NoneType)
-UniverseNode.__doc__ = 'The UniverseNode Type. All Node Types are the implicit children of the Universe Node Type.'
+
+class UniverseNode:
+    """The UniverseNode Type. All Node Types are the implicit children of the Universe Node Type."""
+
 
 # A node in a graph.
 Node = Union[type[NamedTuple], NodeTuple]  # noqa: UP007
@@ -43,28 +44,28 @@ T = TypeVar('T')
 class Items(Protocol):
     """Protocol for callable objects that return an iterable of items."""
 
-    def __call__(self, **kwargs) -> Iterable[T]:  # pragma: no cover
+    def __call__(self, **kwargs: Any) -> Iterable[T]:  # pragma: no cover
         ...
 
 
 class Nodes(Protocol):
     """Protocol for callable objects that return an iterable of nodes."""
 
-    def __call__(self, **kwargs) -> Iterable[Node]:  # pragma: no cover
+    def __call__(self, **kwargs: Any) -> Iterable[Node]:  # pragma: no cover
         ...
 
 
 class Edges(Protocol):
     """Protocol for callable objects that return an iterable of edges."""
 
-    def __call__(self, **kwargs) -> Iterable[Edge]:  # pragma: no cover
+    def __call__(self, **kwargs: Any) -> Iterable[Edge]:  # pragma: no cover
         ...
 
 
 class Predicate(Protocol):
     """Protocol for callable objects that evaluate a condition."""
 
-    def __call__(self, **kwargs) -> bool:  # pragma: no cover
+    def __call__(self, **kwargs: Any) -> bool:  # pragma: no cover
         ...
 
 

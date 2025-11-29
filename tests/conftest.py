@@ -10,7 +10,8 @@ from collections.abc import Iterable
 import faker
 import pytest
 
-import graphinate
+from graphinate import model
+from graphinate.builders import D3Builder
 
 
 @pytest.fixture
@@ -45,9 +46,9 @@ def _ast_edge(parsed_ast: AST):
 
 @pytest.fixture
 def ast_graph_model():
-    graph_model = graphinate.model(name='AST Graph')
+    graph_model = model(name='AST Graph')
 
-    root_ast_node = ast.parse(inspect.getsource(graphinate.builders.D3Builder))
+    root_ast_node = ast.parse(inspect.getsource(D3Builder))
 
     def node_type(ast_node):
         return ast_node.__class__.__name__
@@ -90,7 +91,7 @@ def map_graph_model(country_count, city_count):
     country_ids = {str(c): None for c in range(1, country_count + 1)}
     city_ids = {str(c): random.choice(list(country_ids.keys())) for c in range(1, city_count + 1)}
 
-    graph_model = graphinate.model(name='Map')
+    graph_model = model(name='Map')
 
     faker.Faker.seed(0)
     fake = faker.Faker()
@@ -137,7 +138,7 @@ def map_graph_model(country_count, city_count):
 
 @pytest.fixture
 def octagonal_graph_model():
-    graph_model = graphinate.model(name="Octagonal Graph")
+    graph_model = model(name="Octagonal Graph")
     number_of_sides = 8
 
     # Register edges supplier function

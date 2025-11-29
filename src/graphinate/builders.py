@@ -23,7 +23,7 @@ import inspect
 import json
 import math
 import operator
-from abc import ABC
+from abc import ABC, abstractmethod
 from collections import Counter
 from collections.abc import Callable, Hashable, Mapping
 from datetime import datetime
@@ -40,6 +40,7 @@ from loguru import logger
 from mappingtools.transformers import simplify
 from networkx.classes.reportviews import EdgeDataView, EdgeView, NodeDataView, NodeView
 from strawberry.extensions import ParserCache, QueryDepthLimiter, ValidationCache
+from strawberry.types.base import StrawberryType
 
 from . import color, converters
 from .converters import decode_edge_id, decode_id, edge_label_converter, encode_edge_id, encode_id, node_label_converter
@@ -128,6 +129,7 @@ class Builder(ABC):
         self.model = model
         self.graph_type = graph_type
 
+    @abstractmethod
     def build(self, **kwargs) -> GraphRepresentation:
         """Build the graph representation.
 
@@ -135,13 +137,8 @@ class Builder(ABC):
 
         Args:
             **kwargs: Any additional parameters for the build process.
-
-        Returns:
-            GraphRepresentation: The constructed graph object.
         """
-
-        self._cached_build_kwargs = kwargs
-        return {}
+        self._cached_build_kwargs = MappingProxyType(kwargs)
 
 
 class NetworkxBuilder(Builder):
@@ -596,6 +593,7 @@ class GraphQLBuilder(NetworkxBuilder):
 
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
         super().__init__(model, graph_type)
+        self._node_value_graphql_type_supplier: Callable[[str], StrawberryType | None] | None = None
 
     @staticmethod
     def add_field_resolver(class_dict: dict, field_name: str, resolver: Callable, graphql_type: Any | None = None):
@@ -611,7 +609,7 @@ class GraphQLBuilder(NetworkxBuilder):
             'node_id': str(node),
             'type': node_data['type'],
             'label': node_data.get('label', node_label_converter(node)),
-            'value': [json.dumps(v, default=str) for v in node_data['value']],
+            'value': node_data['value'],
             'magnitude': node_data.get('magnitude', 1),
             'lineage': str(node_data['lineage']),
             'color': color.color_hex(node_data['color']),
@@ -728,6 +726,12 @@ class GraphQLBuilder(NetworkxBuilder):
                 '__doc__': f"A {class_name} Graph Node",
                 '__annotations__': {}
             }
+
+            if (
+                    self._node_value_graphql_type_supplier is not None
+                    and (value_graphql_type := self._node_value_graphql_type_supplier(node_type) is not None)
+            ):
+                class_dict['value'] = list[value_graphql_type]
 
             self.add_field_resolver(class_dict, 'neighbors', neighbors_resolver())
             self.add_field_resolver(class_dict, 'edges', edges_resolver())
@@ -892,16 +896,22 @@ class GraphQLBuilder(NetworkxBuilder):
             ]
         )
 
-    def build(self, **kwargs) -> GraphRepresentation:
+    def build(self,
+              node_value_graphql_type_supplier: Callable[[str], StrawberryType | None] | None = None,
+              **kwargs) -> GraphRepresentation:
         """
 
         Args:
+            node_value_graphql_type_supplier: Callable[[str], StrawberryType]]
             **kwargs:
 
         Returns:
             Strawberry GraphQL Schema
         """
         super().build(**kwargs)
+
+        self._node_value_graphql_type_supplier = node_value_graphql_type_supplier
+
         return self.schema()
 
 

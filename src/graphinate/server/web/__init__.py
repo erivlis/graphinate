@@ -3,9 +3,11 @@ import pathlib
 from collections.abc import Mapping
 
 
-def current_file() -> pathlib.Path:
+def current_file() -> pathlib.Path | None:
     """Returns current file name"""
-    return pathlib.Path(inspect.getfile(inspect.currentframe().f_back))
+    if current_frame := inspect.currentframe():
+        return pathlib.Path(inspect.getfile(current_frame.f_back))
+    return None
 
 
 paths_mapping: Mapping[str, pathlib.Path] = {p.name: p for p in current_file().parent.iterdir() if p.is_dir()}
