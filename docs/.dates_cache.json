@@ -1,90 +1,90 @@
 {
   "acknowledgements.md": {
     "created": "2023-08-20T00:21:55.621436",
-    "modified": "2025-11-30T00:38:09.973303"
+    "modified": "2025-11-30T00:47:51.552417"
   },
   "development.md": {
     "created": "2025-11-29T23:49:45.246681",
-    "modified": "2025-11-30T00:38:09.974301"
+    "modified": "2025-11-30T00:51:03.743587"
   },
   "index.md": {
     "created": "2023-08-15T00:05:21.586874",
-    "modified": "2025-03-12T00:40:46.459147"
+    "modified": "2025-11-30T00:47:51.562002"
   },
   "introduction.md": {
     "created": "2023-08-19T23:54:18.668094",
-    "modified": "2025-08-22T22:30:50.705536"
+    "modified": "2025-11-30T00:51:18.857368"
   },
   "start.md": {
     "created": "2023-08-20T00:07:42.683716",
-    "modified": "2025-03-11T23:45:05.567864"
+    "modified": "2025-11-30T00:47:51.614076"
   },
   "tutorial.md": {
     "created": "2025-02-26T00:03:30.194156",
-    "modified": "2025-03-12T00:12:38.290310"
+    "modified": "2025-11-30T00:47:51.998515"
   },
   "examples\\code.md": {
     "created": "2023-08-20T00:09:32.677003",
-    "modified": "2025-03-07T10:14:05.629365"
+    "modified": "2025-11-30T00:50:10.125701"
   },
   "examples\\github.md": {
     "created": "2023-10-05T11:43:15.316025",
-    "modified": "2025-01-28T23:47:41.840220"
+    "modified": "2025-11-30T00:50:14.886832"
   },
   "examples\\math.md": {
     "created": "2023-10-05T11:43:22.861997",
-    "modified": "2025-01-28T23:54:42.968373"
+    "modified": "2025-11-30T00:50:18.087888"
   },
   "examples\\social.md": {
     "created": "2025-02-24T23:49:35.972953",
-    "modified": "2025-03-11T23:47:36.266891"
+    "modified": "2025-11-30T00:50:23.539073"
   },
   "examples\\system.md": {
     "created": "2024-03-27T01:28:38.922865",
-    "modified": "2024-03-27T01:51:20.126046"
+    "modified": "2025-11-30T00:50:29.995741"
   },
   "examples\\web.md": {
     "created": "2023-10-05T11:43:30.550657",
-    "modified": "2025-03-12T00:42:43.742512"
+    "modified": "2025-11-30T00:50:34.220260"
   },
   "reference\\SUMMARY.md": {
     "created": "2025-03-08T20:51:52.801367",
-    "modified": "2025-03-08T20:51:52.807370"
+    "modified": "2025-11-30T00:47:52.021968"
   },
   "usage\\cli.md": {
     "created": "2023-09-27T21:23:44.140564",
-    "modified": "2025-03-01T23:56:33.595498"
+    "modified": "2025-11-30T00:50:45.042102"
   },
   "usage\\lib.md": {
     "created": "2023-09-27T21:23:44.133584",
-    "modified": "2025-03-12T00:30:12.961397"
+    "modified": "2025-11-30T00:50:48.229301"
   },
   "reference\\graphinate\\builders.md": {
     "created": "2025-03-08T20:51:52.788270",
-    "modified": "2025-03-08T20:51:52.792269"
+    "modified": "2025-11-30T00:47:52.033968"
   },
   "reference\\graphinate\\index.md": {
     "created": "2025-03-08T20:51:52.786270",
-    "modified": "2025-03-08T20:51:52.788270"
+    "modified": "2025-11-30T00:47:52.035968"
   },
   "reference\\graphinate\\modeling.md": {
     "created": "2025-03-08T20:51:52.792269",
-    "modified": "2025-03-08T20:51:52.795269"
+    "modified": "2025-11-30T00:47:52.036968"
   },
   "reference\\graphinate\\typing.md": {
     "created": "2025-03-08T20:51:52.800360",
-    "modified": "2025-03-08T20:51:52.805368"
+    "modified": "2025-11-30T00:47:52.038968"
   },
   "reference\\graphinate\\renderers\\graphql.md": {
     "created": "2025-03-08T20:51:52.796358",
-    "modified": "2025-03-08T20:51:52.800360"
+    "modified": "2025-11-30T00:47:52.040973"
   },
   "reference\\graphinate\\renderers\\index.md": {
     "created": "2025-03-08T20:51:52.794269",
-    "modified": "2025-03-08T20:51:52.798361"
+    "modified": "2025-11-30T00:47:52.041974"
   },
   "reference\\graphinate\\renderers\\matplotlib.md": {
     "created": "2025-03-08T20:51:52.798361",
-    "modified": "2025-03-08T20:51:52.803367"
+    "modified": "2025-11-30T00:47:52.043973"
   }
 }

@@ -34,7 +34,7 @@ N: int = 8
 
 # First Define a GraphModel instance.
 # It will be used to hold the graph definitions
-graph_model: graphinate.GraphModel = graphinate.model(name="Octagonal Graph")
+graph_model: graphinate.GraphModel = graphinate.model(name='Octagonal Graph')
 
 
 # Register in the Graph Model the edges' supplier generator function

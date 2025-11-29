@@ -27,11 +27,7 @@ import musicbrainzngs
 
 
 def initialize_musicbrainz():
-    musicbrainzngs.set_useragent(
-        "MusicArtistGraph",
-        "0.1.0",
-        "https://github.com/erivlis/graphinate"
-    )
+    musicbrainzngs.set_useragent('MusicArtistGraph', '0.1.0', 'https://github.com/erivlis/graphinate')
 
 
 initialize_musicbrainz()
@@ -75,7 +71,7 @@ This function will be used to create a Graph Model.
 
 ```python
 def music_graph_model(name: str, max_depth: int = 0) -> graphinate.GraphModel:
-    graph_model = graphinate.model(f"{name.capitalize()} Graph")
+    graph_model = graphinate.model(f'{name.capitalize()} Graph')
 ```
 
 ### Step 3.3: Search for the Root Artist
@@ -182,7 +178,7 @@ artists_cache = diskcache.Cache(directory=cache_dir(), eviction_policy='none')
 
 
 def music_graph_model(name: str, max_depth: int = 0):
-    graph_model = graphinate.model(f"{name.capitalize()} Graph")
+    graph_model = graphinate.model(f'{name.capitalize()} Graph')
 
     result = musicbrainzngs.search_artists(query=name, strict=True, artist=name)
     sleep(1)  # Sleep for 1 second to avoid rate limiting
@@ -192,7 +188,8 @@ def music_graph_model(name: str, max_depth: int = 0):
         artist_id = artist.get('id')
         if artist_id not in artists_cache:
             artists_cache[artist_id] = musicbrainzngs.get_artist_by_id(id=artist_id, includes=['artist-rels']).get(
-                'artist')
+                'artist'
+            )
             sleep(0.1)  # Sleep for 0.1 second to avoid rate limiting
 
         artist = artists_cache.get(artist_id)
@@ -210,8 +207,12 @@ def music_graph_model(name: str, max_depth: int = 0):
     def artist_type(value):
         return value.get('type', '_UNKNOWN_')
 
-    @graph_model.node(artist_type, key=operator.itemgetter('id'), label=operator.itemgetter('name'),
-                      multiplicity=graphinate.Multiplicity.FIRST)
+    @graph_model.node(
+        artist_type,
+        key=operator.itemgetter('id'),
+        label=operator.itemgetter('name'),
+        multiplicity=graphinate.Multiplicity.FIRST,
+    )
     def node():
         yielded = set()
         for a, b in artists(None, root_artist, 0):
@@ -248,15 +249,50 @@ We will define a list of artist names to be displayed in the listbox.
 
 ```python
 artist_names = [
-    'Alice in Chains', 'Beatles', 'Caravan', 'Charles Mingus', 'Dave Brubeck',
-    'Dave Douglas', 'David Bowie', 'Deep Purple', 'Dire Straits', 'Emerson, Lake & Palmer',
-    'Foo Fighters', 'Frank Zappa', 'Genesis', 'Gentle Giant', 'Herbie Hancock',
-    'Jethro Tull', 'John Coltrane', 'John Scofield', 'John Zorn', 'Ken Vandermark',
-    'King Crimson', 'Led Zeppelin', 'Mahavishnu Orchestra', 'Miles Davis', 'Nirvana',
-    'Ornette Coleman', 'Paul McCartney', 'Pearl Jam', 'Pink Floyd', 'Police',
-    'Porcupine Tree', 'Radiohead', 'Red Hot Chili Peppers', 'Return to Forever', 'Rush',
-    'Smashing Pumpkins', 'Soft Machine', 'Soundgarden', 'Stone Temple Pilots', 'System of a Down',
-    'Thelonious Monk', 'Weather Report', 'Wings', 'Yes'
+    'Alice in Chains',
+    'Beatles',
+    'Caravan',
+    'Charles Mingus',
+    'Dave Brubeck',
+    'Dave Douglas',
+    'David Bowie',
+    'Deep Purple',
+    'Dire Straits',
+    'Emerson, Lake & Palmer',
+    'Foo Fighters',
+    'Frank Zappa',
+    'Genesis',
+    'Gentle Giant',
+    'Herbie Hancock',
+    'Jethro Tull',
+    'John Coltrane',
+    'John Scofield',
+    'John Zorn',
+    'Ken Vandermark',
+    'King Crimson',
+    'Led Zeppelin',
+    'Mahavishnu Orchestra',
+    'Miles Davis',
+    'Nirvana',
+    'Ornette Coleman',
+    'Paul McCartney',
+    'Pearl Jam',
+    'Pink Floyd',
+    'Police',
+    'Porcupine Tree',
+    'Radiohead',
+    'Red Hot Chili Peppers',
+    'Return to Forever',
+    'Rush',
+    'Smashing Pumpkins',
+    'Soft Machine',
+    'Soundgarden',
+    'Stone Temple Pilots',
+    'System of a Down',
+    'Thelonious Monk',
+    'Weather Report',
+    'Wings',
+    'Yes',
 ]
 ```
 
@@ -303,15 +339,50 @@ if __name__ == '__main__':
     from gui import ListboxChooser
 
     artist_names = [
-        'Alice in Chains', 'Beatles', 'Caravan', 'Charles Mingus', 'Dave Brubeck',
-        'Dave Douglas', 'David Bowie', 'Deep Purple', 'Dire Straits', 'Emerson, Lake & Palmer',
-        'Foo Fighters', 'Frank Zappa', 'Genesis', 'Gentle Giant', 'Herbie Hancock',
-        'Jethro Tull', 'John Coltrane', 'John Scofield', 'John Zorn', 'Ken Vandermark',
-        'King Crimson', 'Led Zeppelin', 'Mahavishnu Orchestra', 'Miles Davis', 'Nirvana',
-        'Ornette Coleman', 'Paul McCartney', 'Pearl Jam', 'Pink Floyd', 'Police',
-        'Porcupine Tree', 'Radiohead', 'Red Hot Chili Peppers', 'Return to Forever', 'Rush',
-        'Smashing Pumpkins', 'Soft Machine', 'Soundgarden', 'Stone Temple Pilots', 'System of a Down',
-        'Thelonious Monk', 'Weather Report', 'Wings', 'Yes'
+        'Alice in Chains',
+        'Beatles',
+        'Caravan',
+        'Charles Mingus',
+        'Dave Brubeck',
+        'Dave Douglas',
+        'David Bowie',
+        'Deep Purple',
+        'Dire Straits',
+        'Emerson, Lake & Palmer',
+        'Foo Fighters',
+        'Frank Zappa',
+        'Genesis',
+        'Gentle Giant',
+        'Herbie Hancock',
+        'Jethro Tull',
+        'John Coltrane',
+        'John Scofield',
+        'John Zorn',
+        'Ken Vandermark',
+        'King Crimson',
+        'Led Zeppelin',
+        'Mahavishnu Orchestra',
+        'Miles Davis',
+        'Nirvana',
+        'Ornette Coleman',
+        'Paul McCartney',
+        'Pearl Jam',
+        'Pink Floyd',
+        'Police',
+        'Porcupine Tree',
+        'Radiohead',
+        'Red Hot Chili Peppers',
+        'Return to Forever',
+        'Rush',
+        'Smashing Pumpkins',
+        'Soft Machine',
+        'Soundgarden',
+        'Stone Temple Pilots',
+        'System of a Down',
+        'Thelonious Monk',
+        'Weather Report',
+        'Wings',
+        'Yes',
     ]
 
     listbox_chooser = ListboxChooser('Choose Artist/s', {name: name for name in artist_names})
