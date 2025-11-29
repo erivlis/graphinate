@@ -103,6 +103,7 @@ nav:
   # - Gallery: gallery/
   # defer to gen-files + literate-nav
   - Reference: reference/
+  - Development: development.md
   - Acknowledgements: acknowledgements.md
 
 
