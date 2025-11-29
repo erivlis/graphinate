@@ -4,6 +4,7 @@ from typing import Union
 
 import matplotlib as mpl
 import networkx as nx
+import numpy as np
 
 
 @functools.lru_cache
@@ -20,22 +21,32 @@ def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = 
         The graph should have a 'node_types' attribute containing the types of nodes.
         The colormap can be specified as a string or a matplotlib colormap object.
     """
+    if not graph.nodes:
+        return {}
 
-    node_types = graph.graph.get('node_types', {})
+    node_type_keys = graph.graph.get('node_types', {}).keys()
 
-    if len(node_types) > 1 and 'node' in node_types:
-        node_types.pop('node')
-
-    type_lookup = {t: i for i, t in enumerate(graph.graph['node_types'].keys())}
-    color_lookup = {node: type_lookup.get(data.get('type'), 0) for node, data in graph.nodes.data()}
-    if len(color_lookup) > 1:
-        low, *_, high = sorted(color_lookup.values())
+    if len(node_type_keys) > 1 and 'node' in node_type_keys:
+        # Create a new list of keys, preserving order, but excluding 'node'
+        final_keys = [k for k in node_type_keys if k != 'node']
     else:
-        low = high = 0
+        final_keys = list(node_type_keys)
+
+    type_lookup = {t: i for i, t in enumerate(final_keys)}
+
+    color_values_ndarray = np.fromiter(
+        (type_lookup.get(graph.nodes[node].get('type'), 0) for node in graph.nodes),
+        dtype=int,
+        count=len(graph),
+    )
+
+    low, high = color_values_ndarray.min(), color_values_ndarray.max()
+
     norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
     mapper = mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
-    node_colors = {n: mapper.to_rgba(i) for n, i in color_lookup.items()}
-    return node_colors
+    colors = mapper.to_rgba(color_values_ndarray)
+
+    return dict(zip(graph.nodes, colors))
 
 
 def color_hex(color: Union[str, Sequence[Union[float, int]]]) -> Union[str, Sequence[Union[float, int]]]:
