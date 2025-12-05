@@ -668,7 +668,7 @@ class GraphQLBuilder(NetworkxBuilder):
             self.GraphNodeType._member_map_[v] = v
             self.GraphNodeType._value2member_map_[v] = v
 
-            self.GraphNodeType._enum_definition.values.append(
+            self.GraphNodeType.__strawberry_definition__.values.append(
                 EnumValue(
                     name=v,
                     value=v,
