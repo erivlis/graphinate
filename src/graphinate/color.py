@@ -39,14 +39,17 @@ def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = 
         dtype=int,
         count=len(graph),
     )
-
-    low, high = color_values_ndarray.min(), color_values_ndarray.max()
+    if len(color_values_ndarray) > 1:
+        low, high = color_values_ndarray.min(), color_values_ndarray.max()
+    else:
+        low = high = 0
 
     norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
     mapper = mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
-    colors = mapper.to_rgba(color_values_ndarray)
+    colors = mapper.to_rgba(color_values_ndarray).tolist()
 
-    return dict(zip(graph.nodes, colors))
+    color_mapping = dict(zip(graph.nodes, colors))
+    return color_mapping
 
 
 def color_hex(color: Union[str, Sequence[Union[float, int]]]) -> Union[str, Sequence[Union[float, int]]]:
