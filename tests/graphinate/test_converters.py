@@ -45,10 +45,23 @@ def test_infnum_to_value(case, expected):
     assert actual == expected
 
 
-@pytest.mark.parametrize('case', [0, None, "", False])
-def test_label_converter__value__falsy(case):
-    actual = converters.label_converter(case, delimiter=constants.DEFAULT_NODE_DELIMITER)
-    assert actual == case
+label_converter_cases = [
+    (None, constants.DEFAULT_NODE_DELIMITER, None),
+    (0, constants.DEFAULT_NODE_DELIMITER, "0"),
+    (False, constants.DEFAULT_NODE_DELIMITER, "False"),
+    ("", constants.DEFAULT_NODE_DELIMITER, ""),
+    ("hello", constants.DEFAULT_NODE_DELIMITER, "hello"),
+    (123, constants.DEFAULT_NODE_DELIMITER, "123"),
+    (True, constants.DEFAULT_NODE_DELIMITER, "True"),
+    ((1, "a", True), "-", "1-a-True"),
+    (("node1", 1), "|", "node1|1"),
+]
+
+
+@pytest.mark.parametrize(('case', 'delimiter', 'expected'), label_converter_cases)
+def test_label_converter(case, delimiter, expected):
+    actual = converters.label_converter(case, delimiter=delimiter)
+    assert actual == expected
 
 
 def test_encoding():
