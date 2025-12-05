@@ -3,7 +3,7 @@ import base64
 import decimal
 import math
 from types import MappingProxyType
-from typing import Any, NewType, Union
+from typing import Any, Union
 
 import strawberry
 
@@ -22,40 +22,39 @@ __all__ = [
     'value_to_infnum',
 ]
 
-InfNumber = NewType("InfNumber", Union[float, int, decimal.Decimal])
+InfNumber = Union[float, int, decimal.Decimal]
 
-INFINITY_MAPPING = MappingProxyType({
+INFINITY_MAPPING: MappingProxyType[str, InfNumber] = MappingProxyType({
     'Infinity': math.inf,
     '+Infinity': math.inf,
     '-Infinity': -math.inf
 })
 
-MATH_INF_MAPPING = MappingProxyType({
+MATH_INF_MAPPING: MappingProxyType[InfNumber, str] = MappingProxyType({
     math.inf: 'Infinity',
     -math.inf: '-Infinity'
 })
 
 
-def value_to_infnum(value: any) -> InfNumber:
+def value_to_infnum(value: str | InfNumber) -> InfNumber:
     return INFINITY_MAPPING.get(value, value)
 
 
-def infnum_to_value(value: InfNumber):
+def infnum_to_value(value: InfNumber) -> InfNumber | str:
     return MATH_INF_MAPPING.get(value, value)
 
 
-def label_converter(value, delimiter: str):
-    if value:
+def label_converter(value: Any, delimiter: str) -> str | None:
+    if value is not None:
         return delimiter.join(str(v) for v in value) if isinstance(value, tuple) else str(value)
-
     return value
 
 
-def node_label_converter(value):
+def node_label_converter(value: Any) -> str | None:
     return label_converter(value, delimiter=DEFAULT_NODE_DELIMITER)
 
 
-def edge_label_converter(value):
+def edge_label_converter(value: Any) -> str | None:
     return label_converter(tuple(node_label_converter(n) for n in value), delimiter=DEFAULT_EDGE_DELIMITER)
 
 
@@ -85,11 +84,11 @@ def decode_id(graphql_node_id: strawberry.ID,
     return decode(graphql_node_id, encoding)
 
 
-def encode_edge_id(edge: tuple, encoding: str = 'utf-8'):
+def encode_edge_id(edge: tuple, encoding: str = 'utf-8') -> str:
     encoded_edge = tuple(encode_id(n, encoding) for n in edge)
     return encode_id(encoded_edge, encoding)
 
 
-def decode_edge_id(graphql_edge_id: strawberry.ID, encoding: str = 'utf-8'):
+def decode_edge_id(graphql_edge_id: strawberry.ID, encoding: str = 'utf-8') -> tuple:
     encoded_edge: tuple = decode_id(graphql_edge_id, encoding)
     return tuple(decode_id(enc_node) for enc_node in encoded_edge)

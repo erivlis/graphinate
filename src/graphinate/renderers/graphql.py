@@ -1,5 +1,6 @@
 import contextlib
 import webbrowser
+from typing import Any
 
 import strawberry
 from starlette.applications import Starlette
@@ -55,7 +56,9 @@ def _graphql_app(graphql_schema: strawberry.Schema) -> strawberry.asgi.GraphQL:
     return graphql_app
 
 
-def _starlette_app(graphql_app: strawberry.asgi.GraphQL | None = None, port: int = DEFAULT_PORT, **kwargs) -> Starlette:
+def _starlette_app(graphql_app: strawberry.asgi.GraphQL | None = None,
+                   port: int = DEFAULT_PORT,
+                   **kwargs: Any) -> Starlette:
     def open_url(endpoint):
         webbrowser.open(f'http://localhost:{port}/{endpoint}')
 
@@ -88,7 +91,7 @@ def _starlette_app(graphql_app: strawberry.asgi.GraphQL | None = None, port: int
     return app
 
 
-def server(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT, **kwargs):
+def server(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT, **kwargs: Any):
     """
     Args:
         graphql_schema: The Strawberry GraphQL schema.

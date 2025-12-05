@@ -1,49 +1,54 @@
 import importlib
 import json
 from pathlib import Path
+from types import ModuleType
 from typing import Any
 
 import click
+from strawberry import Schema
 
-from graphinate import GraphModel, builders, graphql
-from graphinate.renderers.graphql import DEFAULT_PORT
+from . import GraphModel, builders, graphql
+from .renderers.graphql import DEFAULT_PORT
 
 
-def _get_kwargs(ctx) -> dict:
+def _get_kwargs(ctx: click.Context) -> dict:
     return dict([item.strip('--').split('=') for item in ctx.args if item.startswith("--")])  # NOSONAR
 
 
-def import_from_string(import_str: Any) -> Any:
+def import_from_string(import_str: str) -> GraphModel:
     """Import an object from a string reference {module-name}:{variable-name}
-    For example, if `model=GraphModel()` is defined in app.py file, then the
-    reference would be app:model.
+    For example, if `model: GraphModel = GraphModel(...)` is a variable defined in an app.py file,
+     then the reference would be app:model.
     """
 
     if not isinstance(import_str, str):
-        return import_str
+        raise ImportFromStringError(f"{import_str} is not a string")
 
-    module_str, _, attrs_str = import_str.partition(":")
-    if not module_str or not attrs_str:
+    module_name, _, attrs_names_str = import_str.partition(':')
+    if not module_name or not attrs_names_str:
         message = f"Import string '{import_str}' must be in format '<module>:<attribute>'."
         raise ImportFromStringError(message)
 
     try:
-        module = importlib.import_module(module_str)
+        module: ModuleType = importlib.import_module(module_name)
     except ModuleNotFoundError as exc:
-        if exc.name != module_str:
+        if exc.name != module_name:
             raise exc from None
-        message = f"Could not import module '{module_str}'."
+        message = f"Could not import module '{module_name}'."
         raise ImportFromStringError(message) from exc
 
-    instance = module
+    instance_candidate: ModuleType | GraphModel = module
     try:
-        for attr_str in attrs_str.split("."):
-            instance = getattr(instance, attr_str)
-    except AttributeError as exc:
-        message = f"Attribute '{attrs_str}' not found in module '{module_str}'."
-        raise ImportFromStringError(message) from exc
+        for attr_name in attrs_names_str.split('.'):
+            instance_candidate = getattr(instance_candidate, attr_name)
+    except AttributeError as e:
+        message = f"Attribute '{attrs_names_str}' not found in import string reference '{import_str}'."
+        raise ImportFromStringError(message) from e
 
-    return instance
+    if isinstance(instance_candidate, GraphModel):
+        return instance_candidate
+    else:
+        raise ImportFromStringError(f"GraphModel instance cannot be determined from reference '{import_str}'")
 
 
 class ImportFromStringError(Exception):
@@ -53,12 +58,15 @@ class ImportFromStringError(Exception):
 class GraphModelType(click.ParamType):
     name = "MODEL"
 
-    def convert(self, value, param, ctx) -> GraphModel:
+    def convert(self,
+                value: Any,
+                param: click.Parameter | None,
+                ctx: click.Context) -> GraphModel:  # type: ignore[override]
         if isinstance(value, GraphModel):
             return value
 
         try:
-            return import_from_string(value) if isinstance(value, str) else value
+            return import_from_string(value)
         except Exception as e:
             self.fail(str(e))
 
@@ -72,14 +80,14 @@ model_option = click.option('-m', '--model',
 
 @click.group()
 @click.pass_context
-def cli(ctx):
+def cli(ctx: click.Context) -> None:
     ctx.ensure_object(dict)
 
 
 @cli.command()
 @model_option
 @click.pass_context
-def save(ctx, model: GraphModel):
+def save(ctx: click.Context, model: GraphModel) -> None:
     file_path = Path(f"{model.name}.d3_graph.json")
 
     if file_path.is_absolute():
@@ -102,7 +110,7 @@ def save(ctx, model: GraphModel):
 @click.option('-p', '--port', type=int, default=DEFAULT_PORT, help='Port number.')
 @click.option('-b', '--browse', type=bool, default=False, help='Open server address in browser.')
 @click.pass_context
-def server(ctx, model: GraphModel, port: int, browse: bool):
+def server(ctx: click.Context, model: GraphModel, port: int, browse: bool) -> None:
     message = """
      ██████╗ ██████╗  █████╗ ██████╗ ██╗  ██╗██╗███╗   ██╗ █████╗ ████████╗███████╗
     ██╔════╝ ██╔══██╗██╔══██╗██╔══██╗██║  ██║██║████╗  ██║██╔══██╗╚══██╔══╝██╔════╝
@@ -111,5 +119,5 @@ def server(ctx, model: GraphModel, port: int, browse: bool):
     ╚██████╔╝██║  ██║██║  ██║██║     ██║  ██║██║██║ ╚████║██║  ██║   ██║   ███████╗
      ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝   ╚══════╝"""
     click.echo(message)
-    schema = builders.GraphQLBuilder(model).build()
+    schema: Schema = builders.GraphQLBuilder(model).build()
     graphql.server(schema, port=port, browse=browse, **_get_kwargs(ctx))

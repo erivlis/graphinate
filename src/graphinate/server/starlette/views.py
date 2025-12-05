@@ -1,14 +1,16 @@
 import functools
 
+from starlette.requests import Request
 from starlette.responses import FileResponse
 from starlette.routing import Route
 
 from ..web import get_static_path
 
 
-def favicon(request):
+def favicon(request: Request) -> FileResponse:
     path = get_static_path('images/logo-128.png').absolute().as_posix()
     return FileResponse(path)
+
 
 @functools.cache
 def favicon_route() -> Route:

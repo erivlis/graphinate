@@ -1,3 +1,5 @@
+from typing import Any
+
 import networkx as nx
 from matplotlib import pyplot
 
@@ -7,7 +9,7 @@ from ..color import node_color_mapping
 def draw(graph: nx.Graph,
          with_node_labels: bool = True,
          with_edge_labels: bool = False,
-         **kwargs):
+         **kwargs: Any) -> None:
     """
     Draws the given networkx graph with optional node and edge labels.
 
@@ -55,7 +57,7 @@ def draw(graph: nx.Graph,
 def plot(graph: nx.Graph,
          with_node_labels: bool = True,
          with_edge_labels: bool = False,
-         **kwargs):
+         **kwargs: Any) -> None:
     """
     Plots the given networkx graph with optional node and edge labels.
 

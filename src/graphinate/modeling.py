@@ -13,7 +13,7 @@ class GraphModelError(Exception):
     pass
 
 
-def element(element_type: str | None, field_names: Iterable[str] | None = None) -> Callable[[...], Element]:
+def element(element_type: str | None, field_names: Iterable[str] | None = None) -> Callable[[], Element]:
     """Graph Element Supplier Callable
 
     Args:
@@ -96,7 +96,7 @@ class NodeModel:
     """
 
     type: str
-    parent_type: str | None = UniverseNode
+    parent_type: str | UniverseNode | None = UniverseNode
     parameters: set[str] | None = None
     label: Callable[[Any], str | None] = None
     uniqueness: bool = True
@@ -121,11 +121,11 @@ class GraphModel:
     def __init__(self, name: str):
         self.name: str = name
         self._node_models: dict[NodeTypeAbsoluteId, list[NodeModel]] = defaultdict(list)
-        self._node_children: dict[str, list[str]] = defaultdict(list)
+        self._node_children: dict[str, list[NodeModel]] = defaultdict(list)
         self._edge_generators: dict[str, list[Callable[[], Iterable[Edge]]]] = defaultdict(list)
         self._networkx_graph = None
 
-    def __add__(self, other: 'GraphModel'):
+    def __add__(self, other: 'GraphModel') -> 'GraphModel':
         graph_model = GraphModel(name=f"{self.name} + {other.name}")
         for m in (self, other):
             for k, v in m._node_models.items():
@@ -224,7 +224,7 @@ class GraphModel:
 
             model_type = f.__name__ if callable(node_type) else node_type
 
-            def node_generator(**kwargs) -> Iterable[Node]:
+            def node_generator(**kwargs: Any) -> Iterable[Node]:
                 yield from elements(f(**kwargs), node_type, key=key, value=value)
 
             parameters = inspect.getfullargspec(f).args
@@ -281,7 +281,7 @@ class GraphModel:
                 'weight': weight
             }
 
-            def edge_generator(**kwargs) -> Iterable[Edge]:
+            def edge_generator(**kwargs: Any) -> Iterable[Edge]:
                 yield from elements(f(**kwargs), edge_type, **getters)
 
             self._edge_generators[model_type].append(edge_generator)

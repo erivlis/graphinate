@@ -1,7 +1,7 @@
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 
-from starlette.routing import Mount, Route
+from starlette.routing import BaseRoute, Mount
 from starlette.staticfiles import StaticFiles
 
 from ..web import paths_mapping
@@ -19,9 +19,12 @@ def _mount_static_files(named_paths: Mapping[str, Path]) -> list[Mount]:
     return mounts
 
 
-def routes():
-    route_list: list[Mount | Route] = _mount_static_files(paths_mapping)
-    route_list.append(favicon_route())
+def routes() -> Sequence[BaseRoute]:
+    route_list: list[BaseRoute] = [
+        *_mount_static_files(paths_mapping),
+        favicon_route()
+    ]
+
     return route_list
 
 

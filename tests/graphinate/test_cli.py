@@ -50,7 +50,8 @@ def test_import_from_string():
 
 import_from_string_error_cases = [
     ("does_not_exist:model", "Could not import module 'does_not_exist'."),
-    ("polygonal_graph:does_not_exist", "Attribute 'does_not_exist' not found in module 'polygonal_graph'."),
+    ("polygonal_graph:does_not_exist",
+     "Attribute 'does_not_exist' not found in import string reference 'polygonal_graph:does_not_exist'."),
     ("wrong_format", "Import string 'wrong_format' must be in format '<module>:<attribute>'.")
 ]
 
@@ -70,5 +71,5 @@ import_from_string_not_str_cases = [
 
 @pytest.mark.parametrize('case', import_from_string_not_str_cases)
 def test_import_from_string__not_str(case):
-    actual = import_from_string(case)
-    assert actual == case
+    with pytest.raises(ImportFromStringError, match=f"{case} is not a string"):
+        _actual = import_from_string(case)
