@@ -118,6 +118,8 @@ pythonpath = ["src"]
 testpaths = ["tests"]
 
 [tool.coverage.report]
+show_missing = true
+fail_under = 90
 exclude_also = [
     "...",
     "def __repr__",
@@ -132,6 +134,8 @@ exclude_also = [
     "@(abc\\.)?abstractmethod"
 ]
 
+[tool.coverage.run]
+branch = true
 
 [tool.black]
 line-length = 120
