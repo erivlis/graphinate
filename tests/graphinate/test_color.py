@@ -28,8 +28,8 @@ def test_color_hex(color, expected_color_hex):
 
 def test_color_hex_error():
     with pytest.raises(
-        ValueError,
-        match='Input values should either be a float between 0 and 1 or an int between 0 and 255',
+            ValueError,
+            match='Input values should either be a float between 0 and 1 or an int between 0 and 255',
     ):
         _ = color_hex(['a', 'b', 'c'])
 
@@ -111,3 +111,40 @@ def test_node_color_mapping_no_node_types_in_graph():
     # Without `node_types`, all nodes get the default color (index 0)
     assert len(color_map) == 2
     assert np.array_equal(color_map['u1'], color_map['p1'])
+
+
+def test_node_color_mapping_equivalence():
+    # arrange
+    g = nx.Graph()
+    g.graph['node_types'] = {'user': {}, 'post': {}, 'comment': {}}
+    g.add_node('u1', type='user')
+    g.add_node('u2', type='user')
+    g.add_node('p1', type='post')
+    g.add_node('c1', type='comment')
+    g.add_node('n1')  # node with no type
+
+    # act
+    color_map = node_color_mapping(g)
+
+    # assert
+    assert set(color_map.keys()) == {'u2', 'u1', 'p1', 'n1', 'c1'}
+    assert len({tuple(v) for v in color_map.values()}) == 3
+
+
+def test_color_hex_compatibility_with_node_color_mapping_outputs():
+    # arrange
+    g = nx.Graph()
+    g.graph['node_types'] = {'user': {}, 'post': {}}
+    g.add_node('u1', type='user')
+    g.add_node('p1', type='post')
+
+    # act
+    color_map = node_color_mapping(g)
+
+    # assert
+    # Check that color_hex works for the new function's output
+    for color in color_map.values():
+        hex_color = color_hex(color)
+        assert isinstance(hex_color, str)
+        assert hex_color.startswith('#')
+        assert len(hex_color) == 7
