@@ -1,3 +1,14 @@
+## v0.11.1 (2025-12-05)
+
+### Fix
+
+- **builders**: update attribute reference to `__strawberry_definition__` for enum values
+- **color**: handle single-element color arrays and ensure consistent output type
+
+### Refactor
+
+- streamline imports in `__init__.py` for consistency and clarity
+
 ## v0.11.0 (2025-11-30)
 
 ### Feat
