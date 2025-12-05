@@ -1,5 +1,6 @@
 from . import builders, renderers
-from .builders import GraphType, build
+from .builders import build
+from .enums import GraphType
 from .modeling import GraphModel, Multiplicity, model
 from .renderers import graphql, matplotlib, mermaid
 

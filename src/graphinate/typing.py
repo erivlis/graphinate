@@ -12,6 +12,10 @@ Attributes:
 from collections.abc import Callable, Iterable
 from typing import Any, NamedTuple, NewType, Protocol, TypeAlias, TypeVar, Union
 
+import networkx as nx
+import networkx_mermaid as nxm
+import strawberry
+
 NodeTuple: TypeAlias = tuple[str, Any]
 EdgeTuple: TypeAlias = tuple[str, str, Any]
 
@@ -74,3 +78,6 @@ class Supplier(Protocol):
 
     def __call__(self) -> Any:  # pragma: no cover
         ...
+
+
+GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema, nxm.typing.MermaidDiagram, str]  # noqa: UP007

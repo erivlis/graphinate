@@ -5,6 +5,7 @@ import pytest
 
 import graphinate
 import graphinate.builders
+import graphinate.enums
 from graphinate import GraphType
 from graphinate.modeling import GraphModel, Multiplicity
 from graphinate.typing import UniverseNode
@@ -40,7 +41,7 @@ def test_networkx_builder__empty_model():
     assert graph.graph['name'] == name
 
 
-@pytest.mark.parametrize('graph_type', list(graphinate.GraphType))
+@pytest.mark.parametrize('graph_type', list(graphinate.enums.GraphType))
 def test_networkx_builder__graph_type(graph_type):
     # arrange
     name = str(graph_type)
@@ -50,9 +51,9 @@ def test_networkx_builder__graph_type(graph_type):
     def edge():
         for i in range(5):
             yield {'source': i, 'target': i + 1}
-            if graph_type in (graphinate.GraphType.DiGraph, graphinate.GraphType.MultiDiGraph):
+            if graph_type in (graphinate.enums.GraphType.DiGraph, graphinate.enums.GraphType.MultiDiGraph):
                 yield {'source': i + 1, 'target': i}
-            if graph_type in (graphinate.GraphType.MultiGraph, graphinate.GraphType.MultiDiGraph):
+            if graph_type in (graphinate.enums.GraphType.MultiGraph, graphinate.enums.GraphType.MultiDiGraph):
                 yield {'source': i, 'target': i + 1}
 
     # act
