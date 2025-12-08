@@ -1,3 +1,9 @@
+## v0.12.0 (2025-12-09)
+
+### Feat
+
+- enhance D3 JSON output by converting datetime, timedelta, and bytes.
+
 ## v0.11.1 (2025-12-05)
 
 ### Fix
