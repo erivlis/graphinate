@@ -1,4 +1,6 @@
 import json
+from collections.abc import Iterable, Mapping
+from datetime import datetime, timedelta
 from typing import Any, Literal
 
 import mappingtools
@@ -8,6 +10,22 @@ from .. import color
 from ..enums import GraphType
 from ..modeling import GraphModel
 from ._networkx import NetworkxBuilder
+
+
+def _convert(obj: Any) -> Any:
+    """if obj is a not python scalar (e.g. it's some sort of container)
+    then return it as is otherwise convert it to a JSON string"""
+    match obj:
+        case bytes():
+            return obj.decode()
+        case datetime():
+            return obj.isoformat()
+        case timedelta():
+            return f"{obj.total_seconds()} s"
+        case Mapping() | Iterable() | str():
+            return obj
+        case _:
+            return json.dumps(obj, default=str)
 
 
 class D3Builder(NetworkxBuilder):
@@ -31,7 +49,7 @@ class D3Builder(NetworkxBuilder):
 
         match values_format:
             case 'json':
-                return mappingtools.transformers.strictify(d3graph, value_converter=json.dumps)
+                return mappingtools.transformers.strictify(d3graph, value_converter=_convert)
             case 'python':
                 return d3graph
             case _:
