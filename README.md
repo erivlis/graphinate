@@ -10,6 +10,7 @@
       <img alt="PyPI - Status" src="https://img.shields.io/pypi/status/graphinate.svg?logo=pypi&logoColor=lightblue">
       <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/graphinate.svg?logo=python&label=Python&logoColor=lightblue">
       <img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dd/graphinate.svg?logo=pypi&logoColor=lightblue">
+      <img alt="PyPI - Dependents" src="https://dependents.info/erivlis/graphinate/badge?logo=pypi&logoColor=lightblue">
       <img alt="Libraries.io SourceRank" src="https://img.shields.io/librariesio/sourcerank/pypi/Graphinate.svg?logo=Libraries.io&label=SourceRank">
     </td>
   </tr>
@@ -31,6 +32,7 @@
       <a href="https://squidfunk.github.io/mkdocs-material/"><img alt="mkdocs-material" src="https://img.shields.io/badge/Material_for_MkDocs-526CFE?&logo=MaterialForMkDocs&logoColor=white&labelColor=grey"></a>
       <a href="https://github.com/hukkin/mdformat"><img alt="mdformat" src="https://img.shields.io/badge/mdformat-526CFE?&logo=markdown&logoColor=white&labelColor=grey"></a>
       <a href="https://hatch.pypa.io"><img alt="Hatch project" class="off-glb" loading="lazy" src="https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg"></a>
+      <a href="https://commitizen-tools.github.io/commitizen"><img alt="commitizen" src="https://custom-icon-badges.demolab.com/badge/commitizen-7e56c2?logo=commitizen&labelColor=grey"></a>
     </td>
   </tr>
   <tr style="vertical-align: middle;">
