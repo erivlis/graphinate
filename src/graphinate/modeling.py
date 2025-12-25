@@ -4,6 +4,7 @@ from collections import defaultdict, namedtuple
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
 from enum import Enum, auto
+from types import MappingProxyType
 from typing import Any, Union
 
 from .typing import Edge, Element, Extractor, Items, Node, NodeTypeAbsoluteId, UniverseNode
@@ -140,20 +141,20 @@ class GraphModel:
         return graph_model
 
     @property
-    def node_models(self) -> dict[NodeTypeAbsoluteId, list[NodeModel]]:
+    def node_models(self) -> Mapping[NodeTypeAbsoluteId, list[NodeModel]]:
         """
         Returns:
             NodeModel for Node Types. Key values are NodeTypeAbsoluteId.
         """
-        return self._node_models
+        return MappingProxyType(self._node_models)
 
     @property
-    def edge_generators(self):
+    def edge_generators(self) -> Mapping[str, list[Callable[[], Iterable[Edge]]]]:
         """
         Returns:
             Edge generator functions for Edge Types
         """
-        return self._edge_generators
+        return MappingProxyType(self._edge_generators)
 
     @property
     def node_types(self) -> set[str]:
@@ -163,7 +164,7 @@ class GraphModel:
         """
         return {v.type for v in itertools.chain.from_iterable(self._node_models.values())}
 
-    def node_children_types(self, _type: str = UniverseNode) -> dict[str, list[str]]:
+    def node_children_types(self, _type: str = UniverseNode) -> Mapping[str, list[str]]:
         """Children Node Types for given input Node Type
 
         Args:
@@ -172,7 +173,7 @@ class GraphModel:
         Returns:
             List of children Node Types.
         """
-        return {k: v for k, v in self._node_children.items() if k == _type}
+        return MappingProxyType({k: v for k, v in self._node_children.items() if k == _type})
 
     @staticmethod
     def _validate_type(node_type: str):
@@ -213,6 +214,21 @@ class GraphModel:
                    representation of the complete Node payload.
             unique: is the Node universally unique. Defaults to True.
             multiplicity: Multiplicity of the Node. Defaults to ALL.
+
+        Generator Function Signature:
+            The decorated generator function may accept arguments to receive context from parent nodes.
+            These arguments MUST conform to the following strict naming convention:
+            1. The argument name must be lowercase.
+            2. The argument name must end with '_id'.
+            3. The prefix (before '_id') must match an existing registered Node Type.
+
+            Example:
+                If you have a parent node type 'user', your child node generator can accept 'user_id'.
+
+                @model.node(parent_type='user')
+                def get_posts(user_id): ...
+
+            Note: Arbitrary arguments (e.g., configuration flags) are currently NOT supported.
 
         Returns:
             None
