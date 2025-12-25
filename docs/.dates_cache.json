@@ -9,19 +9,31 @@
   },
   "index.md": {
     "created": "2023-08-15T00:05:21.586874",
-    "modified": "2025-11-30T00:47:51.562002"
+    "modified": "2025-12-11T22:20:03.105886"
   },
   "introduction.md": {
     "created": "2023-08-19T23:54:18.668094",
-    "modified": "2025-11-30T00:51:18.857368"
+    "modified": "2025-12-11T22:42:56.866801"
   },
   "start.md": {
     "created": "2023-08-20T00:07:42.683716",
-    "modified": "2025-12-05T12:16:12.147886"
+    "modified": "2025-12-12T00:13:09.683256"
   },
   "tutorial.md": {
     "created": "2025-02-26T00:03:30.194156",
-    "modified": "2025-12-05T12:15:57.828270"
+    "modified": "2025-12-12T00:34:41.094201"
+  },
+  "diagrams\\class_diagram.md": {
+    "created": "2025-12-09T01:43:18.037366",
+    "modified": "2025-12-11T21:50:45.867109"
+  },
+  "diagrams\\component_diagram.md": {
+    "created": "2025-12-09T01:40:54.733907",
+    "modified": "2025-12-09T01:40:54.773421"
+  },
+  "diagrams\\function_call_graph.md": {
+    "created": "2025-12-11T20:53:23.613051",
+    "modified": "2025-12-11T21:22:12.351962"
   },
   "examples\\code.md": {
     "created": "2023-08-20T00:09:32.677003",
@@ -57,7 +69,7 @@
   },
   "usage\\lib.md": {
     "created": "2023-09-27T21:23:44.133584",
-    "modified": "2025-11-30T00:50:48.229301"
+    "modified": "2025-12-25T23:32:44.149441"
   },
   "reference\\graphinate\\builders.md": {
     "created": "2025-03-08T20:51:52.788270",
