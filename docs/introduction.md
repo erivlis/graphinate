@@ -4,7 +4,7 @@
 
 ### Why Graphs?
 
-A Graph is a powerful data structure, that can be used to model a wide range of problems.
+A Graph is a powerful data structure, which can be used to model a wide range of problems.
 Graphs are used in many fields, such as computer science, mathematics, physics, biology, social sciences and more.
 
 ### Why Graphinate?
@@ -53,7 +53,7 @@ There are several modes of building and rendering to facilitate examination of t
 ### A Graph as a Data Structure
 
 A Graph can be a useful data structure.
-It is, perhaps, the simplest data structure, that is a "bit more" than just a simple collection of "things".
+It is, perhaps, the simplest data structure, which is a "bit more" than just a simple collection of "things".
 As such, it can be used to model any data source that has structure.
 
 ### Graph Elements
@@ -112,7 +112,7 @@ This is achieved the following way:
 #### Source
 
 First, it is required to represent the data sources, as an `Iterable` of items.
-It will be supply the data items that will be used to create the graph edges and/or nodes.
+It will supply the data items that will be used to create the graph edges and/or nodes.
 It is recommended to use a `Generator`  as the items Iterable. This way, the data source can be
 lazily-loaded.
 Such an `Iterable` or `Generator` can be, anything from a simple list of dictionaries, to a complex database query.
@@ -121,7 +121,7 @@ Such an `Iterable` or `Generator` can be, anything from a simple list of diction
 
 Graphinate introduces the concept of a `GraphModel`.
 A GraphModel embodies a set of rules which define how to use a data source item in creating a Graph element (i.e.,
-either a node or an edges). The `GraphModel` registers the sources using `GraphModel.node` and `GraphModel.edge`
+either a node or an edge). The `GraphModel` registers the sources using `GraphModel.node` and `GraphModel.edge`
 decorators. These decorators define how to extract both mandatory and optional aspects of information, which then are
 used to generate each Graph element.
 

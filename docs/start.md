@@ -32,12 +32,14 @@ import graphinate
 
 N: int = 8
 
-# First Define a GraphModel instance.
-# It will be used to hold the graph definitions
+# 1. Define a GraphModel
+# This model will hold all your graph's definitions, including how to generate nodes and edges.
 graph_model: graphinate.GraphModel = graphinate.model(name='Octagonal Graph')
 
 
-# Register in the Graph Model the edges' supplier generator function
+# 2. Define a function that provides the graph's edges
+# The @graph_model.edge() decorator registers this function as the edge supplier.
+# The function should yield a dictionary for each edge, specifying its 'source' and 'target'.
 @graph_model.edge()
 def edge():
     for i in range(N):
@@ -45,32 +47,33 @@ def edge():
     yield {'source': N, 'target': 0}
 
 
-# Use the NetworkX Builder
+# 3. Build the graph with a NetworkX representation
+# The NetworkxBuilder takes your graph model and constructs a NetworkX graph object.
 builder = graphinate.builders.NetworkxBuilder(graph_model)
-
-# build the NetworkX GraphRepresentation
-# the output in this case is a nx.Graph instance
 graph = builder.build()
 
-# this supplied plot method uses matplotlib to display the graph
+# You can then visualize the graph using Matplotlib
+# The plot function provides a quick way to see your graph.
 graphinate.matplotlib.plot(graph, with_edge_labels=True)
 
-# or use the Mermaid Builder
+# 4. Alternatively, create a Mermaid diagram for documentation
+# The MermaidBuilder generates a string that can be used to create a Mermaid diagram.
 builder = graphinate.builders.MermaidBuilder(graph_model)
-
-# to create a Mermaid diagram
 diagram: str = builder.build()
 
-# and get Markdown or single page HTML to display it
+# You can then generate Markdown or an HTML file to display the diagram.
 mermaid_markdown: str = graphinate.mermaid.markdown(diagram)
 mermaid_html: str = graphinate.mermaid.html(diagram, title=graph_model.name)
 
-# or use the GraphQL Builder
+# 5. Or, expose your graph through a GraphQL API
+# The GraphQLBuilder creates a Strawberry GraphQL schema.
 builder = graphinate.builders.GraphQLBuilder(graph_model)
-
-# to create a Strawberry GraphQL schema
 schema = builder.build()
 
-# and serve it using Uvicorn web server
+# You can then serve this schema using a web server like Uvicorn.
 graphinate.graphql.server(schema)
 ```
+
+This example provides a glimpse into what **Graphinate** can do.
+For more detailed guides and advanced features, be sure to check out the
+[Tutorial](/tutorial) and the [Examples](/examples/code) sections.

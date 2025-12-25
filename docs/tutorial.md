@@ -80,8 +80,8 @@ We will search for the root artist using the MusicBrainz API.
 
 ```python
     result = musicbrainzngs.search_artists(query=name, strict=True, artist=name)
-sleep(1)  # Sleep for 1 second to avoid rate limiting
-root_artist = result.get('artist-list', [])[0] if result else None
+    sleep(1)  # Sleep for 1 second to avoid rate limiting
+    root_artist = result.get('artist-list', [])[0] if result else None
 ```
 
 ### Step 3.4: Define the Artists Generator Function
@@ -92,7 +92,7 @@ Then we will yield the parent and related artists. If the depth is less than the
 yield artists for each related artist as a starting point.
 
 ```python
-    def artists(parent_artist, artist, depth):
+def artists(parent_artist, artist, depth):
     artist_id = artist.get('id')
     if artist_id not in artists_cache:
         artists_cache[artist_id] = musicbrainzngs.get_artist_by_id(id=artist_id, includes=['artist-rels']).get('artist')
@@ -114,10 +114,10 @@ yield artists for each related artist as a starting point.
 
 ### Step 3.5: Define the Artist Type Function
 
-We will define a function to get the type of an artist. We'll use it in the next step
+We will define a function to get the type of artist. We'll use it in the next step
 
 ```python
-    def artist_type(value):
+def artist_type(value):
     return value.get('type', '_UNKNOWN_')
 ```
 
@@ -132,15 +132,15 @@ The `Multiplicity.FIRST` option ensures that only the first occurrence of an art
                       key=operator.itemgetter('id'),
                       label=operator.itemgetter('name'),
                       multiplicity=graphinate.Multiplicity.FIRST)
-def node():
-    yielded = set()
-    for a, b in artists(None, root_artist, 0):
-        if a and ((a_id := a.get('id')) not in yielded):
-            yielded.add(a_id)
-            yield a
-        if b and ((b_id := b.get('id')) not in yielded):
-            yielded.add(b_id)
-            yield b
+    def node():
+        yielded = set()
+        for a, b in artists(None, root_artist, 0):
+            if a and ((a_id := a.get('id')) not in yielded):
+                yielded.add(a_id)
+                yield a
+            if b and ((b_id := b.get('id')) not in yielded):
+                yielded.add(b_id)
+                yield b
 ```
 
 ### Step 3.7: Define the Edge Model
@@ -149,10 +149,10 @@ We will define the edge model for the graph to represent relationships between a
 
 ```python
     @graph_model.edge()
-def edge():
-    for a, b in artists(None, root_artist, 0):
-        if a:
-            yield {'source': a.get('id'), 'target': b.get('id')}
+    def edge():
+        for a, b in artists(None, root_artist, 0):
+            if a:
+                yield {'source': a.get('id'), 'target': b.get('id')}
 ```
 
 ### Step 3.8: Return the Graph Model
@@ -237,7 +237,7 @@ def music_graph_model(name: str, max_depth: int = 0):
 ### Step 4.1: Import Required Modules
 
 We will use `tkinter` to create a simple GUI for selecting artists.
-Implemented before hand in the `gui.py` file located in the example folder.
+Implemented beforehand in the `gui.py` file located in the examples/math folder.
 
 ```python
 from gui import ListboxChooser
@@ -249,7 +249,6 @@ We will define a list of artist names to be displayed in the listbox.
 
 ```python
 artist_names = [
-    'Alice in Chains',
     'Beatles',
     'Caravan',
     'Charles Mingus',
