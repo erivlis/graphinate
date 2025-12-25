@@ -81,7 +81,8 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
-    - [What is Graphinate?](#what-is-graphinate)
+    - [Meet Graphinate](#meet-graphinate)
+    - [Library at a Glance](#library-at-a-glance)
     - [Links](#links)
 - [Quick Start](#quick-start)
     - [Install](#install)
@@ -93,16 +94,32 @@
 
 ## Introduction
 
-### What is Graphinate?
+### Meet Graphinate
 
-**Graphinate** is a python library that can be used to generate Graph Data Structures from Data Sources.
+**Graphinate** turns your data into Graphs. Effortlessly.
 
-It can help create an efficient retrieval pipeline from a given data source, while also enabling the developer to map
-data payloads and hierarchies to a Graph.
+It is a Python library designed to streamline the pipeline from raw data to structured Graph representations. With Graphinate, you can easily map complex data hierarchies and payloads directly to nodes and edges, creating an efficient retrieval system.
 
-In addition, there are several modes of output to enable examination of the Graph and its content.
+Whether you need to visualize relationships, analyze structure, or serve data via an API, Graphinate provides the tools to bring your graph to life.
 
 **Graphinate** uses and builds upon the excellent [**_NetworkX_**](https://networkx.org/).
+
+### Library at a Glance
+
+#### 📐 The Architect (`graphinate.modeling`)
+Define the blueprint of your graph by decorating simple functions that yield your data as nodes and edges.
+
+#### 🏗️ The Construction Crew (`graphinate.builders`)
+Takes your graph blueprint and constructs various outputs, whether it's a queryable `NetworkX` object, a `Mermaid` diagram, or a `GraphQL` schema.
+
+#### 🎨 The Artists (`graphinate.renderers`)
+A suite of tools to visualize your graphs, from `matplotlib` plots to interactive `Mermaid` diagrams.
+
+#### 📡 The Broadcaster (`graphinate.server`)
+Instantly serve your graph data as an interactive `GraphQL` API, ready for consumption by web applications.
+
+#### ⌨️ The Command Center (`graphinate.cli`)
+A handy command-line tool to manage and interact with your graph definitions without writing boilerplate code.
 
 ### Links
 
@@ -181,7 +198,7 @@ mermaid_markdown: str = graphinate.mermaid.markdown(diagram)
 mermaid_html: str = graphinate.mermaid.html(diagram, title=graph_model.name)
 
 # or use the GraphQL Builder
-builder = graphinate.builders.GraphQLBuilder(graph_model)
+builder = graphinate.builders.GraphQLBuilder(.graph_model)
 
 # to create a Strawberry GraphQL schema
 schema = builder.build()
