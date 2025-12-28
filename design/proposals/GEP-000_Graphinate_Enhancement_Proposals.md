@@ -8,6 +8,7 @@
 | **Status**  | Active                           |
 | **Type**    | Process                          |
 | **Created** | 2025-12-25                       |
+| **Updated** | 2025-12-28                       |
 
 ## Abstract
 
@@ -32,6 +33,8 @@ careful consideration. GEPs provide a structured way to:
     * **Accepted:** The design is approved.
     * **Rejected:** The design is flawed or misaligned.
     * **Deferred:** Good idea, but not now.
+    * **Superseded:** Replaced by a newer GEP.
+    * **Withdrawn:** The author withdrew the proposal.
 4. **Implementation:** The code is written.
 5. **Final:** The feature is released.
 
@@ -41,21 +44,20 @@ careful consideration. GEPs provide a structured way to:
 * **Process:** Meta-GEPs (like this one) describing procedures.
 * **Informational:** Design issues or general guidelines.
 
-
-
 ## Template
 
 ```markdown
 # GEP-XXX: Title
 
-| Field       | Value           |
-|:------------|:----------------|
-| **GEP**     | XXX             |
-| **Title**   | Title           |
-| **Author**  | Name            |
-| **Status**  | Draft           |
-| **Type**    | Standards Track |
-| **Created** | YYYY-MM-DD      |
+| Field | Value |
+| :--- | :--- |
+| **GEP** | XXX |
+| **Title** | Title |
+| **Author** | Name |
+| **Status** | Draft |
+| **Type** | Standards Track |
+| **Created** | YYYY-MM-DD |
+| **Updated** | YYYY-MM-DD |
 
 ## Abstract
 
@@ -80,4 +82,8 @@ Does this break existing code? How will the transition be handled?
 ## Reference Implementation
 
 Link to code or pseudo-code.
+
+## Change Log
+
+* YYYY-MM-DD: Initial Draft
 ```

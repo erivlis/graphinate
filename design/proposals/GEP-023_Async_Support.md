@@ -7,7 +7,8 @@
 | **Author**  | Eran Rivlis     |
 | **Status**  | Draft           |
 | **Type**    | Standards Track |
-| **Created** | 2025-12-26      |
+| **Created** | 2025-12-25      |
+| **Updated** | 2025-12-28      |
 
 ## Abstract
 
@@ -26,6 +27,8 @@ By supporting `async` generators, the builder can potentially fetch data concurr
 least not block the main thread, enabling better integration with async web frameworks (FastAPI/Starlette).
 
 ## Specification
+
+> **Note:** The implementation of this feature should leverage the **Graph Engine** architecture defined in **GEP-024**.
 
 ### 1. Model Detection
 
@@ -58,3 +61,8 @@ process independent branches of the hierarchy in parallel.
     * Raise an error if the model contains async generators.
     * Use `asyncio.run()` to execute the async build (if not already in a loop).
 * **Async API:** The new `abuild()` method provides the async interface.
+
+## Change Log
+
+* 2025-12-25: Initial Draft
+* 2025-12-28: Updated to reference GEP-024
