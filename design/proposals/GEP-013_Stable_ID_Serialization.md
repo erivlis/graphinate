@@ -5,17 +5,24 @@
 | **GEP**     | 13                      |
 | **Title**   | Stable ID Serialization |
 | **Author**  | Eran Rivlis             |
-| **Status**  | Draft                   |
+| **Status**  | Withdrawn               |
 | **Type**    | Standards Track         |
 | **Created** | 2025-12-25              |
+| **Updated** | 2025-12-29              |
 
 ## Abstract
 
 The current ID encoding mechanism in `graphinate.converters` relies on Python's `repr()` combined with Base64 encoding
-and `ast.literal_eval()` for decoding. This approach is brittle, potentially unsafe, and produces unstable IDs. This
-proposal advocates for replacing it with a deterministic, JSON-based serialization strategy.
+and `ast.literal_eval()` for decoding. This proposal advocated for replacing it with a deterministic, JSON-based
+serialization strategy.
 
-## Motivation
+## Status: Withdrawn
+
+This proposal has been withdrawn. The complexity of handling Python's rich type system (tuples, sets, custom objects) in
+JSON outweighs the benefits of "purity". The original `repr()` implementation, while having theoretical downsides (
+stability, security), is practically robust for the project's current needs and handles type round-tripping natively.
+
+## Motivation (Original)
 
 Graphinate uses encoded IDs to represent nodes and edges in external systems (like GraphQL). These IDs must be:
 
@@ -32,7 +39,7 @@ Graphinate uses encoded IDs to represent nodes and edges in external systems (li
    deeply nested structures (stack overflow) or excessive memory consumption.
 3. **Opacity:** The resulting Base64 string is opaque and hard to debug.
 
-## Specification
+## Specification (Original)
 
 We propose switching to a **Canonical JSON** serialization format.
 
@@ -77,4 +84,4 @@ This is a breaking change. IDs generated with the old method will not be decodab
 
 ## Reference Implementation
 
-(To be determined)
+(Withdrawn)

@@ -5,17 +5,24 @@
 | **GEP**     | 22                    |
 | **Title**   | 2D Visualization Mode |
 | **Author**  | Eran Rivlis           |
-| **Status**  | Draft                 |
+| **Status**  | Superseded            |
 | **Type**    | Standards Track       |
 | **Created** | 2025-12-26            |
+| **Updated** | 2025-12-30            |
 
 ## Abstract
 
 The current viewer uses `3d-force-graph` to render the graph in a 3D space. While visually impressive ("Wonder"), 3D
 visualizations often suffer from occlusion and navigation difficulties, making them less effective for analytical
-tasks ("Clarity"). This proposal advocates for adding a 2D visualization mode using the `force-graph` library.
+tasks ("Clarity"). This proposal advocated for adding a 2D visualization mode using the `force-graph` library.
 
-## Motivation
+## Status: Superseded
+
+This proposal has been **Superseded by GEP-026 (Pluggable Visualization & Notebook Support)**.
+
+Instead of hardcoding a toggle between 2D and 3D, the project will adopt a **Pluggable Renderer Architecture**. A 2D renderer (using `force-graph`, `sigma.js`, or `cytoscape.js`) will simply be one of many possible `engine` implementations available to the user via `graphinate.render(model, engine='2d')`.
+
+## Motivation (Original)
 
 **Issues with 3D Only:**
 
@@ -28,7 +35,7 @@ tasks ("Clarity"). This proposal advocates for adding a 2D visualization mode us
 1. **Clarity:** Easier to see the overall structure and clusters without perspective distortion.
 2. **Standard:** Most graph analysis tools default to 2D.
 
-## Specification
+## Specification (Original)
 
 ### 1. Library Integration
 

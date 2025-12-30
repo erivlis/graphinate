@@ -8,11 +8,18 @@
 | **Status**  | Draft            |
 | **Type**    | Standards Track  |
 | **Created** | 2025-12-28       |
+| **Updated** | 2025-12-30       |
 
 ## Abstract
 
 This proposal advocates for extracting the graph generation logic (iterating generators, resolving dependencies,
 managing lineage) from the `NetworkxBuilder` into a standalone, observable component called the `GraphEngine`.
+
+## Relations
+
+*   **Enables:** [GEP-023: Async Support](GEP-023_Async_Support.md) - The engine will support async generators.
+*   **Enables:** [GEP-026: Pluggable Visualization](GEP-026_Pluggable_Visualization_and_Notebook_Support.md) - The engine provides the realtime stream for the frontend.
+*   **Adheres to:** [GEP-002: Modularization Strategy](GEP-002_Modularization_Strategy.md) - The engine is a distinct layer.
 
 ## Motivation
 
@@ -48,7 +55,9 @@ class GraphEngine:
     async def run(self):
         # ... logic to iterate generators ...
         # ... logic to calculate IDs ...
-        await self._notify(NodeCreatedEvent(node, data))
+        # Supports both sync and async generators (e.g., Kafka consumers)
+        async for item in self._iterate_model():
+             await self._notify(item)
 ```
 
 ### 2. The Graph Observer (Consumer)
@@ -75,10 +84,11 @@ class NetworkxBuilder(GraphObserver):
         self.graph.add_node(event.node_id, **event.data)
 ```
 
-### 4. Realtime Support
+### 4. Realtime Support (Kafka / WebSockets)
 
-This architecture trivially supports realtime streaming. A `WebSocketObserver` can simply push events to a client as
-they happen.
+This architecture trivially supports realtime streaming.
+*   **Input:** The `GraphEngine` can consume from **Async Generators** (e.g., `aiokafka` consumer).
+*   **Output:** A `WebSocketObserver` (or GraphQL Subscription resolver) can push events to the frontend (GEP-026) as they happen.
 
 ## Design Considerations
 
