@@ -4,7 +4,7 @@ This guide provides instructions for setting up your development environment to 
 
 ## Install dependencies
 
-Use UV to install all dependencies, including those for testing and documentation.
+UV is used to install all dependencies, including those for testing and documentation.
 
 ```shell
 uv sync --all-extras --all-groups
@@ -21,43 +21,63 @@ uv sync --all-extras --all-groups
 
 ## Ruff
 
-We use [Ruff](https://github.com/astral-sh/ruff) for linting and formatting.
+[Ruff](https://github.com/astral-sh/ruff) is used for linting and formatting.
 
 ### Report issues
 
-```shell
-ruff check src
-```
+=== "src"
+
+    ```shell
+    ruff check src
+    ```
+
+=== "tests"
+
+    ```shell
+    ruff check tests
+    ```
 
 ### Fix issues
 
-```shell
-ruff check src --fix
-```
+=== "src"
+
+    ```shell
+    ruff check src --fix
+    ```
+
+=== "tests"
+
+    ```shell
+    ruff check tests --fix
+    ```
 
 ## Test
 
 We use [pytest](https://pytest.org) for testing.
 
-### Standard (cobertura) XML Coverage Report
+=== "Terminal"
 
-```shell
-python -m pytest tests --cov=src --cov-branch --doctest-modules --cov-report=xml --junitxml=junit.xml
-```
+    > This is the recommended command for local development, as it provides the fastest feedback.
 
-### HTML Coverage Report
+    ```shell
+    python -m pytest tests --cov=src --cov-branch --doctest-modules --cov-report=term --junitxml=junit.xml
+    ```
 
-```shell
-python -m pytest tests --cov=src --cov-branch --doctest-modules --cov-report=html --junitxml=junit.xml
-```
+=== "HTML"
 
-### Terminal Coverage Report
+    > Generates an interactive HTML coverage report.
 
-This is the recommended command for local development, as it provides the fastest feedback.
+    ```shell
+    python -m pytest tests --cov=src --cov-branch --doctest-modules --cov-report=html --junitxml=junit.xml
+    ```
 
-```shell
-python -m pytest tests --cov=src --cov-branch --doctest-modules --cov-report=term --junitxml=junit.xml
-```
+=== "XML"
+
+    > Generates a standard Cobertura XML report (useful for CI/CD).
+
+    ```shell
+    python -m pytest tests --cov=src --cov-branch --doctest-modules --cov-report=xml --junitxml=junit.xml
+    ```
 
 ## Docs
 

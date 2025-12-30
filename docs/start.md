@@ -6,17 +6,31 @@ In addition, it has the following interfaces for ease of use: a CLI and a GraphQ
 
 ## Install
 
-**Graphinate** is available on PyPI:
+**Graphinate** is available on PyPI.
 
-```shell
-pip install graphinate
-```
+=== "pip"
 
-To install with server support
+    ```shell
+    pip install graphinate
+    ```
 
-```shell
-pip install graphinate[server]
-```
+    To install with server support:
+
+    ```shell
+    pip install graphinate[server]
+    ```
+
+=== "uv"
+
+    ```shell
+    uv add graphinate
+    ```
+
+    To install with server support:
+
+    ```shell
+    uv add graphinate --extra server
+    ```
 
 **Graphinate** officially supports Python >= 3.10.
 
