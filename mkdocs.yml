@@ -100,6 +100,8 @@ nav:
   - Tutorial: tutorial.md
   - Usage: usage/
   - Examples: examples/
+  - Advanced:
+    - Secure IDs: advanced/secure_ids.md
   # - Gallery: gallery/
   # defer to gen-files + literate-nav
   - Reference: reference/
