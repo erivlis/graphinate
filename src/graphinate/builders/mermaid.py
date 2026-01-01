@@ -5,7 +5,7 @@ import networkx_mermaid as nxm
 from .. import color
 from ..enums import GraphType
 from ..modeling import GraphModel
-from ._networkx import NetworkxBuilder
+from .networkx import NetworkxBuilder
 
 
 class MermaidBuilder(NetworkxBuilder):

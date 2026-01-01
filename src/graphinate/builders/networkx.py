@@ -13,7 +13,7 @@ from ..enums import GraphType
 from ..modeling import GraphModel, Multiplicity
 from ..tools import utcnow
 from ..typing import NodeTypeAbsoluteId, UniverseNode
-from ._builder import Builder
+from .builder import Builder
 
 
 class NetworkxBuilder(Builder):

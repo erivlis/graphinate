@@ -24,11 +24,11 @@ from typing import Any
 
 from ..enums import GraphType
 from ..modeling import GraphModel
-from ._builder import Builder
-from ._d3 import D3Builder
-from ._graphql import GraphQLBuilder
-from ._mermaid import MermaidBuilder
-from ._networkx import NetworkxBuilder
+from .builder import Builder
+from .d3 import D3Builder
+from .graphql import GraphQLBuilder
+from .mermaid import MermaidBuilder
+from .networkx import NetworkxBuilder
 
 
 def build(builder_cls: type[Builder],

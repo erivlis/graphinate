@@ -9,7 +9,7 @@ import networkx as nx
 from .. import color
 from ..enums import GraphType
 from ..modeling import GraphModel
-from ._networkx import NetworkxBuilder
+from .networkx import NetworkxBuilder
 
 
 def _convert(obj: Any) -> Any:
