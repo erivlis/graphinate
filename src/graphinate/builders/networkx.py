@@ -98,7 +98,7 @@ class NetworkxBuilder(Builder):
                                          lineage=list(node_lineage),
                                          created=utcnow())
 
-                    self._graph.graph['node_types'].update({node_type: 1})
+                    self._graph.graph['node_types'][node_type] += 1
 
                 if node_model.parent_type is not UniverseNode:
                     logger.debug("Adding edge. Source: {}, Target: {}", parent_node_id, node_id)
@@ -128,7 +128,7 @@ class NetworkxBuilder(Builder):
                                              value=[edge.value],
                                              weight=edge_weight,
                                              created=utcnow())
-                        self._graph.graph['edge_types'].update({edge_type: 1})
+                        self._graph.graph['edge_types'][edge_type] += 1
                     else:
                         self._graph.edges[edge_id]['value'].append(edge.value)
                         self._graph.edges[edge_id]['weight'] += edge_weight
@@ -164,7 +164,7 @@ class NetworkxBuilder(Builder):
         if default_type := defaults.get('type'):
             type_count = sum(1 for n, d in self._graph.nodes(data='type') if d == default_type)
             if type_count:
-                self._graph.graph['node_types'].update({default_type: type_count})
+                self._graph.graph['node_types'][default_type] += type_count
 
     def _rectify_edge_attributes(self, **defaults):
         for name, default in defaults.items():
@@ -180,7 +180,7 @@ class NetworkxBuilder(Builder):
         if default_type := defaults.get('type'):
             type_count = sum(1 for *_, d in self._graph_edges(data='type') if d == default_type)
             if type_count:
-                self._graph.graph['edge_types'].update({default_type: type_count})
+                self._graph.graph['edge_types'][default_type] += type_count
 
     def _finalize_graph(self, **node_attributes):
         self._rectify_node_attributes(**node_attributes)
