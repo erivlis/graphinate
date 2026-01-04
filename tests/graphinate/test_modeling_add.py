@@ -1,11 +1,8 @@
-#  [MermaidChart: 31f25fab-3a92-4cc4-bb11-71e8012c8ece]
-#  [MermaidChart: 31f25fab-3a92-4cc4-bb11-71e8012c8ece]
-#  [MermaidChart: 31f25fab-3a92-4cc4-bb11-71e8012c8ece]
 # tests/test_modeling.py
 
 from collections import defaultdict
 
-from src.graphinate.modeling import GraphModel
+from graphinate.modeling import GraphModel
 
 
 def test_add_graph_models_names():
