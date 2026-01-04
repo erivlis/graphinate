@@ -1,16 +1,16 @@
-import asyncio
 import inspect
 from dataclasses import dataclass
-from typing import Protocol, Any, AsyncIterable, List
+from typing import Protocol
 
 from .modeling import GraphModel
+
 
 # region Events
 
 @dataclass
 class GraphEvent:
     """Base class for all graph execution events."""
-    pass
+
 
 @dataclass
 class NodeEvent(GraphEvent):
@@ -19,6 +19,7 @@ class NodeEvent(GraphEvent):
     data: dict
     parent_id: str | None = None
 
+
 @dataclass
 class EdgeEvent(GraphEvent):
     """Emitted when an edge is discovered/created."""
@@ -26,11 +27,13 @@ class EdgeEvent(GraphEvent):
     target_id: str
     data: dict
 
+
 @dataclass
 class ErrorEvent(GraphEvent):
     """Emitted when a generator raises an exception."""
     error: Exception
     context: dict
+
 
 # endregion
 
@@ -38,7 +41,7 @@ class ErrorEvent(GraphEvent):
 
 class GraphObserver(Protocol):
     """Interface for components that listen to the GraphEngine."""
-    
+
     async def on_node(self, event: NodeEvent) -> None:
         ...
 
@@ -51,21 +54,21 @@ class GraphObserver(Protocol):
     async def on_complete(self) -> None:
         ...
 
+
 # endregion
 
 # region Engine
 
 class GraphEngine:
-    """
-    The Execution Engine.
-    
+    """The Execution Engine.
+
     Responsible for iterating over the GraphModel, handling the 'magic'
     (ID generation, dependency injection), and notifying observers.
     """
 
     def __init__(self, model: GraphModel):
         self.model = model
-        self._observers: List[GraphObserver] = []
+        self._observers: list[GraphObserver] = []
         self._is_running = False
 
     def subscribe(self, observer: GraphObserver):
@@ -73,24 +76,22 @@ class GraphEngine:
         self._observers.append(observer)
 
     async def run(self):
-        """
-        Execute the graph generation process.
-        """
+        """Execute the graph generation process."""
         if self._is_running:
             raise RuntimeError("Engine is already running")
-        
+
         self._is_running = True
-        
+
         try:
             # TODO: This is where the logic from NetworkxBuilder._populate_nodes moves to.
             # It will need to handle:
             # 1. Root nodes
             # 2. Recursive children
             # 3. Async vs Sync generators (GEP-023)
-            
+
             # Mock implementation for scaffold
             await self._notify_node("root", {"label": "Root"}, None)
-            
+
         except Exception as e:
             await self._notify_error(e)
         finally:
@@ -115,9 +116,8 @@ class GraphEngine:
         await self._broadcast(lambda obs: obs.on_complete())
 
     async def _broadcast(self, callback):
-        """
-        Notify all observers.
-        
+        """Notify all observers.
+
         Design Decision: Sequential await.
         If one observer is slow, it slows down the engine (Backpressure).
         This is usually desired to prevent OOM.
