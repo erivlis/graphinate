@@ -9,7 +9,7 @@ def test_add_graph_models_names():
     # Arrange
     model_a = GraphModel(name="ModelA")
     model_b = GraphModel(name="ModelB")
-    
+
     # Act
     combined_model = model_a + model_b
 

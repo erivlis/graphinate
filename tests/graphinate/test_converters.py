@@ -62,7 +62,7 @@ label_converter_cases = [
 def test_label_converter(case, delimiter, expected):
     # Act
     actual = converters.label_converter(case, delimiter=delimiter)
-    
+
     # Assert
     assert actual == expected
 

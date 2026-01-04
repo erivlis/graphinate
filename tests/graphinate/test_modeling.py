@@ -52,7 +52,7 @@ def test_validate_type_identifier_and_callable():
             return "called"
 
     node_type = CallableStr("valididentifier")
-    
+
     # Act & Assert
     # Should not raise
     GraphModel._validate_type(node_type)
@@ -61,7 +61,7 @@ def test_validate_type_identifier_and_callable():
 def test_validate_type_non_callable_valid_identifier():
     # Arrange
     node_type = "valid_identifier"
-    
+
     # Act & Assert
     # Should not raise
     GraphModel._validate_type(node_type)
@@ -74,7 +74,7 @@ def test_validate_type_non_string_callable():
             return "called"
 
     node_type = DummyCallable()
-    
+
     # Act & Assert
     # Should not raise
     GraphModel._validate_type(node_type)
@@ -83,7 +83,7 @@ def test_validate_type_non_string_callable():
 def test_validate_type_neither_callable_nor_identifier():
     # Arrange
     node_type = "123 invalid!"
-    
+
     # Act & Assert
     with pytest.raises(ValueError, match="Invalid Type:"):
         GraphModel._validate_type(node_type)
@@ -92,7 +92,7 @@ def test_validate_type_neither_callable_nor_identifier():
 def test_validate_type_empty_string():
     # Arrange
     node_type = ""
-    
+
     # Act & Assert
     with pytest.raises(ValueError, match="Invalid Type:"):
         GraphModel._validate_type(node_type)
@@ -101,7 +101,7 @@ def test_validate_type_empty_string():
 def test_validate_type_special_characters():
     # Arrange
     node_type = "invalid-type!"
-    
+
     # Act & Assert
     with pytest.raises(ValueError, match="Invalid Type:"):
         GraphModel._validate_type(node_type)
@@ -110,7 +110,7 @@ def test_validate_type_special_characters():
 def test_validate_type_accepts_valid_identifier():
     # Arrange
     node_type = "node_type"
-    
+
     # Act & Assert
     # Should not raise
     GraphModel._validate_type(node_type)
@@ -133,7 +133,7 @@ def test_validate_type_accepts_identifier_and_callable():
             return "called"
 
     node_type = CallableStr("anotheridentifier")
-    
+
     # Act & Assert
     # Should not raise
     GraphModel._validate_type(node_type)
@@ -142,7 +142,7 @@ def test_validate_type_accepts_identifier_and_callable():
 def test_validate_type_raises_on_invalid_identifier():
     # Arrange
     node_type = "not valid!"
-    
+
     # Act & Assert
     with pytest.raises(ValueError, match="Invalid Type:"):
         GraphModel._validate_type(node_type)
@@ -151,7 +151,7 @@ def test_validate_type_raises_on_invalid_identifier():
 def test_validate_type_raises_on_empty_string():
     # Arrange
     node_type = ""
-    
+
     # Act & Assert
     with pytest.raises(ValueError, match="Invalid Type:"):
         GraphModel._validate_type(node_type)
@@ -166,7 +166,7 @@ def test_validate_type_callable_string():
             return "called"
 
     node_type = CallableStr("not_an_identifier_but_callable")
-    
+
     # Act & Assert
     # Should not raise
     GraphModel._validate_type(node_type)
@@ -179,10 +179,10 @@ def test_elements_yields_correct_count():
         {"id": 2, "name": "B"},
         {"id": 3, "name": "C"},
     ]
-    
+
     # Act
     result = list(elements(data, element_type="Node", id="id", name="name"))
-    
+
     # Assert
     assert len(result) == len(data)
     for i, el in enumerate(result):
@@ -196,10 +196,10 @@ def test_elements_multiple_getters():
         {"id": 1, "name": "A", "value": 10},
         {"id": 2, "name": "B", "value": 20},
     ]
-    
+
     # Act
     result = list(elements(data, element_type="Node", id="id", name="name", value="value"))
-    
+
     # Assert
     assert len(result) == 2
     for i, el in enumerate(result):
@@ -211,10 +211,10 @@ def test_elements_multiple_getters():
 def test_elements_empty_iterable():
     # Arrange
     data = []
-    
+
     # Act
     result = list(elements(data, element_type="Node", id="id"))
-    
+
     # Assert
     assert result == []
 
@@ -222,7 +222,7 @@ def test_elements_empty_iterable():
 def test_elements_element_type_not_callable_invalid():
     # Arrange
     data = [{"id": 1}]
-    
+
     # Act & Assert
     # element_type is not callable and not a valid identifier
     with pytest.raises(ValueError, match="Invalid Type:"):
@@ -241,7 +241,7 @@ def test_elements_callable_element_type():
 
     # Act
     result = list(elements(data, element_type=type_extractor, id="id"))
-    
+
     # Assert
     assert result[0].__class__.__name__ == "Alpha"
     assert result[1].__class__.__name__ == "Beta"
