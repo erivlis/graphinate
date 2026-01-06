@@ -1,3 +1,4 @@
+import functools
 import inspect
 import itertools
 from collections import defaultdict, namedtuple
@@ -14,6 +15,11 @@ class GraphModelError(Exception):
     pass
 
 
+@functools.lru_cache(maxsize=128)
+def _get_namedtuple_class(element_type: str, field_names: str | tuple[str, ...]) -> type:
+    return namedtuple(element_type, field_names)
+
+
 def element(element_type: str | None, field_names: Iterable[str] | None = None) -> Callable[[], Element]:
     """Graph Element Supplier Callable
 
@@ -24,7 +30,11 @@ def element(element_type: str | None, field_names: Iterable[str] | None = None) 
     Returns:
         Element Supplier Callable
     """
-    return namedtuple(element_type, field_names) if element_type and field_names else tuple
+    if element_type and field_names:
+        if not isinstance(field_names, str):
+            field_names = tuple(field_names)
+        return _get_namedtuple_class(element_type, field_names)
+    return tuple
 
 
 def extractor(obj: Any, key: Extractor | None = None) -> str | None:
