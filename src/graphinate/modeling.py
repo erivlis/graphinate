@@ -4,6 +4,7 @@ from collections import defaultdict, namedtuple
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
 from enum import Enum, auto
+from functools import lru_cache
 from types import MappingProxyType
 from typing import Any, Union
 
@@ -14,7 +15,12 @@ class GraphModelError(Exception):
     pass
 
 
-def element(element_type: str | None, field_names: Iterable[str] | None = None) -> Callable[[], Element]:
+@lru_cache(maxsize=128)
+def _get_namedtuple_class(type_name: str, field_names: tuple[str] | str) -> type:
+    return namedtuple(type_name, field_names)
+
+
+def element(element_type: str | None, field_names: Iterable[str] | str | None = None) -> Callable[[], Element]:
     """Graph Element Supplier Callable
 
     Args:
@@ -24,7 +30,11 @@ def element(element_type: str | None, field_names: Iterable[str] | None = None) 
     Returns:
         Element Supplier Callable
     """
-    return namedtuple(element_type, field_names) if element_type and field_names else tuple
+    if element_type and field_names:
+        if isinstance(field_names, str):
+            return _get_namedtuple_class(element_type, field_names)
+        return _get_namedtuple_class(element_type, tuple(field_names))
+    return tuple
 
 
 def extractor(obj: Any, key: Extractor | None = None) -> str | None:
