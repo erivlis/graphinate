@@ -72,14 +72,23 @@ def elements(iterable: Iterable[Any],
     Returns:
         Iterable of Elements.
     """
-    for item in iterable:
-        _type = element_type(item) if element_type and callable(element_type) else element_type
-        if not _type.isidentifier():
-            raise ValueError(f"Invalid Type: {_type}. Must be a valid Python identifier.")
+    if element_type and not callable(element_type):
+        if not element_type.isidentifier():
+            raise ValueError(f"Invalid Type: {element_type}. Must be a valid Python identifier.")
+        # Optimization: Create element class once if type is constant
+        create_element = element(element_type, getters.keys())
+        for item in iterable:
+            kwargs = {k: extractor(item, v) for k, v in getters.items()}
+            yield create_element(**kwargs)
+    else:
+        for item in iterable:
+            _type = element_type(item) if element_type and callable(element_type) else element_type
+            if not _type.isidentifier():
+                raise ValueError(f"Invalid Type: {_type}. Must be a valid Python identifier.")
 
-        create_element = element(_type, getters.keys())
-        kwargs = {k: extractor(item, v) for k, v in getters.items()}
-        yield create_element(**kwargs)
+            create_element = element(_type, getters.keys())
+            kwargs = {k: extractor(item, v) for k, v in getters.items()}
+            yield create_element(**kwargs)
 
 
 class Multiplicity(Enum):
