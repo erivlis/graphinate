@@ -72,12 +72,28 @@ def elements(iterable: Iterable[Any],
     Returns:
         Iterable of Elements.
     """
-    for item in iterable:
-        _type = element_type(item) if element_type and callable(element_type) else element_type
+    is_dynamic_type = callable(element_type)
+    static_create_element = None
+
+    if not is_dynamic_type:
+        _type = element_type
+        # Eagerly validate static types.
+        # Note: This will raise AttributeError if _type is None (consistent with previous behavior, but happens earlier)
+        # and ValueError if _type is invalid identifier.
         if not _type.isidentifier():
             raise ValueError(f"Invalid Type: {_type}. Must be a valid Python identifier.")
 
-        create_element = element(_type, getters.keys())
+        static_create_element = element(_type, getters.keys())
+
+    for item in iterable:
+        if is_dynamic_type:
+            _type = element_type(item)
+            if not _type.isidentifier():
+                raise ValueError(f"Invalid Type: {_type}. Must be a valid Python identifier.")
+            create_element = element(_type, getters.keys())
+        else:
+            create_element = static_create_element
+
         kwargs = {k: extractor(item, v) for k, v in getters.items()}
         yield create_element(**kwargs)
 
