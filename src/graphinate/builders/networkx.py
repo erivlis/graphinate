@@ -60,14 +60,17 @@ class NetworkxBuilder(Builder):
         """Populate graph nodes based on the provided model and ID."""
         for node_model in self.model.node_models[node_type_absolute_id]:
             unique = node_model.uniqueness
+            node_model_label = node_model.label
+            is_label_callable = callable(node_model_label)
+
             for node in node_model.generator(**kwargs):
                 parent_node_id = self._parent_node_id(node_type_absolute_id, **kwargs)
                 node_lineage = (*parent_node_id, node.key) if parent_node_id is not UniverseNode else (node.key,)
                 node_id = (node.key,) if unique else node_lineage
 
                 label = node.key
-                if node_model.label is not None:
-                    label = node_model.label(node.value) if callable(node_model.label) else node_model.label
+                if node_model_label is not None:
+                    label = node_model_label(node.value) if is_label_callable else node_model_label
 
                 node_type = node.__class__.__name__.lower()
                 if node_type == 'tuple':
