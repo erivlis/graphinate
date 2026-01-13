@@ -137,53 +137,69 @@ class NetworkxBuilder(Builder):
                         self._graph.edges[edge_id]['weight'] += edge_weight
                         self._graph.edges[edge_id]['updated'] = utcnow()
 
-    @staticmethod
-    def _rectified_values(name: str, default: Any, elements: Callable[
-        [str, Any], NodeView[Any] | EdgeView[Any] | NodeDataView[Any] | EdgeDataView], k: Callable[[Any], Any],
-                          v: Callable[[Any], Any]) -> dict:
-        if callable(default):
-            elem = elements(data=name, default=None)
-            return {k(e): default(k(e))
-                    for e in elem
-                    if (v(e) is None if isinstance(elem, NodeDataView) else v(e) is not None)}
-        elif isinstance(default, dict):
-            return default
-        elif default:
-            return {k(e): v(e) for e in elements(data=name, default=default) if v(e) == default}
-        else:  # default is None or empty collection
-            return {k(e): k(e) for e in elements(data=name, default=default) if v(e) is default}
+    def _apply_defaults(self, elements_iter, defaults: Mapping, is_node: bool):
+        """Apply defaults to elements in a single pass."""
+        type_count = 0
+        default_type = defaults.get('type')
+
+        # Pre-sort defaults into static and callable to avoid repeated checks
+        static_defaults = []
+        callable_defaults = []
+        for name, default in defaults.items():
+            if callable(default):
+                callable_defaults.append((name, default))
+            else:
+                static_defaults.append((name, default))
+
+        for *keys, data in elements_iter:
+            element_id = keys[0] if is_node else tuple(keys)
+
+            # Apply static defaults
+            for name, default in static_defaults:
+                if name not in data:
+                    if default:  # Truthy static
+                        data[name] = default
+                    else:  # Falsy static (e.g. value=[]) -> Set ID
+                        data[name] = element_id
+
+            # Apply callable defaults
+            for name, default in callable_defaults:
+                val = data.get(name)
+                if is_node:
+                    if val is None:
+                        data[name] = default(element_id)
+                else:
+                    if val is not None:
+                        data[name] = default(element_id)
+
+            if default_type and data.get('type') == default_type:
+                type_count += 1
+
+        if default_type and type_count > 0:
+            counter_name = 'node_types' if is_node else 'edge_types'
+            self._graph.graph[counter_name][default_type] += type_count
 
     def _rectify_node_attributes(self, **defaults):
+        simple_defaults = {}
         for name, default in defaults.items():
-            if values := self._rectified_values(
-                    name,
-                    default,
-                    self._graph.nodes,
-                    operator.itemgetter(0),
-                    operator.itemgetter(1),
-            ):
-                nx.set_node_attributes(self._graph, values=values, name=name)
+            if isinstance(default, dict):
+                nx.set_node_attributes(self._graph, values=default, name=name)
+            else:
+                simple_defaults[name] = default
 
-        if default_type := defaults.get('type'):
-            type_count = sum(1 for n, d in self._graph.nodes(data='type') if d == default_type)
-            if type_count:
-                self._graph.graph['node_types'][default_type] += type_count
+        if simple_defaults:
+            self._apply_defaults(self._graph.nodes(data=True), simple_defaults, is_node=True)
 
     def _rectify_edge_attributes(self, **defaults):
+        simple_defaults = {}
         for name, default in defaults.items():
-            if values := self._rectified_values(
-                    name,
-                    default,
-                    self._graph_edges,
-                    lambda x: tuple(x[:-1]),
-                    lambda x: x[-1]
-            ):
-                nx.set_edge_attributes(self._graph, values=values, name=name)
+            if isinstance(default, dict):
+                nx.set_edge_attributes(self._graph, values=default, name=name)
+            else:
+                simple_defaults[name] = default
 
-        if default_type := defaults.get('type'):
-            type_count = sum(1 for *_, d in self._graph_edges(data='type') if d == default_type)
-            if type_count:
-                self._graph.graph['edge_types'][default_type] += type_count
+        if simple_defaults:
+            self._apply_defaults(self._graph_edges(data=True), simple_defaults, is_node=False)
 
     def _finalize_graph(self, **node_attributes):
         self._rectify_node_attributes(**node_attributes)
