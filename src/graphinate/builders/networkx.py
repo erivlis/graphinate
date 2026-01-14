@@ -58,13 +58,15 @@ class NetworkxBuilder(Builder):
 
     def _populate_nodes(self, node_type_absolute_id: NodeTypeAbsoluteId, **kwargs: Any):
         """Populate graph nodes based on the provided model and ID."""
+        # Optimization: Hoist parent_node_id calculation out of the loop
+        parent_node_id = self._parent_node_id(node_type_absolute_id, **kwargs)
+
         for node_model in self.model.node_models[node_type_absolute_id]:
             unique = node_model.uniqueness
             node_model_label = node_model.label
             is_label_callable = callable(node_model_label)
 
             for node in node_model.generator(**kwargs):
-                parent_node_id = self._parent_node_id(node_type_absolute_id, **kwargs)
                 node_lineage = (*parent_node_id, node.key) if parent_node_id is not UniverseNode else (node.key,)
                 node_id = (node.key,) if unique else node_lineage
 
@@ -76,22 +78,9 @@ class NetworkxBuilder(Builder):
                 if node_type == 'tuple':
                     node_type = node_model.type.lower()
 
-                if node_id in self._graph:
-                    logger.debug("Updating node. ID: {}, Label: {}", node_id, label)
-
-                    match node_model.multiplicity:
-                        case Multiplicity.ADD:
-                            self._graph.nodes[node_id]['value'] = [self._graph.nodes[node_id]['value'] + node.value]
-                        case Multiplicity.ALL:
-                            self._graph.nodes[node_id]['value'].append(node.value)
-                        case Multiplicity.FIRST:
-                            ...
-                        case Multiplicity.LAST:
-                            self._graph.nodes[node_id]['value'] = [node.value]
-
-                    self._graph.nodes[node_id]['magnitude'] += 1
-                    self._graph.nodes[node_id]['updated'] = utcnow()
-                else:
+                try:
+                    node_data = self._graph.nodes[node_id]
+                except KeyError:
                     logger.debug("Adding node. ID: {}, Label: {}", node_id, label)
                     self._graph.add_node(node_id,
                                          label=label,
@@ -102,6 +91,21 @@ class NetworkxBuilder(Builder):
                                          created=utcnow())
 
                     self._graph.graph['node_types'][node_type] += 1
+                else:
+                    logger.debug("Updating node. ID: {}, Label: {}", node_id, label)
+
+                    match node_model.multiplicity:
+                        case Multiplicity.ADD:
+                            node_data['value'] = [node_data['value'] + node.value]
+                        case Multiplicity.ALL:
+                            node_data['value'].append(node.value)
+                        case Multiplicity.FIRST:
+                            ...
+                        case Multiplicity.LAST:
+                            node_data['value'] = [node.value]
+
+                    node_data['magnitude'] += 1
+                    node_data['updated'] = utcnow()
 
                 if node_model.parent_type is not UniverseNode:
                     logger.debug("Adding edge. Source: {}, Target: {}", parent_node_id, node_id)
