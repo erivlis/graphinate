@@ -1,12 +1,10 @@
-import operator
 from collections import Counter
-from collections.abc import Callable, Hashable, Mapping
+from collections.abc import Hashable, Mapping
 from typing import Any, Union
 
 import networkx as nx
 from loguru import logger
 from mappingtools.transformers import simplify
-from networkx.classes.reportviews import EdgeDataView, EdgeView, NodeDataView, NodeView
 
 from .. import color
 from ..enums import GraphType
@@ -25,9 +23,7 @@ class NetworkxBuilder(Builder):
 
     def _initialize_graph(self):
         """Initialize an empty NetworkX graph with metadata and default attributes."""
-        self._graph: nx.Graph = self.graph_type.value(name=self.model.name,
-                                                      node_types=Counter(),
-                                                      edge_types=Counter())
+        self._graph: nx.Graph = self.graph_type.value(name=self.model.name, node_types=Counter(), edge_types=Counter())
 
     def _graph_edges(self, data, default=None):
         params = {'data': data, 'default': default}
@@ -63,9 +59,11 @@ class NetworkxBuilder(Builder):
             node_model_label = node_model.label
             is_label_callable = callable(node_model_label)
 
+            parent_node_id = self._parent_node_id(node_type_absolute_id, **kwargs)
+            is_universe_parent = parent_node_id is UniverseNode
+
             for node in node_model.generator(**kwargs):
-                parent_node_id = self._parent_node_id(node_type_absolute_id, **kwargs)
-                node_lineage = (*parent_node_id, node.key) if parent_node_id is not UniverseNode else (node.key,)
+                node_lineage = (node.key,) if is_universe_parent else (*parent_node_id, node.key)
                 node_id = (node.key,) if unique else node_lineage
 
                 label = node.key
@@ -77,7 +75,7 @@ class NetworkxBuilder(Builder):
                     node_type = node_model.type.lower()
 
                 if node_id in self._graph:
-                    logger.debug("Updating node. ID: {}, Label: {}", node_id, label)
+                    logger.debug('Updating node. ID: {}, Label: {}', node_id, label)
 
                     match node_model.multiplicity:
                         case Multiplicity.ADD:
@@ -92,25 +90,25 @@ class NetworkxBuilder(Builder):
                     self._graph.nodes[node_id]['magnitude'] += 1
                     self._graph.nodes[node_id]['updated'] = utcnow()
                 else:
-                    logger.debug("Adding node. ID: {}, Label: {}", node_id, label)
-                    self._graph.add_node(node_id,
-                                         label=label,
-                                         type=node_type,
-                                         value=[node.value],
-                                         magnitude=1,
-                                         lineage=list(node_lineage),
-                                         created=utcnow())
+                    logger.debug('Adding node. ID: {}, Label: {}', node_id, label)
+                    self._graph.add_node(
+                        node_id,
+                        label=label,
+                        type=node_type,
+                        value=[node.value],
+                        magnitude=1,
+                        lineage=list(node_lineage),
+                        created=utcnow(),
+                    )
 
                     self._graph.graph['node_types'][node_type] += 1
 
                 if node_model.parent_type is not UniverseNode:
-                    logger.debug("Adding edge. Source: {}, Target: {}", parent_node_id, node_id)
-                    self._graph.add_edge(parent_node_id,
-                                         node_id,
-                                         created=utcnow())
+                    logger.debug('Adding edge. Source: {}, Target: {}', parent_node_id, node_id)
+                    self._graph.add_edge(parent_node_id, node_id, created=utcnow())
 
                 new_kwargs = kwargs.copy()
-                new_kwargs[f"{node_type}_id"] = node.key
+                new_kwargs[f'{node_type}_id'] = node.key
                 self._populate_node_type(node_model.type, **new_kwargs)
 
     def _populate_edges(self, **kwargs: Any):
@@ -122,15 +120,17 @@ class NetworkxBuilder(Builder):
                     edge_label = edge.label(edge_id) if callable(edge.label) else edge.label
                     edge_weight = edge.weight or 1.0
                     edge_type = edge.type.lower()
-                    logger.debug("Adding edge. Source: {}, Target: {}", *edge_id)
+                    logger.debug('Adding edge. Source: {}, Target: {}', *edge_id)
 
                     if isinstance(self._graph, nx.MultiGraph) or edge_id not in self._graph.edges:
-                        self._graph.add_edge(*edge_id,
-                                             label=edge_label,
-                                             type=edge_type,
-                                             value=[edge.value],
-                                             weight=edge_weight,
-                                             created=utcnow())
+                        self._graph.add_edge(
+                            *edge_id,
+                            label=edge_label,
+                            type=edge_type,
+                            value=[edge.value],
+                            weight=edge_weight,
+                            created=utcnow(),
+                        )
                         self._graph.graph['edge_types'][edge_type] += 1
                     else:
                         self._graph.edges[edge_id]['value'].append(edge.value)
