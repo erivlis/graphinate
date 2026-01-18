@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Graphinate Viewer</title>
     <link rel="modulepreload"
           href="https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/dist/tweakpane.min.js"
@@ -10,7 +11,7 @@
           href="https://cdn.jsdelivr.net/npm/@tweakpane/plugin-essentials@0.2.1/dist/tweakpane-plugin-essentials.min.js"
           integrity="sha256-VYrWNKBoz1vsS026wJe4Zvb5/r8kGOSTfIBcmLdOA1g="
           crossorigin="anonymous">
-    <script type="module" defer>
+    <script type="module">
         // Import ES module
         import * as Tweakpane from 'https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/dist/tweakpane.min.js';
         import * as TweakpaneEssentialsPlugin
@@ -64,7 +65,7 @@
 </head>
 <body>
 <div id="3d-graph"></div>
-<script type="module" lang="javascript">
+<script type="module">
     import * as THREE from 'https://esm.sh/three';
     import {scaleLinear, interpolateRgb, color as d3Color} from 'https://esm.sh/d3';
 
