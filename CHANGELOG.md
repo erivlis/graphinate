@@ -1,3 +1,23 @@
+## v0.13.0 (2026-01-18)
+
+### Feat
+
+- make NumPy an optional dependency for color mapping.
+- implement GraphEngine with event-driven architecture and observer pattern
+- expose graph properties as read-only; clarify node generator argument rules.
+
+### Refactor
+
+- move Multiplicity enum, modernize type hints, and simplify logic.
+- align GraphModel import path with package structure.
+- streamline engine imports for builder module rename.
+- rename builder modules by removing leading underscores.
+
+### Perf
+
+- Cache namedtuple class creation in modeling.py (#35)
+- optimize Counter updates in NetworkX builder
+
 ## v0.12.0 (2025-12-09)
 
 ### Feat
