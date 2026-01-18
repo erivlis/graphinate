@@ -107,7 +107,7 @@
 `;
 
       //**const fetchURL = window.location.href;
-      const fetchURL = `${window.location.protocol}//${window.location.host}/graphql`;
+      const fetchURL = `${globalThis.location.protocol}//${globalThis.location.host}/graphql`;
 
       function httpUrlToWebSocketUrl(url) {
         const parsedURL = new URL(url);

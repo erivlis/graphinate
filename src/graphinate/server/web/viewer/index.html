@@ -356,12 +356,11 @@
                     .interpolate(interpolateRgb) // Use interpolateRgb to create a color scale
                     .range([link.colors.source, link.colors.target]); // Define the range of colors
 
-                const colors = new Float32Array([].concat(
-                    ...[0, 1]
-                        .map(nodeColorScale)
-                        .map(d3Color)
-                        .map(({r, g, b}) => [r, g, b].map(v => v / 255)
-                        )));
+                const colors = new Float32Array([0, 1]
+                    .map(nodeColorScale)
+                    .map(d3Color)
+                    .flatMap(({r, g, b}) => [r, g, b].map(v => v / 255))
+                );
 
                 const material = new THREE.LineBasicMaterial({vertexColors: true});
                 const geometry = new THREE.BufferGeometry();
@@ -401,7 +400,7 @@
 
         const visibleLinks = [];
         for (const link of gData.links) {
-           if (visibleNodes.find((node) => node.id === link.source.id) && visibleNodes.find((node) => node.id === link.target.id)) {
+           if (visibleNodes.some((node) => node.id === link.source.id) && visibleNodes.some((node) => node.id === link.target.id)) {
                 visibleLinks.push(link);
             }
         }
