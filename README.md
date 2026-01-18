@@ -252,4 +252,4 @@ ______________________________________________________________________
 
 <img alt="Work on my Machine" src="https://forthebadge.com/images/badges/works-on-my-machine.svg">
 
-Copyright © 2023-2025 Eran Rivlis
+Copyright © 2023-2026 Eran Rivlis
