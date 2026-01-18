@@ -1,3 +1,18 @@
+## v0.13.1 (2026-01-18)
+
+### Fix
+
+- update copyright year in README.md to 2026
+- refactor imports and enhance logging in GraphQL and NetworkX modules
+- update Static Mode to read from globalThis for data injection
+- update __all__ export order and add docstrings for clarity
+- update fetchURL to use globalThis and optimize color array creation
+- remove unnecessary lang attribute from script tag in index.html
+
+### Perf
+
+- hoist invariant calculation in NetworkxBuilder (#43)
+
 ## v0.13.0 (2026-01-18)
 
 ### Feat
