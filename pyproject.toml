@@ -20,6 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Free Threading :: 2 - Beta", # Build works, but multi-threaded testing might be incomplete.
     "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
     "Natural Language :: English",
     "Operating System :: OS Independent",
