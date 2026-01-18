@@ -6,12 +6,12 @@ import networkx as nx
 from loguru import logger
 from mappingtools.transformers import simplify
 
-from .builder import Builder
 from .. import color
 from ..enums import GraphType, Multiplicity
 from ..modeling import GraphModel
 from ..tools import utcnow
 from ..typing import NodeTypeAbsoluteId, UniverseNode
+from .builder import Builder
 
 
 class NetworkxBuilder(Builder):
