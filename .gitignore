@@ -783,3 +783,4 @@ cython_debug/
 
 /.idea/**
 .qodo
+docs/.dates_cache.json
