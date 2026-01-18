@@ -369,4 +369,4 @@ def model(name: str):
     return GraphModel(name=name)
 
 
-__all__ = ('GraphModel', 'model', 'elements')
+__all__ = ('GraphModel', 'elements', 'model')

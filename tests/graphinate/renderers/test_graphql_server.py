@@ -43,7 +43,7 @@ class SendStub:
     """A ASGI send callable that does nothing."""
 
     async def __call__(self, message):
-        pass
+        """A ASGI send callable that does nothing."""
 
 
 class RequestStub(Request):
@@ -174,9 +174,9 @@ def test_schema_generator_or_response_error_handling(monkeypatch, request_stub):
     # mock strawberry-graphql schema module
     class FailingSchemaGenerator:
         def __init__(self, data):
-            pass
+            """The class raises an error. No need to initiate anything"""
 
-        def OpenAPIResponse(self, request):  # noqa: N802
+        def OpenAPIResponse(self, request):  # noqa: N802 # NOSONAR
             raise RuntimeError("Schema generation failed")
 
     monkeypatch.setattr(graphql_mod, "SchemaGenerator", FailingSchemaGenerator)
