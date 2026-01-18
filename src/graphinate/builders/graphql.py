@@ -6,7 +6,8 @@ import math
 import operator
 from collections.abc import Callable
 from datetime import datetime
-from enum import Enum, EnumType
+from enum import Enum
+from enum import EnumMeta as EnumType  # support Python 3.10
 from typing import Any, Optional
 
 import inflect
