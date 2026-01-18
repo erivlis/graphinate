@@ -123,10 +123,6 @@ class GraphQLBuilder(NetworkxBuilder):
         def size(self) -> int:
             return self.nx_graph.size(weight='weight')
 
-        # @strawberry.field()
-        # def girth(self) -> int:
-        #     return min(len(cycle) for cycle in nx.simple_cycles(self.graph))
-
         @strawberry.field()
         def average_degree(self) -> float:
             return self.nx_graph.number_of_nodes() and (
@@ -463,7 +459,7 @@ class GraphQLBuilder(NetworkxBuilder):
             return GraphQLBuilder.Measure(name=measure.name, value=value)
 
         # query_class_dict['measure'] = strawberry.field(resolver=graph_measure)
-        # query_class_dict['__annotations__']['measure'] = float
+        # query_class_dict['__annotations__']['measure'] = float | int
         self.add_field_resolver(query_class_dict, 'measure', graph_measure)
         # endregion
 

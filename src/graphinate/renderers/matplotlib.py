@@ -78,5 +78,4 @@ def plot(graph: nx.Graph,
     fig.suptitle(graph.name)
     fig.tight_layout()
 
-    # pyplot.axis("off")
     pyplot.show()

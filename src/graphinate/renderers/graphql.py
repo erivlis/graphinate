@@ -3,6 +3,7 @@ import webbrowser
 from typing import Any
 
 import strawberry
+from loguru import logger
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
@@ -64,6 +65,8 @@ def _starlette_app(graphql_app: strawberry.asgi.GraphQL | None = None,
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):  # pragma: no cover
+        if app.debug:
+            logger.debug("Starting Starlette lifespan.")
         if kwargs.get('browse'):
             open_url('viewer')
         yield

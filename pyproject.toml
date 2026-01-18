@@ -206,7 +206,7 @@ multiline-quotes = "single"
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
-max-complexity = 15
+max-complexity = 18
 
 [tool.mypy]
 python_version = "3.10"

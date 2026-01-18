@@ -114,6 +114,7 @@ class NetworkxBuilder(Builder):
     def _populate_edges(self, **kwargs: Any):
         """Populate graph edges based on defined connections."""
         for edge_model, edge_generators in self.model.edge_generators.items():
+            logger.debug("Adding from {}", edge_model)
             for edge_generator in edge_generators:
                 for edge in edge_generator(**kwargs):
                     edge_id = ((edge.source,), (edge.target,))
