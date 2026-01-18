@@ -1,19 +1,17 @@
-import operator
 from collections import Counter
-from collections.abc import Callable, Hashable, Mapping
+from collections.abc import Hashable, Mapping
 from typing import Any, Union
 
 import networkx as nx
 from loguru import logger
 from mappingtools.transformers import simplify
-from networkx.classes.reportviews import EdgeDataView, EdgeView, NodeDataView, NodeView
 
+from .builder import Builder
 from .. import color
-from ..enums import GraphType
-from ..modeling import GraphModel, Multiplicity
+from ..enums import GraphType, Multiplicity
+from ..modeling import GraphModel
 from ..tools import utcnow
 from ..typing import NodeTypeAbsoluteId, UniverseNode
-from .builder import Builder
 
 
 class NetworkxBuilder(Builder):
@@ -157,10 +155,8 @@ class NetworkxBuilder(Builder):
             # Apply static defaults
             for name, default in static_defaults:
                 if name not in data:
-                    if default:  # Truthy static
-                        data[name] = default
-                    else:  # Falsy static (e.g. value=[]) -> Set ID
-                        data[name] = element_id
+                    # Truthy static else Falsy static (e.g. value=[]) -> Set ID
+                    data[name] = default if default else element_id
 
             # Apply callable defaults
             for name, default in callable_defaults:

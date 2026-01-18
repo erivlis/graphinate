@@ -3,11 +3,11 @@ import itertools
 from collections import defaultdict, namedtuple
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
-from enum import Enum, auto
 from functools import lru_cache
 from types import MappingProxyType
 from typing import Any, Union
 
+from .enums import Multiplicity
 from .typing import Edge, Element, Extractor, Items, Node, NodeTypeAbsoluteId, UniverseNode
 
 
@@ -16,7 +16,7 @@ class GraphModelError(Exception):
 
 
 @lru_cache(maxsize=128)
-def _get_namedtuple_class(type_name: str, field_names: tuple[str] | str) -> type:
+def _get_namedtuple_element_class(type_name: str, field_names: tuple[str] | str) -> type[Element]:
     return namedtuple(type_name, field_names)
 
 
@@ -30,11 +30,11 @@ def element(element_type: str | None, field_names: Iterable[str] | str | None = 
     Returns:
         Element Supplier Callable
     """
-    if element_type and field_names:
-        if isinstance(field_names, str):
-            return _get_namedtuple_class(element_type, field_names)
-        return _get_namedtuple_class(element_type, tuple(field_names))
-    return tuple
+
+    if not isinstance(field_names, str):
+        field_names = tuple(field_names)
+
+    return _get_namedtuple_element_class(element_type, field_names) if element_type and field_names else tuple
 
 
 def extractor(obj: Any, key: Extractor | None = None) -> str | None:
@@ -96,13 +96,6 @@ def elements(iterable: Iterable[Any],
 
         kwargs = {k: extractor(item, v) for k, v in getters.items()}
         yield create_element(**kwargs)
-
-
-class Multiplicity(Enum):
-    ADD = auto()
-    ALL = auto()
-    FIRST = auto()
-    LAST = auto()
 
 
 @dataclass
@@ -376,4 +369,4 @@ def model(name: str):
     return GraphModel(name=name)
 
 
-__all__ = ('GraphModel', 'Multiplicity', 'model')
+__all__ = ('GraphModel', 'model', 'elements')

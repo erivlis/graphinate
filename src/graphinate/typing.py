@@ -16,9 +16,6 @@ import networkx as nx
 import networkx_mermaid as nxm
 import strawberry
 
-NodeTuple: TypeAlias = tuple[str, Any]
-EdgeTuple: TypeAlias = tuple[str, str, Any]
-
 IdentifierStr = NewType('IdentifierStr', str)
 IdentifierStr.__doc__ = 'A string that is a valid Python identifier (i.e., `isidentifier()` is True).'
 
@@ -30,14 +27,17 @@ class UniverseNode:
     """The UniverseNode Type. All Node Types are the implicit children of the Universe Node Type."""
 
 
+NodeTuple: TypeAlias = tuple[str, ...]
+EdgeTuple: TypeAlias = tuple[str, str, ...]
+
 # A node in a graph.
-Node = Union[type[NamedTuple], NodeTuple]  # noqa: UP007
+Node: TypeAlias = type[NamedTuple] | NodeTuple  # noqa: UP007
 
 # An edge in a graph.
-Edge = Union[type[NamedTuple], EdgeTuple]  # noqa: UP007
+Edge: TypeAlias = type[NamedTuple] | EdgeTuple  # noqa: UP007
 
 # An element in a graph.
-Element = Union[Node, Edge]  # noqa: UP007
+Element: TypeAlias = Node | Edge  # noqa: UP007
 
 # A source of data for an element.
 Extractor = Union[str, Callable[[Any], str]]  # noqa: UP007

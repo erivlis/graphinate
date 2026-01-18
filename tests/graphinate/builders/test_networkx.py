@@ -6,8 +6,8 @@ import pytest
 import graphinate
 import graphinate.builders
 import graphinate.enums
-from graphinate import GraphType
-from graphinate.modeling import GraphModel, Multiplicity
+from graphinate import GraphType, Multiplicity
+from graphinate.modeling import GraphModel
 from graphinate.typing import UniverseNode
 
 graph_types = [

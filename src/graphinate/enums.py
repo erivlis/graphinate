@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 
 import networkx as nx
 from typing_extensions import Self
@@ -42,3 +42,10 @@ class GraphType(Enum):
             return cls.MultiGraph
         else:
             return cls.Graph
+
+
+class Multiplicity(Enum):
+    ADD = auto()
+    ALL = auto()
+    FIRST = auto()
+    LAST = auto()
