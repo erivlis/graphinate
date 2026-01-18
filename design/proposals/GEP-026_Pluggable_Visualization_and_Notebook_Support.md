@@ -38,7 +38,7 @@ Currently, Graphinate requires running a Uvicorn server (`graphinate.server`) to
 The current `index.html` fetches data via `fetch('/graphql')`. We will refactor the frontend logic to support a **Data Injection Strategy**.
 
 *   **Server Mode (Current):** `fetch('/graphql')`
-*   **Static Mode (New):** Read from `window.GRAPHINATE_DATA` (injected JSON).
+*   **Static Mode (New):** Read from `globalThis.GRAPHINATE_DATA` (injected JSON).
 
 ### 2. Python API
 
