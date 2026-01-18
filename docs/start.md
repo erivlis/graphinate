@@ -20,7 +20,19 @@ In addition, it has the following interfaces for ease of use: a CLI and a GraphQ
     pip install graphinate[server]
     ```
 
-=== "uv"
+    To install with plotting support (scipy):
+
+    ```shell
+    pip install graphinate[plot]
+    ```
+
+    To install with numpy support (faster color mapping):
+
+    ```shell
+    pip install graphinate[numpy]
+    ```
+
+=== "uv sync"
 
     ```shell
     uv add graphinate
@@ -30,6 +42,18 @@ In addition, it has the following interfaces for ease of use: a CLI and a GraphQ
 
     ```shell
     uv add graphinate --extra server
+    ```
+
+    To install with plotting support (scipy):
+
+    ```shell
+    uv add graphinate --extra plot
+    ```
+
+    To install with numpy support (faster color mapping):
+
+    ```shell
+    uv add graphinate --extra numpy
     ```
 
 **Graphinate** officially supports Python >= 3.10.
