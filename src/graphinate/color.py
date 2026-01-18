@@ -4,7 +4,12 @@ from typing import Union
 
 import matplotlib as mpl
 import networkx as nx
-import numpy as np
+
+try:
+    import numpy as np
+    HAS_NUMPY = True
+except ImportError:
+    HAS_NUMPY = False
 
 
 @functools.lru_cache
@@ -34,19 +39,28 @@ def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = 
 
     type_lookup = {t: i for i, t in enumerate(final_keys)}
 
-    color_values_ndarray = np.fromiter(
-        (type_lookup.get(graph.nodes[node].get('type'), 0) for node in graph.nodes),
-        dtype=int,
-        count=len(graph),
-    )
-    if len(color_values_ndarray) > 1:
-        low, high = color_values_ndarray.min(), color_values_ndarray.max()
+    if HAS_NUMPY:
+        color_indices = np.fromiter(
+            (type_lookup.get(graph.nodes[node].get('type'), 0) for node in graph.nodes),
+            dtype=int,
+            count=len(graph),
+        )
+        if len(color_indices) > 1:
+            low, high = color_indices.min(), color_indices.max()
+        else:
+            low = high = 0
     else:
-        low = high = 0
+        color_indices = [type_lookup.get(graph.nodes[node].get('type'), 0) for node in graph.nodes]
+        if len(color_indices) > 1:
+            low, high = min(color_indices), max(color_indices)
+        else:
+            low = high = 0
 
     norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
     mapper = mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
-    colors = mapper.to_rgba(color_values_ndarray).tolist()
+
+    # mapper.to_rgba handles both numpy arrays and lists
+    colors = mapper.to_rgba(color_indices).tolist()
 
     color_mapping = dict(zip(graph.nodes, colors))
     return color_mapping

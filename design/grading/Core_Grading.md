@@ -4,7 +4,7 @@ This document evaluates the core utility namespaces (`color`, `enums`, `tools`, 
 
 ## 1. `color.py`
 
-*   **Efficiency (Shannon):** 4/5. Uses `functools.lru_cache` to avoid recomputing color mappings. Vectorized operations with `numpy` are efficient.
+*   **Efficiency (Shannon):** 4/5. Uses `functools.lru_cache` to avoid recomputing color mappings. Dynamically uses `numpy` if available for vectorized operations, falling back to pure Python otherwise.
 *   **Safety (The Golem):** 4/5. `color_hex` validates input ranges.
 *   **Clarity (Feynman):** 3/5. `node_color_mapping` has some complex logic regarding `node_type_keys` filtering that could be simplified or better commented.
 *   **Verdict:** **A-**.

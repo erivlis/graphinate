@@ -1,5 +1,4 @@
 import networkx as nx
-import numpy as np
 import pytest
 
 from graphinate.color import color_hex, node_color_mapping
@@ -59,8 +58,8 @@ def test_node_color_mapping_multiple_types():
 
     # Assert
     assert len(color_map) == 3
-    assert np.array_equal(color_map['u1'], color_map['u2'])  # Same type, same color
-    assert not np.array_equal(color_map['u1'], color_map['p1'])  # Different types, different colors
+    assert color_map['u1'] == color_map['u2']  # Same type, same color
+    assert color_map['u1'] != color_map['p1']  # Different types, different colors
 
 
 def test_node_color_mapping_filters_generic_node_type():
@@ -77,10 +76,10 @@ def test_node_color_mapping_filters_generic_node_type():
 
     # Assert
     # 'user' and 'post' should have distinct colors
-    assert not np.array_equal(color_map['u1'], color_map['p1'])
+    assert color_map['u1'] != color_map['p1']
     # 'node' type should map to the first color in the sequence (same as 'user' in this case)
     # because 'user' will be at index 0 and 'post' at index 1 after filtering.
-    assert np.array_equal(color_map['n1'], color_map['u1'])
+    assert color_map['n1'] == color_map['u1']
 
 
 def test_node_color_mapping_with_only_generic_node_type():
@@ -96,7 +95,7 @@ def test_node_color_mapping_with_only_generic_node_type():
 
     # Assert
     assert len(color_map) == 2
-    assert np.array_equal(color_map['n1'], color_map['n2'])  # All nodes get the same color
+    assert color_map['n1'] == color_map['n2']  # All nodes get the same color
 
 
 def test_node_color_mapping_no_node_types_in_graph():
@@ -111,7 +110,7 @@ def test_node_color_mapping_no_node_types_in_graph():
     # Assert
     # Without `node_types`, all nodes get the default color (index 0)
     assert len(color_map) == 2
-    assert np.array_equal(color_map['u1'], color_map['p1'])
+    assert color_map['u1'] == color_map['p1']
 
 
 def test_node_color_mapping_equivalence():
