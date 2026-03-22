@@ -8,6 +8,7 @@
 | **Status**  | Draft                         |
 | **Type**    | Standards Track               |
 | **Created** | 2025-12-25                    |
+| **Updated** | 2026-03-22                    |
 
 ## Abstract
 
@@ -66,15 +67,16 @@ def commit(repo_id):
 Use Python's type system to declare dependencies.
 
 ```python
+from typing import Annotated
 from graphinate import ParentId
 
 
 @model.node(parent_type='repository')
-def commit(rid: ParentId['repository']):
+def commit(rid: Annotated[str, ParentId('repository')]):
     ...
 ```
 
-* **Pros:** Self-documenting, leverages IDE support, very Pythonic.
+* **Pros:** Self-documenting, leverages IDE support, very Pythonic, allows arbitrary argument names.
 * **Cons:** Requires runtime inspection of type hints (reflection).
 
 ### Option 3: Context Object
@@ -91,10 +93,27 @@ def commit(ctx: GenerationContext):
 * **Pros:** Simple signature, extensible.
 * **Cons:** "God object" anti-pattern, less clear what specific data the function needs.
 
+## Architectural Impact & Execution Plan (Option 2)
+
+Implementing the type-hinting approach requires changes across the modeling and execution layers.
+
+### 1. The Semantic Primitive (`graphinate.typing`)
+We will introduce `ParentId` as an annotation marker. Using `typing.Annotated` is the modern Pythonic way to attach runtime metadata to type hints without breaking static type checkers.
+
+### 2. The Modeling Layer (`graphinate.modeling`)
+*   **Inspection:** The `@model.node` decorator will use `typing.get_type_hints(..., include_extras=True)` to parse the signature of the generator function.
+*   **State Restructuring:** The `NodeModel` class will be updated. Instead of storing a simple `parameters: set[str]`, it will store a `dependencies: dict[str, str]` mapping the parameter name to the required parent node type.
+*   **Validation:** The draconian `_validate_node_parameters` will be relaxed. It will allow arbitrary arguments, ensuring only that required parent dependencies are satisfied by the declared type hints or the fallback naming convention.
+
+### 3. The Execution Layer (`graphinate.builders.networkx`)
+*   The `_populate_nodes` engine loop currently builds the child `kwargs` by strictly appending `{node_type}_id`.
+*   It will be updated to consult the `NodeModel.dependencies` map, injecting the parent ID into the exact parameter name requested by the child generator.
+*   Arbitrary `**kwargs` passed from the CLI or Server will flow through the generators without triggering validation errors.
+
 ## Backwards Compatibility
 
 The current naming convention (`{node_type}_id`) should be preserved as a "default fallback" to maintain backward
-compatibility. The new explicit mechanisms will take precedence if present.
+compatibility. If a generator argument has no type hint but matches the `_id` suffix rule, it will be treated as an implicit dependency. The new explicit mechanisms will take precedence if present.
 
 ## Reference Implementation
 
