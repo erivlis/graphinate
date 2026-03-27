@@ -54,10 +54,13 @@ class NetworkxBuilder(Builder):
 
     def _populate_nodes(self, node_type_absolute_id: NodeTypeAbsoluteId, **kwargs: Any):
         """Populate graph nodes based on the provided model and ID."""
+        node_types_counter = self._graph.graph['node_types']
+
         for node_model in self.model.node_models[node_type_absolute_id]:
             unique = node_model.uniqueness
             node_model_label = node_model.label
             is_label_callable = callable(node_model_label)
+            has_parent = node_model.parent_type is not UniverseNode
 
             parent_node_id = self._parent_node_id(node_type_absolute_id, **kwargs)
 
@@ -100,20 +103,21 @@ class NetworkxBuilder(Builder):
                         created=utcnow(),
                     )
 
-                    self._graph.graph['node_types'][node_type] += 1
+                    node_types_counter[node_type] += 1
 
-                if node_model.parent_type is not UniverseNode:
+                if has_parent:
                     logger.debug('Adding edge. Source: {}, Target: {}', parent_node_id, node_id)
                     self._graph.add_edge(parent_node_id, node_id, created=utcnow())
 
-                new_kwargs = kwargs.copy()
-                new_kwargs[f'{node_type}_id'] = node.key
-                self._populate_node_type(node_model.type, **new_kwargs)
+                next_id_key = f'{node_type}_id'
+                kwargs[next_id_key] = node.key
+                self._populate_node_type(node_model.type, **kwargs)
+                del kwargs[next_id_key]
 
     def _populate_edges(self, **kwargs: Any):
         """Populate graph edges based on defined connections."""
         for edge_model, edge_generators in self.model.edge_generators.items():
-            logger.debug("Adding from {}", edge_model)
+            logger.debug('Adding from {}', edge_model)
             for edge_generator in edge_generators:
                 for edge in edge_generator(**kwargs):
                     edge_id = ((edge.source,), (edge.target,))
