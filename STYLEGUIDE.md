@@ -1,12 +1,13 @@
 # Style Guide
 
-This document outlines the coding, testing, and documentation style guidelines for the Graphinate project. These
-guidelines are meant to complement established standards like PEP 8.
+This document outlines the coding, testing, and documentation style guidelines for the project. These guidelines are
+meant to complement established standards like PEP 8.
 
 ## Linting and Formatting
 
 To maintain a consistent codebase, we use the following tools for linting and formatting:
 
+* **`commitzen`**: For enforcing commit message conventions. This helps maintain a clean and understandable Git history.
 * **`ruff`**: For linting and formatting Python code. The configuration is defined in `pyproject.toml`. It's recommended
   to integrate `ruff` into your IDE to get real-time feedback.
 * **`mdformat`**: For formatting Markdown files, including documentation. This ensures a consistent style across all our
@@ -35,6 +36,7 @@ Tests are written using the `pytest` framework.
 * **Structure**: Tests should follow the "Arrange, Act, Assert" pattern to ensure clarity and separation of concerns.
 * **Fixtures**: Use `pytest` fixtures for setup and teardown logic. Place common fixtures in `tests/conftest.py`.
 * **Mocks**: Use the `pytest-mock` library for mocking dependencies.
+* **Floating Tests**: For tests that involve floating-point comparisons, use `pytest.approx` to handle precision issues.
 
 ## Documentation Style
 
@@ -67,6 +69,9 @@ To maintain a clean and understandable version history, we follow these Git prac
   ```
   feat: add user authentication service
   ```
+
+  This is enacted by the `commitzen` tool, which will follow this format when making commits.
+  See [cz.toml](./cz.toml) for the configuration.
 
 * **Branching**: Create new branches for each feature or bug fix. Name branches descriptively, like `feat/add-auth` or
   `fix/login-bug`.
