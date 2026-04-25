@@ -1,3 +1,10 @@
+# /// script
+# dependencies = [
+#   "graphinate[server]",
+#   "diskcache",
+#   "musicbrainzngs"
+# ]
+# ///
 import logging
 import operator
 import pathlib
@@ -8,6 +15,7 @@ import diskcache
 import musicbrainzngs
 
 import graphinate
+from graphinate.tools import to_valid_python_identifier
 
 # logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -39,7 +47,7 @@ def music_graph_model(name: str, max_depth: int = 0):
     sleep(1)
     root_artist = result.get('artist-list', [])[0] if result else None
 
-    def artists(parent_artist, artist, depth):
+    def artists(parent_artist, artist, relationship, depth):
         logger.info(f"Current depth: {depth}")
         artist_id = artist.get('id')
         if artist_id not in artists_cache:
@@ -49,27 +57,28 @@ def music_graph_model(name: str, max_depth: int = 0):
 
         artist = artists_cache.get(artist_id)
 
-        yield parent_artist, artist
+        yield parent_artist, artist, relationship
 
         if depth < max_depth:
             related_artist_ids = set()
             for item in artist.get('artist-relation-list', []):
                 related_artist = item.get('artist')
                 related_artist_id = related_artist.get('id')
+                related_artist_relationship = to_valid_python_identifier(item.get('type', '_unknown_'))
                 if related_artist_id not in related_artist_ids:
                     related_artist_ids.add(related_artist_id)
-                    yield from artists(artist, related_artist, depth + 1)
+                    yield from artists(artist, related_artist, related_artist_relationship, depth + 1)
 
-    def artist_type(value):
+    def get_type(value):
         return value.get('type', '_UNKNOWN_')
 
-    @graph_model.node(artist_type,
+    @graph_model.node(get_type,
                       key=operator.itemgetter('id'),
                       label=operator.itemgetter('name'),
                       multiplicity=graphinate.Multiplicity.FIRST)
     def node():
         yielded = set()
-        for a, b in artists(None, root_artist, 0):
+        for a, b, t in artists(None, root_artist, None, 0):
             if a and ((a_id := a.get('id')) not in yielded):
                 yielded.add(a_id)
                 yield a
@@ -77,11 +86,11 @@ def music_graph_model(name: str, max_depth: int = 0):
                 yielded.add(b_id)
                 yield b
 
-    @graph_model.edge()
+    @graph_model.edge(get_type)
     def edge():
-        for a, b in artists(None, root_artist, 0):
+        for a, b, t in artists(None, root_artist, None, 0):
             if a:
-                yield {'source': a.get('id'), 'target': b.get('id')}
+                yield {'source': a.get('id'), 'target': b.get('id'), 'type': t}
 
     return graph_model
 
@@ -90,10 +99,12 @@ if __name__ == '__main__':
     from gui import ListboxChooser
 
     artist_names = [
-        'Alice in Chains',
+        'Angine de Poitrine',
         'Beatles',
+        'Brand X',
         'Caravan',
         'Charles Mingus',
+        'Chick Corea',
         'Dave Brubeck',
         'Dave Douglas',
         'David Bowie',
@@ -131,10 +142,14 @@ if __name__ == '__main__':
         'Stone Temple Pilots',
         'System of a Down',
         'Thelonious Monk',
+        'Vienna Art Orchestra',
         'Weather Report',
         'Wings',
         'Yes',
     ]
+
+    # artists_cache = diskcache.Cache(directory=cache_dir(), eviction_policy='none')
+    # artist_names = (artists_cache.get(i).get('name') for i in artists_cache)
 
     listbox_chooser = ListboxChooser('Choose Artist/s', {name: name for name in artist_names})
 

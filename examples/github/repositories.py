@@ -1,3 +1,9 @@
+# /// script
+# dependencies = [
+#   "graphinate[server]",
+#   "PyGithub"
+# ]
+# ///
 import itertools
 import operator
 import pathlib

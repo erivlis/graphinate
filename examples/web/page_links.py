@@ -1,3 +1,11 @@
+# /// script
+# dependencies = [
+#   "graphinate[server]",
+#   "beautifulsoup4",
+#   "lxml",
+#   "requests"
+# ]
+# ///
 from urllib.parse import urlparse
 
 import requests

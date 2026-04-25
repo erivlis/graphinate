@@ -1,3 +1,8 @@
+# /// script
+# dependencies = [
+#   "graphinate[server]"
+# ]
+# ///
 import operator
 
 import graphs

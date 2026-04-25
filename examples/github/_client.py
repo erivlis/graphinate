@@ -12,7 +12,7 @@ from github.NamedUser import NamedUser
 from github.Repository import Repository
 
 # define a 'GITHUB_TOKEN' Env Var.
-token = os.getenv('GITHUB_TOKEN')
+token = os.getenv('GITHUB_TOKEN', input("GitHub Token: "))
 
 # using an access token
 auth = Auth.Token(token)

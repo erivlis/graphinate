@@ -15,12 +15,12 @@ class Materializers(Enum):
         NetworkX: create a NetworkX Graph and plot+show it with matplotlib
         NetworkX_with_edge_labels: create a NetworkX Graph and plot+show it with matplotlib
     """
-    D3Graph: tuple = (builders.D3Builder, lambda d: print(json.dumps(d, indent=2, default=str)))
-    GraphQL: tuple = (builders.GraphQLBuilder, graphql.server)
-    NetworkX: tuple = (builders.NetworkxBuilder, matplotlib.plot)
-    NetworkX_with_edge_labels: tuple = (builders.NetworkxBuilder,
+    D3Graph = (builders.D3Builder, lambda d: print(json.dumps(d, indent=2, default=str)))
+    GraphQL = (builders.GraphQLBuilder, graphql.server)
+    NetworkX = (builders.NetworkxBuilder, matplotlib.plot)
+    NetworkX_with_edge_labels = (builders.NetworkxBuilder,
                                         functools.partial(matplotlib.plot, with_edge_labels=True))
-    Mermaid: tuple = (builders.MermaidBuilder, print)
+    Mermaid = (builders.MermaidBuilder, print)
 
 
 def materialize(model: GraphModel,

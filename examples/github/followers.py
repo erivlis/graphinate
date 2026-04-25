@@ -1,3 +1,9 @@
+# /// script
+# dependencies = [
+#   "graphinate[server]",
+#   "PyGithub"
+# ]
+# ///
 """
 Defines a function `followers_graph_model` that creates a graph model representing GitHub followers.
 It recursively fetches followers of a given user up to a specified maximum depth.

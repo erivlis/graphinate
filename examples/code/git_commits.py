@@ -1,3 +1,9 @@
+# /// script
+# dependencies = [
+#   "GitPython",
+#   "graphinate"
+# ]
+# ///
 import operator
 from pathlib import Path
 from tempfile import TemporaryDirectory

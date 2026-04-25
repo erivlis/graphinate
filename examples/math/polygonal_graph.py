@@ -1,3 +1,8 @@
+# /// script
+# dependencies = [
+#   "graphinate[server,plot]"
+# ]
+# ///
 import networkx as nx
 
 import graphinate

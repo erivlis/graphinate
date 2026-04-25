@@ -5,7 +5,9 @@ from typing import NewType
 
 import networkx as nx
 
-SPECIAL_GRAPHS_ADJACENCY_LISTS = {
+AdjacencyList = NewType('AdjacencyList', dict[int, list[int]])
+
+SPECIAL_GRAPHS_ADJACENCY_LISTS: dict[str, AdjacencyList] = {
     'Buckyball - Truncated Icosahedral Graph': {
         1: [2, 3, 4],
         2: [1, 55, 56],
@@ -690,8 +692,6 @@ SPECIAL_GRAPHS_ADJACENCY_LISTS = {
     }
 }
 
-AdjacencyList = NewType('AdjacencyList', dict[int, list[int]])
-
 
 def ladder_ring_graph(size: int) -> nx.Graph:
     g: nx.Graph = nx.ladder_graph(size)
@@ -759,7 +759,8 @@ def spiral_torus_graph(n, k) -> nx.Graph:
 def k_regular_edges(n, k) -> Iterable[tuple[int, int]]:
     yield from itertools.chain.from_iterable(
         ((i, j) for j in range(i + 1, i + k + 1))
-        for i in range(n-k))
+        for i in range(n - k))
+
 
 def k_regular_graph(n, k) -> nx.Graph:
     g = nx.Graph(k_regular_edges(n, k))
@@ -859,4 +860,3 @@ def atlas():
         nx.set_edge_attributes(g, _type, 'type')
 
     return graph_atlas
-

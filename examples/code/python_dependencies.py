@@ -1,3 +1,9 @@
+# /// script
+# dependencies = [
+#   "graphinate[server]",
+#   "pipdeptree"
+# ]
+# ///
 from pipdeptree._cli import get_options
 from pipdeptree._discovery import get_installed_distributions
 from pipdeptree._models import PackageDAG

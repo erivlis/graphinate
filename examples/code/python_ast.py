@@ -1,3 +1,8 @@
+# /// script
+# dependencies = [
+#   "graphinate[server]"
+# ]
+# ///
 """
 Define functions to create an abstract syntax tree (AST) graph model using the 'graphinate' library.
 The 'ast_graph_model' function parses the AST of a specified class and creates nodes and edges for the graph model.

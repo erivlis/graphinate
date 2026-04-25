@@ -1,3 +1,9 @@
+# /// script
+# dependencies = [
+#   "graphinate[server]",
+#   "magika"
+# ]
+# ///
 import fnmatch
 import operator
 import pathlib

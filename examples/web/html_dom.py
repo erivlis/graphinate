@@ -1,3 +1,10 @@
+# /// script
+# dependencies = [
+#   "graphinate[server]",
+#   "beautifulsoup4",
+#   "requests"
+# ]
+# ///
 import base64
 
 import requests

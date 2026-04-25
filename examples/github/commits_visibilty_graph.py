@@ -1,3 +1,9 @@
+# /// script
+# dependencies = [
+#   "graphinate[server]",
+#   "PyGithub"
+# ]
+# ///
 """
 https://www.pnas.org/doi/10.1073/pnas.0709247105
 """
