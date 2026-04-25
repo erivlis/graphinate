@@ -94,17 +94,19 @@ markdown_extensions:
 
 
 nav:
-  #  - Home: index.md
-  - Introduction: introduction.md
-  - Quick Start: start.md
-  - Tutorial: tutorial.md
-  - Usage: usage/
-  - Examples: examples/
+  - Start:
+    - Home: index.md
+    - Introduction: introduction.md
+    - start.md
+    - Tutorial: tutorial.md
+  - Guide:
+    - Usage: usage/
+    - Examples: examples/
   - Advanced:
-    - Secure IDs: advanced/secure_ids.md
   # - Gallery: gallery/
   # defer to gen-files + literate-nav
-  - Reference: reference/
+    - API Reference: reference/
+    - Secure IDs: advanced/secure_ids.md
   - Development: development.md
   - Acknowledgements: acknowledgements.md
 
@@ -132,7 +134,21 @@ plugins:
   - search:
       lang: en
       separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
-      min_search_length: 3
+#      min_search_length: 3
+#  - meta
+#  - document-dates:
+#      position: bottom         # Display position: top(after title) bottom(end of document), default: top
+#      type: date               # Date type: date datetime timeago, default: date
+#      exclude:                 # List of excluded files (support unix shell-style wildcards)
+#        - temp.md                  # Example: exclude the specified file
+#        - blog/*                   # Example: exclude all files in blog folder, including subfolders
+#        - '*/index.md'             # Example: exclude all index.md files in any subfolders
+#      recently-updated:
+#        limit: 10         # Limit the number of docs displayed
+#        exclude: # Exclude documents you don't want to show
+#          - index.md          # Example: exclude the specified file
+#          - '*/index.md'      # Example: exclude all index.md files in any subfolders
+#          - blog/*            # Example: exclude all files in blog folder, including subfolders
   - gen-files:
       scripts:
         - docs/gen_ref_pages.py
@@ -142,8 +158,8 @@ plugins:
   - git-committers:
       repository: erivlis/graphinate
       branch: main
-  - git-revision-date-localized:
-      enable_creation_date: true
+#  - git-revision-date-localized:
+#      enable_creation_date: true
   - mike:
       # configure version selector
       version_selector: true
