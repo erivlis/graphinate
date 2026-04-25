@@ -18,15 +18,15 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
-      - name: Cache mkdocs-material dependencies
+      - name: Cache mkdocs-materialx dependencies
         uses: actions/cache@v4
         with:
-          key: mkdocs-material-${{ env.cache_id }}
+          key: mkdocs-materialx-${{ env.cache_id }}
           path: .cache
           restore-keys: |
-            mkdocs-material-
+            mkdocs-materialx-
       - run: |
           uv venv
           source .venv/bin/activate
           uv sync --only-group docs
-          mkdocs gh-deploy --force
+          properdocs gh-deploy --force

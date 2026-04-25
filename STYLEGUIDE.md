@@ -40,7 +40,7 @@ Tests are written using the `pytest` framework.
 
 ## Documentation Style
 
-Project documentation is generated using `mkdocs` with the `mkdocs-material` theme.
+Project documentation is generated using `properdocs` with the `mkdocs-materialx` theme.
 
 * **Format**: All documentation is written in Markdown and formatted with `mdformat`.
 * **Admonitions**: Use admonitions to highlight specific information. For example:

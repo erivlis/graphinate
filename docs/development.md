@@ -81,15 +81,15 @@ We use [pytest](https://pytest.org) for testing.
 
 ## Docs
 
-The documentation is built using [MkDocs](https://www.mkdocs.org/) with
-the [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) theme.
+The documentation is built using [ProperDocs](https://properdocs.org/) with
+the [MaterialX](https://github.com/jaywhj/mkdocs-materialx) theme.
 
 ### Test
 
 To serve the documentation locally for testing:
 
 ```shell
-python -m mkdocs serve
+properdocs serve
 ```
 
 ### Build
@@ -97,5 +97,5 @@ python -m mkdocs serve
 To build the static documentation site:
 
 ```shell
-python -m mkdocs build
+properdocs build
 ```

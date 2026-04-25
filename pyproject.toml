@@ -83,7 +83,7 @@ mdformat = [
     "mdformat-tables"
 ]
 docs = [
-    "mkdocs-material>=9.6.22",
+    "mkdocs-materialx",
     "mkdocstrings-python",
     "mkdocs-git-committers-plugin-2",
     "mkdocs-git-revision-date-localized-plugin",
