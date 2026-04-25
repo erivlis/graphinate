@@ -5,10 +5,11 @@ from typing import Any
 import strawberry
 from loguru import logger
 from starlette.applications import Starlette
+from starlette.datastructures import State
 from starlette.requests import Request
-from starlette.responses import RedirectResponse
+from starlette.responses import RedirectResponse, Response
+from starlette.routing import Route, WebSocketRoute
 from starlette.schemas import SchemaGenerator
-from starlette.types import ASGIApp
 from strawberry.asgi import GraphQL
 
 from graphinate.server.starlette import routes
@@ -18,7 +19,7 @@ DEFAULT_PORT: int = 8072
 GRAPHQL_ROUTE_PATH = "/graphql"
 
 
-def _openapi_schema(request: Request) -> ASGIApp:
+def _openapi_schema(request: Request[State]) -> Response:
     """
     Generates an OpenAPI schema for the GraphQL API and other routes.
 
@@ -41,10 +42,11 @@ def _openapi_schema(request: Request) -> ASGIApp:
     }
 
     schema = SchemaGenerator(schema_data)
-    return schema.OpenAPIResponse(request=request)
+    response = schema.OpenAPIResponse(request=request)
+    return response
 
 
-def _graphql_app(graphql_schema: strawberry.Schema) -> strawberry.asgi.GraphQL:
+def _graphql_app(graphql_schema: strawberry.Schema) -> GraphQL:
     """
     Creates a Strawberry GraphQL app with the provided schema.
     Args:
@@ -53,7 +55,7 @@ def _graphql_app(graphql_schema: strawberry.Schema) -> strawberry.asgi.GraphQL:
     Returns:
         strawberry.asgi.GraphQL: The GraphQL app configured with the provided schema.
     """
-    graphql_app = GraphQL(graphql_schema, graphql_ide='apollo-sandbox')
+    graphql_app: GraphQL = GraphQL(graphql_schema, graphql_ide='apollo-sandbox')
     return graphql_app
 
 
@@ -71,25 +73,29 @@ def _starlette_app(graphql_app: strawberry.asgi.GraphQL | None = None,
             open_url('viewer')
         yield
 
+    app_routes: list = [*routes()]
+
+    def redirect_to_viewer(request: Request[State]) -> RedirectResponse:
+        return RedirectResponse(url='/viewer')
+
+    app_routes.append(Route(path='/', endpoint=redirect_to_viewer))
+
+    if graphql_app:
+        app_routes.extend([
+            Route(path=GRAPHQL_ROUTE_PATH, endpoint=graphql_app),
+            WebSocketRoute(path=GRAPHQL_ROUTE_PATH, endpoint=graphql_app),
+            Route(path='/schema', endpoint=_openapi_schema, include_in_schema=False),
+            Route(path='/openapi.json', endpoint=_openapi_schema, include_in_schema=False)
+        ])
+
     app = Starlette(
         lifespan=lifespan,
-        routes=routes()
+        routes=app_routes
     )
 
     from starlette_prometheus import PrometheusMiddleware, metrics
     app.add_middleware(PrometheusMiddleware)
     app.add_route("/metrics", metrics)
-
-    if graphql_app:
-        app.add_route(GRAPHQL_ROUTE_PATH, graphql_app)
-        app.add_websocket_route(GRAPHQL_ROUTE_PATH, graphql_app)
-        app.add_route("/schema", route=_openapi_schema, include_in_schema=False)
-        app.add_route("/openapi.json", route=_openapi_schema, include_in_schema=False)
-
-    def redirect_to_viewer(request):
-        return RedirectResponse(url='/viewer')
-
-    app.add_route('/', redirect_to_viewer)
 
     return app
 
