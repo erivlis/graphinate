@@ -106,6 +106,8 @@ nav:
   # - Gallery: gallery/
   # defer to gen-files + literate-nav
     - API Reference: reference/
+    - advanced/modeling.md
+    - advanced/optimization.md
     - Secure IDs: advanced/secure_ids.md
   - Development: development.md
   - Acknowledgements: acknowledgements.md
@@ -174,7 +176,7 @@ plugins:
             allow_inspection: true
             show_source: false
             heading_level: 3
-            #          show_root_heading: false
+            # show_root_heading: false
             show_category_heading: true
             show_symbol_type_heading: true
             show_symbol_type_toc: true
