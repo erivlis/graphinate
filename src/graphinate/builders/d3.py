@@ -49,7 +49,7 @@ class D3Builder(NetworkxBuilder):
 
         match values_format:
             case 'json':
-                return mappingtools.transformers.strictify(d3graph, value_converter=_convert)
+                return mappingtools.transformers.strictify(d3graph, value_handler=_convert)
             case 'python':
                 return d3graph
             case _:
