@@ -5,10 +5,11 @@
 ### Python
 
 <a href="https://palletsprojects.com/projects/click/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://palletsprojects.com/static/content/projects/click-name.svg" alt="Click Logo"></a>
+<a href="https://ewels.github.io/rich-click/latest/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://ewels.github.io/rich-click/latest/images/rich-click-logo.png" alt="Rich-Click Logo"></a>
 <a href="https://github.com/Delgan/loguru"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://raw.githubusercontent.com/Delgan/loguru/master/docs/_static/img/logo.png" alt="Loguru Logo"></a>
 <a href="https://matplotlib.org/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://matplotlib.org/_static/logo_dark.svg" alt="matplotlib Logo"></a>
 <a href="https://networkx.org/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://networkx.org/_static/networkx_logo.svg" alt="NetworkX Logo"></a>
-<a href="https://www.starlette.io/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://www.starlette.io/img/starlette.svg" alt="Starlette Logo"></a>
+<a href="https://starlette.dev/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://starlette.dev/img/starlette.svg" alt="Starlette Logo"></a>
 <a href="https://strawberry.rocks/"><img style="height: 50px; padding: 5px; background: linear-gradient(-45deg, #FFFFFF, #CCCCCC);" src="https://github.com/strawberry-graphql/strawberry/raw/main/.github/logo.png" alt="Strawberry GraphQL Logo"></a>
 
 ### Javascript and HTML
