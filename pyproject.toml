@@ -30,13 +30,13 @@ classifiers = [
 ]
 keywords = ['graph', 'declarative']
 dependencies = [
-    "click",
     "inflect",
     "loguru",
     "mappingtools",
     "matplotlib",
     "networkx",
     "networkx-mermaid",
+    "rich-click",
     "strawberry-graphql[asgi,opentelemetry]"
 ]
 
