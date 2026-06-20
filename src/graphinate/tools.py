@@ -1,3 +1,4 @@
+import builtins
 import keyword
 import re
 from collections import defaultdict
@@ -65,7 +66,9 @@ class VariableNameManager:
         if s.isdigit():
             s = '_' + s
 
-        if keyword.iskeyword(s) or s in ('None', 'True', 'False'):
+        # 1. Catch strict keywords (automatically catches True, False, None)
+        # 2. Catch built-ins (like list, dict, str, open, id) to prevent shadowing
+        if keyword.iskeyword(s) or s in builtins.__dict__:
             s += '_'
 
         return s
