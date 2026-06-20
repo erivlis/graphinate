@@ -15,7 +15,7 @@ import diskcache
 import musicbrainzngs
 
 import graphinate
-from graphinate.tools import to_valid_python_identifier
+from graphinate.tools import VariableNameManager
 
 # logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -39,6 +39,10 @@ def cache_dir():
 
 
 def music_graph_model(name: str, max_depth: int = 0):
+
+
+    variable_name_manager = VariableNameManager()
+
     graph_model = graphinate.model(f"{name.capitalize()} Graph")
 
     artists_cache = diskcache.Cache(directory=cache_dir(), eviction_policy='none')
@@ -64,7 +68,7 @@ def music_graph_model(name: str, max_depth: int = 0):
             for item in artist.get('artist-relation-list', []):
                 related_artist = item.get('artist')
                 related_artist_id = related_artist.get('id')
-                related_artist_relationship = to_valid_python_identifier(item.get('type', '_unknown_'))
+                related_artist_relationship = variable_name_manager.make_valid(item.get('type', '_unknown_'))
                 if related_artist_id not in related_artist_ids:
                     related_artist_ids.add(related_artist_id)
                     yield from artists(artist, related_artist, related_artist_relationship, depth + 1)
