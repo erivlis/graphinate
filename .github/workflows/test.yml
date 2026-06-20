@@ -17,7 +17,7 @@ jobs:
       matrix:
         python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14", "3.14t" ]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
         with:
@@ -40,12 +40,12 @@ jobs:
           python -m pip install faker httpx pytest pytest-asyncio pytest-cov pytest-mock pytest-randomly pytest-xdist starlette-prometheus uvicorn[standard]
           pytest tests --cov=src --cov-branch --cov-report=xml --junitxml=junit.xml -o junit_family=legacy
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           report_type: test_results
