@@ -1,3 +1,20 @@
+## v0.14.0 (2026-06-20)
+
+### Feat
+
+- introduce utility to sanitize strings into Python identifiers
+
+### Fix
+
+- refactor Starlette application routing
+
+### Refactor
+
+- **cli**: Replaces click with rich-click for an improved CLI experience.
+- **VariableNameManager**: Expands reserved names to include Python built-ins.
+- Introduces VariableNameManager for robust identifier generation.
+- Implements signed IDs for enhanced security and renames node ID functions.
+
 ## v0.13.1 (2026-01-18)
 
 ### Fix
