@@ -19,10 +19,10 @@ from strawberry.types.base import StrawberryType
 from .. import color, converters
 from ..converters import (
     decode_edge_id,
-    decode_id,
+    decode_node_id,
     edge_label_converter,
     encode_edge_id,
-    encode_id,
+    encode_node_id,
     node_label_converter,
 )
 from ..enums import GraphType
@@ -208,7 +208,7 @@ class GraphQLBuilder(NetworkxBuilder):
                     node: tuple,
                     node_data: dict) -> 'GraphQLBuilder.GraphNode':
         kwargs = {
-            'id': encode_id(node),
+            'id': encode_node_id(node),
             'node_id': str(node),
             'type': node_data['type'],
             'label': node_data.get('label', node_label_converter(node)),
@@ -294,7 +294,7 @@ class GraphQLBuilder(NetworkxBuilder):
             def node_neighbors(self,
                                type: 'GraphQLBuilder.GraphNodeType | None' = None,
                                children: bool = False) -> list['GraphQLBuilder.GraphNode']:
-                node = decode_id(self.id)
+                node = decode_node_id(self.id)
                 items = (GraphQLBuilder._graph_node(graphql_types[d['type']], n, d)
                          for n, d in graph.nodes(data=True)
                          if n in graph.neighbors(node))
@@ -315,7 +315,7 @@ class GraphQLBuilder(NetworkxBuilder):
             graph_edge = self._graph_edge
 
             def node_edges(self) -> list[GraphQLBuilder.GraphEdge | None]:
-                node = decode_id(self.id)
+                node = decode_node_id(self.id)
                 return [graph_edge((source, target), data) for source, target, data in graph.edges(node, data=True)]
 
             return node_edges
@@ -332,7 +332,7 @@ class GraphQLBuilder(NetworkxBuilder):
 
             if (
                     self._node_value_graphql_type_supplier is not None
-                    and (value_graphql_type := self._node_value_graphql_type_supplier(node_type) is not None)
+                    and (value_graphql_type := self._node_value_graphql_type_supplier(node_type)) is not None
             ):
                 class_dict['value'] = list[value_graphql_type]
 
@@ -375,7 +375,7 @@ class GraphQLBuilder(NetworkxBuilder):
             def graph_nodes(self,
                             node_id: strawberry.ID | None = strawberry.UNSET) -> list[GraphQLBuilder.GraphNode]:
 
-                decoded_node_id = node_id and decode_id(node_id)
+                decoded_node_id = node_id and decode_node_id(node_id)
 
                 graph = get_graph()
 
@@ -392,7 +392,7 @@ class GraphQLBuilder(NetworkxBuilder):
                         output = node.type.lower() == node_type
 
                     if decoded_node_id:
-                        output = output and (decode_id(node.id) == decoded_node_id)
+                        output = output and (decode_node_id(node.id) == decoded_node_id)
 
                     return output
 
