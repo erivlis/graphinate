@@ -360,6 +360,7 @@ def test_explicit_dependency_injection_with_enum():
 def test_recursive_node_lineage():
     import operator
     from typing import Annotated
+
     from graphinate import ParentId, model
     from graphinate.builders import NetworkxBuilder
 
@@ -385,6 +386,7 @@ def test_recursive_node_lineage():
 def test_case_insensitive_dependency_injection():
     import operator
     from typing import Annotated
+
     from graphinate import ParentId, model
     from graphinate.builders import NetworkxBuilder
 

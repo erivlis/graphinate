@@ -106,24 +106,25 @@ class NodeModel:
     Args:
         type: the type of the Node.
         parent_type: the type of the node's parent. Defaults to UniverseNode.
-        parameters: parameters of the Node. Defaults to None.
+        parameters: parameters of the a Node instance. Defaults to None.
         label: label source. Defaults to None.
         uniqueness: is the Node universally unique. Defaults to True.
         multiplicity: Multiplicity of the Node. Defaults to ALL.
-        generator: Nodes generator method. Defaults to None.
+        dependencies: Node type dependencies. Defaults to None.
+        generator: Nodes type generator method. Defaults to None.
 
     Properties:
         absolute_id: return the NodeModel absolute_id.
     """
-
     type: str
     parent_type: str | UniverseNode | None = UniverseNode
     parameters: set[str] | None = None
-    dependencies: dict[str, str] | None = None
     label: Callable[[Any], str | None] = None
     uniqueness: bool = True
     multiplicity: Multiplicity = Multiplicity.ALL
+    dependencies: dict[str, str] | None = None
     generator: Callable[[], Iterable[Node]] | None = None
+
 
     @property
     def absolute_id(self) -> NodeTypeAbsoluteId:
@@ -198,6 +199,15 @@ class GraphModel:
 
     @staticmethod
     def _validate_type(node_type: Any):
+        """Validate that the node or edge type is a string identifier or callable.
+
+        Args:
+            node_type: The type string, enum value, or callable extractor to validate.
+
+        Raises:
+            TypeError: If the type is not a string or a callable.
+            ValueError: If the type string is not a valid Python identifier.
+        """
         if not callable(node_type):
             if not isinstance(node_type, str):
                 raise TypeError(
@@ -206,18 +216,30 @@ class GraphModel:
             if not node_type.isidentifier():
                 raise ValueError(f"Invalid Type: {node_type}. Must be a valid Python identifier.")
 
-    def _validate_node_parameters(self, dependencies: dict[str, str], parameters: list[str], registering_type: str | None = None):
+    def _validate_node_dependency_registration(
+            self,
+            dependencies: dict[str, str],
+            registering_type: str | None = None
+    ):
+        """Validate that all node dependencies refer to registered node types.
+
+        Args:
+            dependencies: Mapping of parameter name to parent node type.
+            registering_type: The name of the node type currently being registered.
+
+        Raises:
+            GraphModelError: If a dependency target does not match a registered
+                node type.
+        """
         node_types = self.node_types
         if registering_type is not None:
-            node_types = list(node_types) + [registering_type]
+            node_types = [*list(node_types), registering_type]
         for param_name, dep_type in dependencies.items():
             if dep_type is not UniverseNode and dep_type not in node_types:
                 msg = (f"Illegal Arguments: dependency target '{dep_type}' for parameter '{param_name}' "
                        "is not a registered node type. Dependencies must refer to a registered node type.")
 
                 raise GraphModelError(msg)
-
-
 
     def node(self,
              type_: Extractor | None = None,
@@ -328,7 +350,7 @@ class GraphModel:
 
                 yield from elements(f(**f_kwargs), node_type, key=key, value=value)
 
-            self._validate_node_parameters(dependencies, parameters, registering_type=model_type)
+            self._validate_node_dependency_registration(dependencies, registering_type=model_type)
 
             node_model = NodeModel(type=model_type,
                                    parent_type=actual_parent_type,
@@ -340,7 +362,6 @@ class GraphModel:
                                    generator=node_generator)
             self._node_models[node_model.absolute_id].append(node_model)
             self._node_children[actual_parent_type].append(model_type)
-
 
         return register_node
 

@@ -84,7 +84,11 @@ class ParentId:
     """Annotation marker to declare a dependency on a parent node ID."""
 
     def __init__(self, node_type: str | Enum):
+        """Initialize ParentId annotation.
 
+        Args:
+            node_type: The parent node type string or Enum member.
+        """
         if isinstance(node_type, Enum):
             self.node_type = node_type.value
         else:
