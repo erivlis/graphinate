@@ -32,7 +32,7 @@ In addition, it has the following interfaces for ease of use: a CLI and a GraphQ
     pip install graphinate[numpy]
     ```
 
-=== "uv sync"
+=== "uv"
 
     ```shell
     uv add graphinate
