@@ -206,16 +206,18 @@ class GraphModel:
             if not node_type.isidentifier():
                 raise ValueError(f"Invalid Type: {node_type}. Must be a valid Python identifier.")
 
-    def _validate_node_parameters(self, dependencies: dict[str, str], parameters: list[str]):
+    def _validate_node_parameters(self, dependencies: dict[str, str], parameters: list[str], registering_type: str | None = None):
         node_types = self.node_types
+        if registering_type is not None:
+            node_types = list(node_types) + [registering_type]
         for param_name, dep_type in dependencies.items():
             if dep_type is not UniverseNode and dep_type not in node_types:
-                msg = ("Illegal Arguments. Argument should conform to the following rules: "
-                       "1) lowercase "
-                       "2) end with '_id' "
-                       "3) start with value that exists as registered node type")
+                msg = (f"Illegal Arguments: dependency target '{dep_type}' for parameter '{param_name}' "
+                       "is not a registered node type. Dependencies must refer to a registered node type.")
 
                 raise GraphModelError(msg)
+
+
 
     def node(self,
              type_: Extractor | None = None,
@@ -273,6 +275,7 @@ class GraphModel:
 
             node_type = actual_type or f.__name__
             self._validate_type(node_type)
+            self._validate_type(actual_parent_type)
 
             model_type = f.__name__ if callable(node_type) else node_type
 
@@ -314,7 +317,8 @@ class GraphModel:
 
                     if param_name in dependencies:
                         dep_type = dependencies[param_name]
-                        f_kwargs[param_name] = kwargs.get(f"{dep_type}_id")
+                        dep_key = f"{dep_type}_id".lower()
+                        f_kwargs[param_name] = next((v for k, v in kwargs.items() if k.lower() == dep_key), None)
                     elif param_name in kwargs:
                         f_kwargs[param_name] = kwargs[param_name]
                     elif param.default is not inspect.Parameter.empty:
@@ -323,6 +327,8 @@ class GraphModel:
                         f_kwargs[param_name] = None
 
                 yield from elements(f(**f_kwargs), node_type, key=key, value=value)
+
+            self._validate_node_parameters(dependencies, parameters, registering_type=model_type)
 
             node_model = NodeModel(type=model_type,
                                    parent_type=actual_parent_type,
@@ -335,7 +341,6 @@ class GraphModel:
             self._node_models[node_model.absolute_id].append(node_model)
             self._node_children[actual_parent_type].append(model_type)
 
-            self._validate_node_parameters(dependencies, parameters)
 
         return register_node
 

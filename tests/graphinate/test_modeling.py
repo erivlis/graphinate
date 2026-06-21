@@ -355,3 +355,54 @@ def test_explicit_dependency_injection_with_enum():
     assert ('c1',) in graph.nodes
     assert ('p1',) in graph.nodes
     assert (('p1',), ('c1',)) in graph.edges
+
+
+def test_recursive_node_lineage():
+    import operator
+    from typing import Annotated
+    from graphinate import ParentId, model
+    from graphinate.builders import NetworkxBuilder
+
+    m = model(name='Recursive Model')
+
+    @m.node(type_='folder', key=operator.itemgetter('id'), label=operator.itemgetter('name'))
+    def root_folder():
+        yield {'id': 'root', 'name': 'Root'}
+
+    @m.node(type_='folder', parent_type='folder', key=operator.itemgetter('id'), label=operator.itemgetter('name'))
+    def subfolders(folder_id: Annotated[str, ParentId('folder')]):
+        if folder_id == 'root':
+            yield {'id': 'sub1', 'name': 'Sub 1'}
+
+    builder = NetworkxBuilder(m)
+    graph = builder.build()
+
+    assert ('root',) in graph.nodes
+    assert ('sub1',) in graph.nodes
+    assert (('root',), ('sub1',)) in graph.edges
+
+
+def test_case_insensitive_dependency_injection():
+    import operator
+    from typing import Annotated
+    from graphinate import ParentId, model
+    from graphinate.builders import NetworkxBuilder
+
+    m = model(name='Mixed Case Model')
+
+    @m.node(type_='Repository', key=operator.itemgetter('id'))
+    def repos():
+        yield {'id': 'repo1'}
+
+    @m.node(type_='commit', parent_type='Repository', key=operator.itemgetter('id'))
+    def commits(rid: Annotated[str, ParentId('Repository')]):
+        if rid == 'repo1':
+            yield {'id': 'c1'}
+
+    builder = NetworkxBuilder(m)
+    graph = builder.build()
+
+    assert ('repo1',) in graph.nodes
+    assert ('c1',) in graph.nodes
+    assert (('repo1',), ('c1',)) in graph.edges
+
