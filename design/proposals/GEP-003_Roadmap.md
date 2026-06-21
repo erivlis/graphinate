@@ -75,7 +75,8 @@ stability.*
 | **GEP-002** | Modularization Strategy                | **Active**        | Architectural principle.                                             |
 | **GEP-007** | Theoretical Foundations                | **Active**        | Informational / Theory.                                              |
 | **GEP-013** | Stable ID Serialization                | **Withdrawn**     | `repr()` deemed sufficient and more robust for Python types.         |
-| **GEP-025** | Signed ID Serialization                | **Withdrawn**     | Overengineering. Security risk is low for this domain.               |
+| **GEP-025** | Signed ID Serialization                | **Active**        | Implemented as an optional, opt-in HMAC-SHA256 signature layer.      |
 | **GEP-015** | Refactored Graph Population Strategies | **Superseded**    | Replaced by **GEP-024** (The Graph Engine).                          |
 | **GEP-022** | 2D Visualization Mode                  | **Superseded**    | Replaced by **GEP-026** (Pluggable Visualization).                   |
 | **GEP-027** | Advanced Three.js Visualizations       | **Informational** | Design concepts for **GEP-026**.                                     |
+
