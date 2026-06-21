@@ -41,7 +41,7 @@ def test_graph_model_validate_node_parameters():
     # Act & Assert
     with pytest.raises(graphinate.modeling.GraphModelError):
         @graph_model.node()
-        def invalid_node_supplier(wrong_parameter=None):
+        def invalid_node_supplier(unregistered_id):
             yield 1
 
 
@@ -259,3 +259,99 @@ def test_elements_invalid_identifier_type():
     # Act & Assert
     with pytest.raises(ValueError, match="Invalid Type:"):
         list(elements(data, element_type=bad_type, id="id"))
+
+
+def test_explicit_dependency_injection():
+    import operator
+    from typing import Annotated
+
+    from graphinate import ParentId, model
+    from graphinate.builders import NetworkxBuilder
+
+    # Arrange
+    m = model(name='Explicit Injection Model')
+
+    @m.node(type_='parent', key=operator.itemgetter('id'), label=operator.itemgetter('name'))
+    def parents():
+        yield {'id': 'p1', 'name': 'Parent 1'}
+
+    @m.node(type_='child', parent_type='parent', key=operator.itemgetter('id'), label=operator.itemgetter('name'))
+    def children(pid: Annotated[str, ParentId('parent')], limit):
+        if pid == 'p1' and limit == 10:
+            yield {'id': 'c1', 'name': 'Child 1'}
+
+    # Build
+    builder = NetworkxBuilder(m)
+    graph = builder.build(limit=10)
+
+    # Assert
+    assert ('c1',) in graph.nodes
+    assert ('p1',) in graph.nodes
+    assert (('p1',), ('c1',)) in graph.edges
+
+
+def test_explicit_dependency_injection_with_invalid_enum_value():
+    from enum import Enum
+
+    from graphinate import model
+
+    class BadNodeTypes(Enum):
+        PARENT = 123  # Non-string value
+
+    m = model(name='Bad Enum Model')
+
+    with pytest.raises(TypeError, match="Type must be a string or a callable"):
+        @m.node(type_=BadNodeTypes.PARENT)
+        def parents():
+            yield {'id': 'p1'}
+
+
+def test_invalid_explicit_dependency_target():
+    from typing import Annotated
+
+    from graphinate import ParentId, model
+    from graphinate.modeling import GraphModelError
+
+    m = model(name='Invalid Dependency Model')
+
+    with pytest.raises(GraphModelError):
+        @m.node(type_='child')
+        def children(pid: Annotated[str, ParentId('unregistered')]):
+            yield {'id': 'c1'}
+
+
+def test_explicit_dependency_injection_with_enum():
+    import operator
+    from enum import Enum
+    from typing import Annotated
+
+    from graphinate import ParentId, model
+    from graphinate.builders import NetworkxBuilder
+
+    class NodeTypes(Enum):
+        PARENT = 'parent'
+        CHILD = 'child'
+
+    # Arrange
+    m = model(name='Enum Model')
+
+    @m.node(type_=NodeTypes.PARENT, key=operator.itemgetter('id'), label=operator.itemgetter('name'))
+    def parents():
+        yield {'id': 'p1', 'name': 'Parent 1'}
+
+    @m.node(type_=NodeTypes.CHILD,
+            parent_type=NodeTypes.PARENT,
+            key=operator.itemgetter('id'),
+            label=operator.itemgetter('name'))
+    def children(pid: Annotated[str, ParentId(NodeTypes.PARENT)], limit):
+        if pid == 'p1' and limit == 10:
+            yield {'id': 'c1', 'name': 'Child 1'}
+
+    # Build
+    builder = NetworkxBuilder(m)
+    graph = builder.build(limit=10)
+
+    # Assert
+    assert ('c1',) in graph.nodes
+    assert ('p1',) in graph.nodes
+    assert (('p1',), ('c1',)) in graph.edges
