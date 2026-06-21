@@ -1,5 +1,6 @@
 import inspect
 import itertools
+import typing
 from collections import defaultdict, namedtuple
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
@@ -8,7 +9,7 @@ from types import MappingProxyType
 from typing import Any, Union
 
 from .enums import Multiplicity
-from .typing import Edge, Element, Extractor, Items, Node, NodeTypeAbsoluteId, UniverseNode
+from .typing import Edge, Element, Extractor, Items, Node, NodeTypeAbsoluteId, ParentId, UniverseNode
 
 
 class GraphModelError(Exception):
@@ -118,6 +119,7 @@ class NodeModel:
     type: str
     parent_type: str | UniverseNode | None = UniverseNode
     parameters: set[str] | None = None
+    dependencies: dict[str, str] | None = None
     label: Callable[[Any], str | None] = None
     uniqueness: bool = True
     multiplicity: Multiplicity = Multiplicity.ALL
@@ -195,19 +197,25 @@ class GraphModel:
         return MappingProxyType({k: v for k, v in self._node_children.items() if k == _type})
 
     @staticmethod
-    def _validate_type(node_type: str):
-        if not callable(node_type) and not node_type.isidentifier():
-            raise ValueError(f"Invalid Type: {node_type}. Must be a valid Python identifier.")
+    def _validate_type(node_type: Any):
+        if not callable(node_type):
+            if not isinstance(node_type, str):
+                raise TypeError(
+                    f"Invalid Type: {node_type}. Type must be a string or a callable, not {type(node_type).__name__}."
+                )
+            if not node_type.isidentifier():
+                raise ValueError(f"Invalid Type: {node_type}. Must be a valid Python identifier.")
 
-    def _validate_node_parameters(self, parameters: list[str]):
+    def _validate_node_parameters(self, dependencies: dict[str, str], parameters: list[str]):
         node_types = self.node_types
-        if not all(p.endswith('_id') and p == p.lower() and p[:-3] in node_types for p in parameters):
-            msg = ("Illegal Arguments. Argument should conform to the following rules: "
-                   "1) lowercase "
-                   "2) end with '_id' "
-                   "3) start with value that exists as registered node type")
+        for param_name, dep_type in dependencies.items():
+            if dep_type is not UniverseNode and dep_type not in node_types:
+                msg = ("Illegal Arguments. Argument should conform to the following rules: "
+                       "1) lowercase "
+                       "2) end with '_id' "
+                       "3) start with value that exists as registered node type")
 
-            raise GraphModelError(msg)
+                raise GraphModelError(msg)
 
     def node(self,
              type_: Extractor | None = None,
@@ -254,26 +262,80 @@ class GraphModel:
         """
 
         def register_node(f: Items):
-            node_type = type_ or f.__name__
+            from enum import Enum
+            actual_type = type_
+            if isinstance(actual_type, Enum):
+                actual_type = actual_type.value
+
+            actual_parent_type = parent_type
+            if isinstance(actual_parent_type, Enum):
+                actual_parent_type = actual_parent_type.value
+
+            node_type = actual_type or f.__name__
             self._validate_type(node_type)
 
             model_type = f.__name__ if callable(node_type) else node_type
 
-            def node_generator(**kwargs: Any) -> Iterable[Node]:
-                yield from elements(f(**kwargs), node_type, key=key, value=value)
+            dependencies = {}
+            try:
+                hints = typing.get_type_hints(f, include_extras=True)
+            except Exception:
+                hints = {}
 
-            parameters = inspect.getfullargspec(f).args
+            sig = inspect.signature(f)
+            parameters = list(sig.parameters.keys())
+
+            for param_name, param in sig.parameters.items():
+                hint = hints.get(param_name)
+                dep_type = None
+
+                if hint is not None and typing.get_origin(hint) is typing.Annotated:
+                    for metadata in typing.get_args(hint)[1:]:
+                        if isinstance(metadata, ParentId):
+                            dep_type = metadata.node_type
+                            break
+
+                if (
+                        dep_type is None
+                        and param_name.endswith('_id')
+                        and param_name == param_name.lower()
+                ):
+                    dep_type = param_name[:-3]
+
+                if dep_type is not None:
+                    dependencies[param_name] = dep_type
+
+            def node_generator(**kwargs: Any) -> Iterable[Node]:
+                f_kwargs = {}
+                for param_name, param in sig.parameters.items():
+                    if param.kind == inspect.Parameter.VAR_KEYWORD:
+                        f_kwargs.update(kwargs)
+                        continue
+
+                    if param_name in dependencies:
+                        dep_type = dependencies[param_name]
+                        f_kwargs[param_name] = kwargs.get(f"{dep_type}_id")
+                    elif param_name in kwargs:
+                        f_kwargs[param_name] = kwargs[param_name]
+                    elif param.default is not inspect.Parameter.empty:
+                        pass
+                    else:
+                        f_kwargs[param_name] = None
+
+                yield from elements(f(**f_kwargs), node_type, key=key, value=value)
+
             node_model = NodeModel(type=model_type,
-                                   parent_type=parent_type,
+                                   parent_type=actual_parent_type,
                                    parameters=set(parameters),
+                                   dependencies=dependencies,
                                    label=label,
                                    uniqueness=unique,
                                    multiplicity=multiplicity,
                                    generator=node_generator)
             self._node_models[node_model.absolute_id].append(node_model)
-            self._node_children[parent_type].append(model_type)
+            self._node_children[actual_parent_type].append(model_type)
 
-            self._validate_node_parameters(parameters)
+            self._validate_node_parameters(dependencies, parameters)
 
         return register_node
 
@@ -302,7 +364,12 @@ class GraphModel:
         """
 
         def register_edge(f: Items):
-            edge_type = type_ or f.__name__
+            from enum import Enum
+            actual_type = type_
+            if isinstance(actual_type, Enum):
+                actual_type = actual_type.value
+
+            edge_type = actual_type or f.__name__
             self._validate_type(edge_type)
 
             model_type = f.__name__ if callable(edge_type) else edge_type
