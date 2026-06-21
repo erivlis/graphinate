@@ -1,3 +1,7 @@
+---
+title: Code
+icon: lucide/code
+---
 # Code
 
 ## GIT Commits

@@ -1,8 +1,7 @@
 ---
 title: Home
-icon: material/home
+icon: lucide/home
 ---
-
 # Graphinate. Data to Graphs.
 
 <img style="width: 256px; float: right; margin: 15px 15px 15px 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"

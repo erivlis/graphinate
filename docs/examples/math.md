@@ -1,3 +1,7 @@
+---
+title: Math
+icon: lucide/calculator
+---
 # Math
 
 ## Graph Atlas

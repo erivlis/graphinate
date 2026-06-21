@@ -1,3 +1,7 @@
+---
+title: Introduction
+icon: lucide/book-open
+---
 # Introduction
 
 ## Why?

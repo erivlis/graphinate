@@ -1,3 +1,7 @@
+---
+title: Modeling Concepts
+icon: lucide/git-fork
+---
 # Modeling Concepts
 
 ## Dependency Injection and Parameter Naming

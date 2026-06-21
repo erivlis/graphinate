@@ -1,3 +1,7 @@
+---
+title: System
+icon: lucide/cpu
+---
 # System
 
 ## Processes

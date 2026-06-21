@@ -1,3 +1,7 @@
+---
+title: Quick Start
+icon: lucide/rocket
+---
 # Quick Start
 
 **Graphinate** is designed to be used as a library first and foremost.

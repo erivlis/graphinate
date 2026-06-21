@@ -1,3 +1,7 @@
+---
+title: CLI
+icon: lucide/command
+---
 # CLI
 
 ## Commands

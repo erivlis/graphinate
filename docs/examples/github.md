@@ -1,3 +1,7 @@
+---
+title: GitHub
+icon: lucide/git-branch
+---
 # GitHub
 
 ## Repositories

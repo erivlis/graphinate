@@ -1,4 +1,7 @@
-
+---
+title: Performance Optimization
+icon: lucide/zap
+---
 # Performance Optimization
 
 ## NetworkX Backends (GraphQL & Analysis)

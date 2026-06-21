@@ -1,3 +1,7 @@
+---
+title: Library
+icon: lucide/package
+---
 # Library
 
 ## Top level Functions

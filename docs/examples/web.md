@@ -1,3 +1,7 @@
+---
+title: Web
+icon: lucide/globe
+---
 # Web
 
 ## Web Page Links

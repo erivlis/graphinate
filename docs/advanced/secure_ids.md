@@ -1,3 +1,7 @@
+---
+title: Secure ID Serialization
+icon: lucide/shield-check
+---
 # Secure ID Serialization
 
 By default, Graphinate uses a fast and simple ID serialization mechanism based on Python's `repr()` and `base64` decoded

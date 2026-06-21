@@ -1,3 +1,7 @@
+---
+title: Acknowledgements
+icon: lucide/award
+---
 # Acknowledgements
 
 ## Dependencies

@@ -1,3 +1,7 @@
+---
+title: Tutorial
+icon: lucide/graduation-cap
+---
 # Tutorial
 
 This tutorial will guide you through the steps to create a **Music Artists Graph**.

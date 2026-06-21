@@ -1,3 +1,7 @@
+---
+title: Development
+icon: lucide/terminal
+---
 # Development
 
 This guide provides instructions for setting up your development environment to contribute to Graphinate.

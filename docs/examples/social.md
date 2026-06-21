@@ -1,3 +1,7 @@
+---
+title: Social
+icon: lucide/users
+---
 # Social
 
 ## Music Artists
