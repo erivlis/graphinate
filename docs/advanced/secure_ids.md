@@ -1,12 +1,26 @@
 # Secure ID Serialization
 
-By default, Graphinate uses a fast and simple ID serialization mechanism based on Python's `repr()` and `base64`. While convenient, this approach relies on `ast.literal_eval()`, which, although safer than `eval()`, might not meet the security requirements of high-risk environments (e.g., public-facing APIs where ID tampering is a concern).
+By default, Graphinate uses a fast and simple ID serialization mechanism based on Python's `repr()` and `base64` decoded
+via `ast.literal_eval()`. To secure public-facing APIs against ID tampering and potential `literal_eval` DoS vectors,
+Graphinate supports **Signed ID Serialization** using HMAC-SHA256.
 
-This recipe demonstrates how to implement a **Signed ID Converter** using HMAC-SHA256 to ensure that IDs cannot be tampered with.
+## 1. Native Configuration (Preferred)
 
-## The Recipe
+Graphinate has built-in support for HMAC-SHA256 ID signatures. You do not need to write any custom wrapping code. Simply
+set the `GRAPHINATE_SECRET_KEY` environment variable in your production environment:
 
-You can monkey-patch or wrap the default converters to add a cryptographic signature.
+```bash
+export GRAPHINATE_SECRET_KEY="your-highly-secure-app-secret-key"
+```
+
+Once set, all node and edge IDs will automatically be signed during encoding and cryptographically verified during
+decoding. If a client attempts to supply a modified or unsigned ID, a `ValueError` is raised, preventing the untrusted
+payload from reaching `ast.literal_eval()`.
+
+## 2. Custom Customization (Monkey-Patching)
+
+If you require a completely custom ID format, serialization method, or alternative encryption algorithms, you can
+monkey-patch the encoding/decoding converters.
 
 ```python
 import ast
@@ -21,24 +35,27 @@ import graphinate.converters
 # 1. Define your secret key (load from env in production)
 SECRET_KEY = os.environ.get("MY_APP_SECRET", "change-me-in-prod").encode()
 
+
 def sign(payload: bytes) -> bytes:
     """Generate HMAC-SHA256 signature."""
     return hmac.new(SECRET_KEY, payload, hashlib.sha256).digest()
+
 
 def secure_encode(value: Any, encoding: str = 'utf-8') -> str:
     """Encodes an object into a signed, Base64 string."""
     # 1. Serialize payload
     obj_s = repr(value)
     obj_b = obj_s.encode(encoding)
-    
+
     # 2. Sign payload
     signature = sign(obj_b)
-    
+
     # 3. Pack (Signature + Payload)
     packet = signature + obj_b
-    
+
     # 4. Base64 Encode
     return base64.urlsafe_b64encode(packet).decode(encoding)
+
 
 def secure_decode(value: str, encoding: str = 'utf-8') -> Any:
     """Decodes and verifies a signed ID."""
@@ -53,7 +70,7 @@ def secure_decode(value: str, encoding: str = 'utf-8') -> Any:
     # 1. Unpack
     signature = packet[:32]
     payload_b = packet[32:]
-    
+
     # 2. Verify Signature
     expected_signature = sign(payload_b)
     if not hmac.compare_digest(signature, expected_signature):
@@ -62,6 +79,7 @@ def secure_decode(value: str, encoding: str = 'utf-8') -> Any:
     # 3. Deserialize
     obj_s = payload_b.decode(encoding)
     return ast.literal_eval(obj_s)
+
 
 # 4. Apply the patch
 # Note: In a real application, you might want to subclass the Builder 
@@ -74,21 +92,21 @@ graphinate.converters.decode = secure_decode
 
 ## How it Works
 
-1.  **Serialization:** The object is converted to a string using `repr()`.
-2.  **Signing:** An HMAC-SHA256 hash is calculated for that string using your secret key.
-3.  **Packing:** The signature (32 bytes) is prepended to the payload.
-4.  **Encoding:** The combined packet is Base64 encoded to make it URL-safe.
+1. **Serialization:** The object is converted to a string using `repr()`.
+2. **Signing:** An HMAC-SHA256 hash is calculated for that string using your secret key.
+3. **Packing:** The signature (32 bytes) is prepended to the payload.
+4. **Encoding:** The combined packet is Base64 encoded to make it URL-safe.
 
 ## Verification
 
 When decoding:
 
-1.  The Base64 string is decoded back to bytes.
-2.  The signature is extracted.
-3.  The signature is **re-calculated** based on the payload.
-4.  If the calculated signature matches the extracted one, the payload is trusted and passed to `ast.literal_eval()`.
+1. The Base64 string is decoded back to bytes.
+2. The signature is extracted.
+3. The signature is **re-calculated** based on the payload.
+4. If the calculated signature matches the extracted one, the payload is trusted and passed to `ast.literal_eval()`.
 
 ## Performance Impact
 
-*   **Size:** Adds ~44 characters to the ID string.
-*   **CPU:** Negligible overhead for HMAC calculation.
+* **Size:** Adds ~44 characters to the ID string.
+* **CPU:** Negligible overhead for HMAC calculation.
