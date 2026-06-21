@@ -21,7 +21,6 @@ stability.*
 
 | GEP         | Title                                  | Impact   | Difficulty | Rationale                                                                                                               |
 |:------------|:---------------------------------------|:---------|:-----------|:------------------------------------------------------------------------------------------------------------------------|
-| **GEP-010** | **Explicit Dependency Injection**      | **High** | Medium     | **High Usability.** The current string-matching injection is the #1 source of user confusion and runtime errors.        |
 | **GEP-016** | **CLI Argument Parsing & Path Safety** | Low      | Easy       | **Quick Win.** Improves CLI usability and safety with minimal effort.                                                   |
 | **GEP-017** | **Decoupled Server Architecture**      | Medium   | Easy       | **Enabler.** Decoupling the server unlocks proper integration testing for future phases.                                |
 
@@ -55,16 +54,15 @@ stability.*
 
 | Priority | GEP         | Title                                      |
 |:---------|:------------|:-------------------------------------------|
-| 1        | **GEP-010** | Explicit Dependency Injection              |
-| 2        | **GEP-017** | Decoupled Server Architecture              |
-| 3        | **GEP-016** | CLI Argument Parsing & Path Safety         |
-| 4        | **GEP-024** | The Graph Engine                           |
-| 5        | **GEP-029** | Extraction Strategies                      |
-| 6        | **GEP-030** | Node Type Taxonomy                         |
-| 7        | **GEP-014** | Explicit GraphQL Schema Generation         |
-| 8        | **GEP-026** | Pluggable Visualization & Notebook Support |
-| 9        | **GEP-028** | MCP Server Integration                     |
-| 10       | **GEP-020** | Modular Frontend Architecture              |
+| 1        | **GEP-017** | Decoupled Server Architecture              |
+| 2        | **GEP-016** | CLI Argument Parsing & Path Safety         |
+| 3        | **GEP-024** | The Graph Engine                           |
+| 4        | **GEP-029** | Extraction Strategies                      |
+| 5        | **GEP-030** | Node Type Taxonomy                         |
+| 6        | **GEP-014** | Explicit GraphQL Schema Generation         |
+| 7        | **GEP-026** | Pluggable Visualization & Notebook Support |
+| 8        | **GEP-028** | MCP Server Integration                     |
+| 9        | **GEP-020** | Modular Frontend Architecture              |
 
 ## Archive (Completed / Withdrawn / Superseded)
 
@@ -74,9 +72,11 @@ stability.*
 | **GEP-001** | The Graphinate Mission                 | **Active**        | Mission statement.                                                   |
 | **GEP-002** | Modularization Strategy                | **Active**        | Architectural principle.                                             |
 | **GEP-007** | Theoretical Foundations                | **Active**        | Informational / Theory.                                              |
+| **GEP-010** | Explicit Dependency Injection          | **Active**        | Implemented explicit dependency injection using ParentId.            |
 | **GEP-013** | Stable ID Serialization                | **Withdrawn**     | `repr()` deemed sufficient and more robust for Python types.         |
 | **GEP-025** | Signed ID Serialization                | **Active**        | Implemented as an optional, opt-in HMAC-SHA256 signature layer.      |
 | **GEP-015** | Refactored Graph Population Strategies | **Superseded**    | Replaced by **GEP-024** (The Graph Engine).                          |
 | **GEP-022** | 2D Visualization Mode                  | **Superseded**    | Replaced by **GEP-026** (Pluggable Visualization).                   |
 | **GEP-027** | Advanced Three.js Visualizations       | **Informational** | Design concepts for **GEP-026**.                                     |
+
 
