@@ -26,6 +26,8 @@ To maintain a consistent codebase, we use the following tools for linting and fo
   docstring format.
 * **Logging**: Use the `loguru` library for all logging.
 * **Complexity**: Aim to keep the cyclomatic complexity of functions at or below 15, as configured in `ruff`.
+* **Float Equality**: When comparing float values in application code, use `math.isclose`.
+  For tests, see the 'Floating Tests' section below.
 
 ## Test Style
 
@@ -37,6 +39,7 @@ Tests are written using the `pytest` framework.
 * **Fixtures**: Use `pytest` fixtures for setup and teardown logic. Place common fixtures in `tests/conftest.py`.
 * **Mocks**: Use the `pytest-mock` library for mocking dependencies.
 * **Floating Tests**: For tests that involve floating-point comparisons, use `pytest.approx` to handle precision issues.
+  This is the preferred method over `math.isclose` within the test suite.
 
 ## Documentation Style
 
