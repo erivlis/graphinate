@@ -1,4 +1,5 @@
 import contextlib
+import importlib.metadata
 import webbrowser
 from typing import Any
 
@@ -19,6 +20,12 @@ DEFAULT_PORT: int = 8072
 GRAPHQL_ROUTE_PATH = "/graphql"
 
 
+try:
+    __version__ = importlib.metadata.version("graphinate")
+except importlib.metadata.PackageNotFoundError:
+    __version__ = "0.0.0"
+
+
 def _openapi_schema(request: Request[State]) -> Response:
     """
     Generates an OpenAPI schema for the GraphQL API and other routes.
@@ -31,7 +38,7 @@ def _openapi_schema(request: Request[State]) -> Response:
     """
     schema_data = {
         'openapi': '3.0.0',
-        'info': {'title': 'Graphinate API', 'version': '0.10.1'},
+        'info': {'title': 'Graphinate API', 'version': __version__},
         'paths': {
             '/graphql': {'get': {'responses': {200: {'description': 'GraphQL'}}}},
             '/graphiql': {'get': {'responses': {200: {'description': 'GraphiQL UI.'}}}},
@@ -44,6 +51,7 @@ def _openapi_schema(request: Request[State]) -> Response:
     schema = SchemaGenerator(schema_data)
     response = schema.OpenAPIResponse(request=request)
     return response
+
 
 
 def _graphql_app(graphql_schema: strawberry.Schema) -> GraphQL:
