@@ -81,6 +81,7 @@ def test_encoding():
 
 def test_secure_encoding_decoding(monkeypatch):
     import base64
+
     from graphinate._secure import _secret_key
 
     # Ensure cache is clear at the beginning
