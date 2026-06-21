@@ -77,3 +77,49 @@ def test_encoding():
 
     # Assert
     assert actual_edge == expected_edge
+
+
+def test_secure_encoding_decoding(monkeypatch):
+    import base64
+    from graphinate._secure import _secret_key
+
+    # Ensure cache is clear at the beginning
+    _secret_key.cache_clear()
+
+    test_payload = (('node1', 'value1'), ('node2', 'value2'))
+
+    # Encode without secret key
+    unsigned_id = converters.encode(test_payload)
+
+    # Enable signature protection
+    monkeypatch.setenv('GRAPHINATE_SECRET_KEY', 'test-secret-key-12345')
+    _secret_key.cache_clear()
+
+    # Encode with secret key
+    signed_id = converters.encode(test_payload)
+
+    # Assert they are different
+    assert signed_id != unsigned_id
+
+    # Decode with secret key
+    decoded_payload = converters.decode(signed_id)
+    assert decoded_payload == test_payload
+
+    # Tamper with the signed ID (change a character in base64 string)
+    raw_bytes = base64.urlsafe_b64decode(signed_id.encode('utf-8'))
+    # Tamper with the first byte (which is part of the signature)
+    tampered_bytes = bytes([raw_bytes[0] ^ 0xFF]) + raw_bytes[1:]
+    tampered_id = base64.urlsafe_b64encode(tampered_bytes).decode('utf-8')
+
+    with pytest.raises(ValueError, match='Invalid Signature - ID tampered with!'):
+        converters.decode(tampered_id)
+
+    # Test short token
+    short_id = base64.urlsafe_b64encode(b'too-short').decode('utf-8')
+    with pytest.raises(ValueError, match='Token too short'):
+        converters.decode(short_id)
+
+    # Cleanup environment and cache
+    monkeypatch.delenv('GRAPHINATE_SECRET_KEY', raising=False)
+    _secret_key.cache_clear()
+
