@@ -143,6 +143,17 @@ and resolved within [modeling.py](file:///C:/dev/erivlis/graphinate/src/graphina
 
 * 2025-12-25: Initial Draft
 * 2026-06-21: Accepted Option 2 (Type Hinting) and implemented the injection engine.
+* 2026-06-22: Documented remaining structural and validation constraints as open issues/future work.
+
+## Open Issues & Future Work
+
+During the design review of the GEP-010 implementation, the Council of Principles identified the following remaining issues and areas for future work:
+
+1. **Eager Registration Validation:** Parameter validation (`_validate_node_dependency_registration`) currently runs eagerly at decorator execution time. This creates a strict topological import/decoration order constraint and prevents modular model composition (e.g., merging `ModelA + ModelB` where cross-dependencies are resolved only after composition). Future work will explore deferring validation to graph build time.
+2. **In-place Model Mutation (`rectify`):** The builder mutates the shared `GraphModel` instance in-place during the build phase via `rectify()`. This represents a potential concurrency side-effect. Future updates should clone the model or perform mutations on localized registries.
+3. **Recursive Lineage Namespace Collision:** In recursive structures (e.g., `folder -> folder`), overwriting the `folder_id` key in `kwargs` destroys the parent lineage chain, which causes parent ID resolution to fail when nodes are registered with `unique=False`. Passing an explicit lineage tuple during traversal will solve this collision.
+4. **Lineage Casing Asymmetry:** While injection lookup is case-insensitive, the early-break check in `_parent_node_id` remains case-sensitive, creating potential lineage pollution for mixed-case types.
+5. **Dead Code Cleanup (`NodeModel.parameters`):** The `parameters` attribute on `NodeModel` is currently obsolete and should be cleaned up.
 
 ## Copyright
 

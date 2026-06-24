@@ -8,7 +8,7 @@
 | **Status**  | Active                  |
 | **Type**    | Process                 |
 | **Created** | 2025-12-30              |
-| **Updated** | 2026-01-01              |
+| **Updated** | 2026-06-22              |
 
 ## Abstract
 
@@ -31,6 +31,7 @@ stability.*
 | GEP         | Title                                  | Impact   | Difficulty | Rationale                                                                                                                            |
 |:------------|:---------------------------------------|:---------|:-----------|:-------------------------------------------------------------------------------------------------------------------------------------|
 | **GEP-024** | **The Graph Engine**                   | **High** | **Hard**   | **Core Architecture.** Extracting the execution logic is the foundation for Async, Realtime, and better testing. Supersedes GEP-015. |
+| **GEP-032** | **GraphModel Compilation & Validation** | **High** | Medium     | **Core Architecture.** Decouples definition from execution to enable safe concurrent building, circular references, and composition. |
 | **GEP-029** | **Extraction Strategies**              | **High** | Medium     | **Core Architecture.** Formalizing the "E" in ETL. Prerequisite for robust crawling and streaming.                                   |
 | **GEP-030** | **Node Type Taxonomy**                 | Medium   | Medium     | **Semantic Power.** Defines the Type System. Prerequisite for Schema Generation (GEP-014) and Styling (GEP-026).                     |
 | **GEP-014** | **Explicit GraphQL Schema Generation** | **High** | **Hard**   | **Major Refactor.** The current "Voodoo" class generation is fragile. Refactoring this is a prerequisite for Relay support.          |
@@ -57,12 +58,13 @@ stability.*
 | 1        | **GEP-017** | Decoupled Server Architecture              |
 | 2        | **GEP-016** | CLI Argument Parsing & Path Safety         |
 | 3        | **GEP-024** | The Graph Engine                           |
-| 4        | **GEP-029** | Extraction Strategies                      |
-| 5        | **GEP-030** | Node Type Taxonomy                         |
-| 6        | **GEP-014** | Explicit GraphQL Schema Generation         |
-| 7        | **GEP-026** | Pluggable Visualization & Notebook Support |
-| 8        | **GEP-028** | MCP Server Integration                     |
-| 9        | **GEP-020** | Modular Frontend Architecture              |
+| 4        | **GEP-032** | GraphModel Compilation & Validation        |
+| 5        | **GEP-029** | Extraction Strategies                      |
+| 6        | **GEP-030** | Node Type Taxonomy                         |
+| 7        | **GEP-014** | Explicit GraphQL Schema Generation         |
+| 8        | **GEP-026** | Pluggable Visualization & Notebook Support |
+| 9        | **GEP-028** | MCP Server Integration                     |
+| 10       | **GEP-020** | Modular Frontend Architecture              |
 
 ## Archive (Completed / Withdrawn / Superseded)
 
