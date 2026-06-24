@@ -5,10 +5,10 @@
 | **GEP**     | 10                            |
 | **Title**   | Explicit Dependency Injection |
 | **Author**  | Eran Rivlis                   |
-| **Status**  | Draft                         |
+| **Status**  | Accepted                      |
 | **Type**    | Standards Track               |
 | **Created** | 2025-12-25                    |
-| **Updated** | 2026-03-22                    |
+| **Updated** | 2026-06-21                    |
 
 ## Abstract
 
@@ -74,10 +74,19 @@ from graphinate import ParentId
 @model.node(parent_type='repository')
 def commit(rid: Annotated[str, ParentId('repository')]):
     ...
+
+# Also supports Enums/StrEnums directly:
+class NodeTypes(Enum):
+    REPOSITORY = 'repository'
+
+@model.node(parent_type=NodeTypes.REPOSITORY)
+def commit(rid: Annotated[str, ParentId(NodeTypes.REPOSITORY)]):
+    ...
 ```
 
-* **Pros:** Self-documenting, leverages IDE support, very Pythonic, allows arbitrary argument names.
+* **Pros:** Self-documenting, leverages IDE support, very Pythonic, allows arbitrary argument names, and accepts enums/StrEnums directly (by resolving their `.value` strings at runtime) to prevent typo-based bugs.
 * **Cons:** Requires runtime inspection of type hints (reflection).
+
 
 ### Option 3: Context Object
 
@@ -98,26 +107,53 @@ def commit(ctx: GenerationContext):
 Implementing the type-hinting approach requires changes across the modeling and execution layers.
 
 ### 1. The Semantic Primitive (`graphinate.typing`)
-We will introduce `ParentId` as an annotation marker. Using `typing.Annotated` is the modern Pythonic way to attach runtime metadata to type hints without breaking static type checkers.
+
+We will introduce `ParentId` as an annotation marker. Using `typing.Annotated` is the modern Pythonic way to attach
+runtime metadata to type hints without breaking static type checkers.
 
 ### 2. The Modeling Layer (`graphinate.modeling`)
-*   **Inspection:** The `@model.node` decorator will use `typing.get_type_hints(..., include_extras=True)` to parse the signature of the generator function.
-*   **State Restructuring:** The `NodeModel` class will be updated. Instead of storing a simple `parameters: set[str]`, it will store a `dependencies: dict[str, str]` mapping the parameter name to the required parent node type.
-*   **Validation:** The draconian `_validate_node_parameters` will be relaxed. It will allow arbitrary arguments, ensuring only that required parent dependencies are satisfied by the declared type hints or the fallback naming convention.
+
+* **Inspection:** The `@model.node` decorator will use `typing.get_type_hints(..., include_extras=True)` to parse the
+  signature of the generator function.
+* **State Restructuring:** The `NodeModel` class will be updated. Instead of storing a simple `parameters: set[str]`, it
+  will store a `dependencies: dict[str, str]` mapping the parameter name to the required parent node type.
+* **Validation:** The draconian `_validate_node_parameters` will be relaxed. It will allow arbitrary arguments, ensuring
+  only that required parent dependencies are satisfied by the declared type hints or the fallback naming convention.
 
 ### 3. The Execution Layer (`graphinate.builders.networkx`)
-*   The `_populate_nodes` engine loop currently builds the child `kwargs` by strictly appending `{node_type}_id`.
-*   It will be updated to consult the `NodeModel.dependencies` map, injecting the parent ID into the exact parameter name requested by the child generator.
-*   Arbitrary `**kwargs` passed from the CLI or Server will flow through the generators without triggering validation errors.
+
+* The `_populate_nodes` engine loop currently builds the child `kwargs` by strictly appending `{node_type}_id`.
+* It will be updated to consult the `NodeModel.dependencies` map, injecting the parent ID into the exact parameter name
+  requested by the child generator.
+* Arbitrary `**kwargs` passed from the CLI or Server will flow through the generators without triggering validation
+  errors.
 
 ## Backwards Compatibility
 
 The current naming convention (`{node_type}_id`) should be preserved as a "default fallback" to maintain backward
-compatibility. If a generator argument has no type hint but matches the `_id` suffix rule, it will be treated as an implicit dependency. The new explicit mechanisms will take precedence if present.
+compatibility. If a generator argument has no type hint but matches the `_id` suffix rule, it will be treated as an
+implicit dependency. The new explicit mechanisms will take precedence if present.
 
 ## Reference Implementation
 
-(To be determined)
+Exposed via `ParentId` annotation primitive in [typing.py](file:///C:/dev/erivlis/graphinate/src/graphinate/typing.py)
+and resolved within [modeling.py](file:///C:/dev/erivlis/graphinate/src/graphinate/modeling.py).
+
+## Change Log
+
+* 2025-12-25: Initial Draft
+* 2026-06-21: Accepted Option 2 (Type Hinting) and implemented the injection engine.
+* 2026-06-22: Documented remaining structural and validation constraints as open issues/future work.
+
+## Open Issues & Future Work
+
+During the design review of the GEP-010 implementation, the Council of Principles identified the following remaining issues and areas for future work:
+
+1. **Eager Registration Validation:** Parameter validation (`_validate_node_dependency_registration`) currently runs eagerly at decorator execution time. This creates a strict topological import/decoration order constraint and prevents modular model composition (e.g., merging `ModelA + ModelB` where cross-dependencies are resolved only after composition). Future work will explore deferring validation to graph build time.
+2. **In-place Model Mutation (`rectify`):** The builder mutates the shared `GraphModel` instance in-place during the build phase via `rectify()`. This represents a potential concurrency side-effect. Future updates should clone the model or perform mutations on localized registries.
+3. **Recursive Lineage Namespace Collision:** In recursive structures (e.g., `folder -> folder`), overwriting the `folder_id` key in `kwargs` destroys the parent lineage chain, which causes parent ID resolution to fail when nodes are registered with `unique=False`. Passing an explicit lineage tuple during traversal will solve this collision.
+4. **Lineage Casing Asymmetry:** While injection lookup is case-insensitive, the early-break check in `_parent_node_id` remains case-sensitive, creating potential lineage pollution for mixed-case types.
+5. **Dead Code Cleanup (`NodeModel.parameters`):** The `parameters` attribute on `NodeModel` is currently obsolete and should be cleaned up.
 
 ## Copyright
 

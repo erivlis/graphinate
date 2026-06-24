@@ -46,11 +46,14 @@ class NetworkxBuilder(Builder):
 
         ids = []
         for k, v in kwargs.items():
-            if k[:-3] == node_type_absolute_id[1]:
-                break
-            ids.append(v)
+            if k.endswith('_id'):
+                ids.append(v)
+                if k[:-3] == node_type_absolute_id[0]:
+                    break
 
         return tuple(ids)
+
+
 
     def _populate_nodes(self, node_type_absolute_id: NodeTypeAbsoluteId, **kwargs: Any):
         """Populate graph nodes based on the provided model and ID."""
