@@ -7,11 +7,11 @@
 import itertools
 import operator
 import pathlib
+from typing import Annotated
 
-from _client import github_commits, github_files, github_repositories, github_user  # see _client.py
+import graphinate  # noqa: I001
 
-import graphinate
-
+from _client import github_commits, github_files, github_repositories, github_user  # noqa: I001
 
 def repo_graph_model():  # noqa: C901
     """
@@ -71,30 +71,30 @@ def repo_graph_model():  # noqa: C901
         yield github_user(user_id)
 
     @repository_node
-    def repository(user_id: str | None = None,
+    def repository(uid: Annotated[str | None, graphinate.ParentId('user')] = None,
                    repository_id: str | None = None,
                    **kwargs):
-        repos = github_repositories(user_id, repository_id)
+        repos = github_repositories(uid, repository_id)
         yield from repos
 
     @commit_node
-    def commit(user_id: str | None = None,
-               repository_id: str | None = None,
+    def commit(uid: Annotated[str | None, graphinate.ParentId('user')] = None,
+               rid: Annotated[str | None, graphinate.ParentId('repository')] = None,
                commit_id: str | None = None,
                **kwargs):
-        for repo in github_repositories(user_id, repository_id):
+        for repo in github_repositories(uid, rid):
             yield from github_commits(repo, commit_id)
 
-    def file_type(user_id: str | None = None,
-                  repository_id: str | None = None,
-                  commit_id: str | None = None,
+    def file_type(uid: Annotated[str | None, graphinate.ParentId('user')] = None,
+                  rid: Annotated[str | None, graphinate.ParentId('repository')] = None,
+                  cid: Annotated[str | None, graphinate.ParentId('commit')] = None,
                   file_type_id: str | None = None,
                   **kwargs):
         def group_key(file):
             return pathlib.PurePath(file).suffix
 
-        for repo in github_repositories(user_id, repository_id):
-            for commit in github_commits(repo, commit_id):
+        for repo in github_repositories(uid, rid):
+            for commit in github_commits(repo, cid):
                 yield from ((k, list(g)) for k, g in
                             itertools.groupby(
                                 sorted(github_files(commit),
@@ -102,13 +102,13 @@ def repo_graph_model():  # noqa: C901
                             ))
 
     @file_node
-    def file(user_id: str | None = None,
-             repository_id: str | None = None,
-             commit_id: str | None = None,
+    def file(uid: Annotated[str | None, graphinate.ParentId('user')] = None,
+             rid: Annotated[str | None, graphinate.ParentId('repository')] = None,
+             cid: Annotated[str | None, graphinate.ParentId('commit')] = None,
              file_id: str | None = None,
              **kwargs):
-        for repo in github_repositories(user_id, repository_id):
-            for commit in github_commits(repo, commit_id):
+        for repo in github_repositories(uid, rid):
+            for commit in github_commits(repo, cid):
                 yield from github_files(commit, file_id)
 
     return graph_model

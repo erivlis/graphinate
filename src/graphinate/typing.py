@@ -8,8 +8,8 @@ Attributes:
   Extractor (Extractor): Source of data for an Element
   UniverseNode (UniverseNode): The Universe Node Type. All Node Types are the implicit children of UniverseNodeType.
 """
-
 from collections.abc import Callable, Iterable
+from enum import Enum
 from typing import Any, NamedTuple, NewType, Protocol, TypeAlias, TypeVar, Union
 
 import networkx as nx
@@ -80,4 +80,24 @@ class Supplier(Protocol):
         ...
 
 
+class ParentId:
+    """Annotation marker to declare a dependency on a parent node ID."""
+
+    def __init__(self, node_type: str | Enum):
+        """Initialize ParentId annotation.
+
+        Args:
+            node_type: The parent node type string or Enum member.
+        """
+        if isinstance(node_type, Enum):
+            self.node_type = node_type.value
+        else:
+            self.node_type = str(node_type)
+
+    def __repr__(self) -> str:
+        return f"ParentId('{self.node_type}')"
+
+
+
 GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema, nxm.typing.MermaidDiagram, str]  # noqa: UP007
+

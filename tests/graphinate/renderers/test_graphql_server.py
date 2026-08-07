@@ -222,4 +222,43 @@ def test_server_prometheus_middleware_integration():
     assert "PrometheusMiddleware" in middleware_names
     assert response.status_code == 200
 
+
+def test_root_redirect_and_schema_endpoints(client: TestClient):
+    res_root = client.get("/", follow_redirects=False)
+    assert res_root.status_code == 307
+    assert res_root.headers["location"] == "/viewer"
+
+    res_schema = client.get("/schema")
+    assert res_schema.status_code == 200
+
+    res_openapi = client.get("/openapi.json")
+    assert res_openapi.status_code == 200
+
+
+def test_server_runs_uvicorn(fake_schema, monkeypatch):
+    import uvicorn
+    called = []
+    def mock_run(app, host, port):
+        called.append((host, port))
+
+    monkeypatch.setattr(uvicorn, "run", mock_run)
+    graphql.server(fake_schema, port=9000)
+    assert len(called) == 1
+    assert called[0] == ("0.0.0.0", 9000)
+
+
+def test_package_not_found_fallback(monkeypatch):
+    import importlib.metadata
+    def mock_version(pkg):
+        raise importlib.metadata.PackageNotFoundError()
+
+    monkeypatch.setattr(importlib.metadata, 'version', mock_version)
+    import importlib
+
+    import graphinate.renderers.graphql as gql
+    importlib.reload(gql)
+    assert gql.__version__ == "0.0.0"
+
+
+
 # endregion --- Test Cases ---

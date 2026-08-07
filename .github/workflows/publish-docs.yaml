@@ -11,22 +11,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - name: Set up UV and Python
+        uses: astral-sh/setup-uv@v9.0.0
         with:
-          python-version: 3.x
-      - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+          python-version: "3.x"
+          enable-cache: true
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
       - name: Cache mkdocs-materialx dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           key: mkdocs-materialx-${{ env.cache_id }}
           path: .cache
           restore-keys: |
             mkdocs-materialx-
-      - run: |
-          uv venv
-          source .venv/bin/activate
+      - name: Install dependencies and deploy docs
+        run: |
           uv sync --only-group docs
-          properdocs gh-deploy --force
+          uv run properdocs gh-deploy --force

@@ -8,7 +8,7 @@
 | **Status**  | Active                  |
 | **Type**    | Process                 |
 | **Created** | 2025-12-30              |
-| **Updated** | 2026-01-01              |
+| **Updated** | 2026-06-22              |
 
 ## Abstract
 
@@ -21,7 +21,6 @@ stability.*
 
 | GEP         | Title                                  | Impact   | Difficulty | Rationale                                                                                                               |
 |:------------|:---------------------------------------|:---------|:-----------|:------------------------------------------------------------------------------------------------------------------------|
-| **GEP-010** | **Explicit Dependency Injection**      | **High** | Medium     | **High Usability.** The current string-matching injection is the #1 source of user confusion and runtime errors.        |
 | **GEP-016** | **CLI Argument Parsing & Path Safety** | Low      | Easy       | **Quick Win.** Improves CLI usability and safety with minimal effort.                                                   |
 | **GEP-017** | **Decoupled Server Architecture**      | Medium   | Easy       | **Enabler.** Decoupling the server unlocks proper integration testing for future phases.                                |
 
@@ -32,6 +31,7 @@ stability.*
 | GEP         | Title                                  | Impact   | Difficulty | Rationale                                                                                                                            |
 |:------------|:---------------------------------------|:---------|:-----------|:-------------------------------------------------------------------------------------------------------------------------------------|
 | **GEP-024** | **The Graph Engine**                   | **High** | **Hard**   | **Core Architecture.** Extracting the execution logic is the foundation for Async, Realtime, and better testing. Supersedes GEP-015. |
+| **GEP-032** | **GraphModel Compilation & Validation** | **High** | Medium     | **Core Architecture.** Decouples definition from execution to enable safe concurrent building, circular references, and composition. |
 | **GEP-029** | **Extraction Strategies**              | **High** | Medium     | **Core Architecture.** Formalizing the "E" in ETL. Prerequisite for robust crawling and streaming.                                   |
 | **GEP-030** | **Node Type Taxonomy**                 | Medium   | Medium     | **Semantic Power.** Defines the Type System. Prerequisite for Schema Generation (GEP-014) and Styling (GEP-026).                     |
 | **GEP-014** | **Explicit GraphQL Schema Generation** | **High** | **Hard**   | **Major Refactor.** The current "Voodoo" class generation is fragile. Refactoring this is a prerequisite for Relay support.          |
@@ -55,10 +55,10 @@ stability.*
 
 | Priority | GEP         | Title                                      |
 |:---------|:------------|:-------------------------------------------|
-| 1        | **GEP-010** | Explicit Dependency Injection              |
-| 2        | **GEP-017** | Decoupled Server Architecture              |
-| 3        | **GEP-016** | CLI Argument Parsing & Path Safety         |
-| 4        | **GEP-024** | The Graph Engine                           |
+| 1        | **GEP-017** | Decoupled Server Architecture              |
+| 2        | **GEP-016** | CLI Argument Parsing & Path Safety         |
+| 3        | **GEP-024** | The Graph Engine                           |
+| 4        | **GEP-032** | GraphModel Compilation & Validation        |
 | 5        | **GEP-029** | Extraction Strategies                      |
 | 6        | **GEP-030** | Node Type Taxonomy                         |
 | 7        | **GEP-014** | Explicit GraphQL Schema Generation         |
@@ -74,9 +74,11 @@ stability.*
 | **GEP-001** | The Graphinate Mission                 | **Active**        | Mission statement.                                                   |
 | **GEP-002** | Modularization Strategy                | **Active**        | Architectural principle.                                             |
 | **GEP-007** | Theoretical Foundations                | **Active**        | Informational / Theory.                                              |
+| **GEP-010** | Explicit Dependency Injection          | **Active**        | Implemented explicit dependency injection using ParentId.            |
 | **GEP-013** | Stable ID Serialization                | **Withdrawn**     | `repr()` deemed sufficient and more robust for Python types.         |
 | **GEP-025** | Signed ID Serialization                | **Active**        | Implemented as an optional, opt-in HMAC-SHA256 signature layer.      |
 | **GEP-015** | Refactored Graph Population Strategies | **Superseded**    | Replaced by **GEP-024** (The Graph Engine).                          |
 | **GEP-022** | 2D Visualization Mode                  | **Superseded**    | Replaced by **GEP-026** (Pluggable Visualization).                   |
 | **GEP-027** | Advanced Three.js Visualizations       | **Informational** | Design concepts for **GEP-026**.                                     |
+
 
