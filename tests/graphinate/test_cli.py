@@ -126,15 +126,19 @@ def test_server_command(octagonal_graph_model, runner, monkeypatch):
 
 
 def test_save_model_absolute_or_subdirectory_path(runner):
+    import os
     m_subdir = graphinate.GraphModel('sub/dir_model')
     res_subdir = runner.invoke(cli, ['save', '-m', m_subdir])
     assert res_subdir.exit_code != 0
     assert "Saving to subdirectories is not supported" in res_subdir.output
 
-    m_abs = graphinate.GraphModel('C:/abs_model')
+    abs_name = os.path.abspath(os.sep + 'abs_model')
+    m_abs = graphinate.GraphModel(abs_name)
     res_abs = runner.invoke(cli, ['save', '-m', m_abs])
     assert res_abs.exit_code != 0
     assert "Please provide a relative file path" in res_abs.output
+
+
 
 
 
