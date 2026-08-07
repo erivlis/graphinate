@@ -9,9 +9,9 @@ import operator
 import pathlib
 from typing import Annotated
 
-from _client import github_commits, github_files, github_repositories, github_user  # noqa: I001
-
 import graphinate  # noqa: I001
+
+from _client import github_commits, github_files, github_repositories, github_user  # noqa: I001
 
 def repo_graph_model():  # noqa: C901
     """
