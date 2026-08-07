@@ -1,7 +1,7 @@
 from enum import Enum, auto
+from typing import Self
 
 import networkx as nx
-from typing_extensions import Self
 
 
 class GraphType(Enum):
