@@ -9,10 +9,9 @@ import operator
 import pathlib
 from typing import Annotated
 
-from _client import github_commits, github_files, github_repositories, github_user  # see _client.py
-
 import graphinate
 
+from _client import github_commits, github_files, github_repositories, github_user  # see _client.py
 
 
 def repo_graph_model():  # noqa: C901
@@ -114,7 +113,6 @@ def repo_graph_model():  # noqa: C901
                 yield from github_files(commit, file_id)
 
     return graph_model
-
 
 
 if __name__ == '__main__':
