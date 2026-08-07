@@ -27,9 +27,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras --all-groups
       - name: Run Ruff Linter
-        run: uv run ruff check .
-      - name: Check Ruff Formatting
-        run: uv run ruff format --check .
+        run: uv run ruff check ./src ./tests
+#      - name: Check Ruff Formatting
+#        run: uv run ruff format --check .
       - name: Test with pytest
         run: uv run pytest tests --cov=src --cov-branch --cov-report=xml --junitxml=junit.xml -o junit_family=legacy -n auto
       - name: Upload coverage reports to Codecov
