@@ -408,3 +408,66 @@ def test_case_insensitive_dependency_injection():
     assert ('c1',) in graph.nodes
     assert (('repo1',), ('c1',)) in graph.edges
 
+
+def test_parent_id_repr():
+    from graphinate.typing import ParentId
+    p = ParentId('parent')
+    assert repr(p) == "ParentId('parent')"
+
+
+def test_element_string_field_names():
+    from graphinate.modeling import element
+    elem_cls = element('MyType', 'field1 field2')
+    inst = elem_cls('v1', 'v2')
+    assert inst.field1 == 'v1'
+    assert inst.field2 == 'v2'
+
+
+def test_validate_node_dependency_registration_direct():
+    from graphinate.modeling import GraphModel, GraphModelError
+    m = GraphModel('Direct Validate')
+    m._validate_node_dependency_registration({})
+    with pytest.raises(GraphModelError):
+        m._validate_node_dependency_registration({'p': 'nonexistent'})
+
+
+def test_node_generator_default_param():
+    import operator
+
+    from graphinate.builders import NetworkxBuilder
+    from graphinate.modeling import GraphModel
+    m = GraphModel('Default Param')
+    @m.node(type_='parent', key=operator.itemgetter('id'))
+    def parent():
+        yield {'id': 'p1'}
+
+    @m.node(type_='child', parent_type='parent', key=operator.itemgetter('id'))
+    def child(parent_id, flag=True):
+        if flag:
+            yield {'id': 'c1'}
+
+    b = NetworkxBuilder(m)
+    g = b.build()
+    assert ('c1',) in g.nodes
+
+
+def test_edge_generator_callable_type():
+    import operator
+
+    from graphinate.builders import NetworkxBuilder
+    from graphinate.modeling import GraphModel
+    m = GraphModel('Edge Type')
+    @m.node(type_='node', key=operator.itemgetter('id'))
+    def n():
+        yield {'id': '1'}
+
+    @m.edge(type_=lambda item: 'link')
+    def edges():
+        yield {'source': '1', 'target': '1'}
+
+    b = NetworkxBuilder(m)
+    g = b.build()
+    assert len(g.edges) == 1
+
+
+

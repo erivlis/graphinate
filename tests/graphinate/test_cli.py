@@ -86,3 +86,57 @@ def test_import_from_string__not_str(case):
     # Act & Assert
     with pytest.raises(ImportFromStringError, match=f"{case} is not a string"):
         _actual = import_from_string(case)
+
+
+def test_import_from_string_not_a_graph_model():
+    with pytest.raises(ImportFromStringError, match="GraphModel instance cannot be determined"):
+        import_from_string("sys:path")
+
+
+def test_import_from_string_nested_module_not_found(monkeypatch):
+    import importlib
+    def mock_import(name):
+        raise ModuleNotFoundError("No module named 'other_pkg'", name="other_pkg")
+    monkeypatch.setattr(importlib, 'import_module', mock_import)
+
+    with pytest.raises(ModuleNotFoundError):
+        import_from_string("some_module:model")
+
+
+def test_save_model_file_exists_confirm(octagonal_graph_model, runner):
+    with runner.isolated_filesystem():
+        file_name = f"{octagonal_graph_model.name}.d3_graph.json"
+        Path(file_name).write_text("{}")
+
+        result = runner.invoke(cli, ['save', '-m', octagonal_graph_model], input='y\n')
+        assert result.exit_code == 0
+
+
+def test_server_command(octagonal_graph_model, runner, monkeypatch):
+    import graphinate.renderers.graphql as graphql_renderer
+    called = []
+    def mock_server(schema, port, browse, **kwargs):
+        called.append((port, browse))
+
+    monkeypatch.setattr(graphql_renderer, 'server', mock_server)
+    result = runner.invoke(cli, ['server', '-m', octagonal_graph_model, '-p', '8080'])
+    assert result.exit_code == 0
+    assert len(called) == 1
+    assert called[0] == (8080, False)
+
+
+def test_save_model_absolute_or_subdirectory_path(runner):
+    m_subdir = graphinate.GraphModel('sub/dir_model')
+    res_subdir = runner.invoke(cli, ['save', '-m', m_subdir])
+    assert res_subdir.exit_code != 0
+    assert "Saving to subdirectories is not supported" in res_subdir.output
+
+    m_abs = graphinate.GraphModel('C:/abs_model')
+    res_abs = runner.invoke(cli, ['save', '-m', m_abs])
+    assert res_abs.exit_code != 0
+    assert "Please provide a relative file path" in res_abs.output
+
+
+
+
+

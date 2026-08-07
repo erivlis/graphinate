@@ -148,3 +148,31 @@ def test_color_hex_compatibility_with_node_color_mapping_outputs():
         assert isinstance(hex_color, str)
         assert hex_color.startswith('#')
         assert len(hex_color) == 7
+
+
+def test_node_color_mapping_single_node():
+    g = nx.Graph()
+    g.graph['node_types'] = {'user': {}}
+    g.add_node('u1', type='user')
+    color_map = node_color_mapping(g)
+    assert 'u1' in color_map
+
+
+def test_node_color_mapping_without_numpy(monkeypatch):
+    import graphinate.color
+    monkeypatch.setattr(graphinate.color, 'HAS_NUMPY', False)
+
+    g = nx.Graph()
+    g.graph['node_types'] = {'user': {}, 'post': {}}
+    g.add_node('u1', type='user')
+    g.add_node('p1', type='post')
+    color_map = node_color_mapping(g)
+    assert len(color_map) == 2
+
+    # Test single node without numpy
+    g_single = nx.Graph()
+    g_single.graph['node_types'] = {'user': {}}
+    g_single.add_node('u1', type='user')
+    color_map_single = node_color_mapping(g_single)
+    assert len(color_map_single) == 1
+

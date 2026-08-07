@@ -346,6 +346,49 @@ def test_populate_nodes_universe_node_parent_handling(builder_with_graph):
     builder_with_graph.model._node_models = {node_type_absolute_id: [node_model]}
     builder_with_graph._populate_nodes(node_type_absolute_id)
     node_id = (node.key,)
-    # Lineage should be (node.key,) and no edge should be created
     assert builder_with_graph._graph.nodes[node_id]['lineage'] == [node.key]
     assert len(builder_with_graph._graph.edges) == 0
+
+
+
+def test_populate_nodes_multiplicity_first_and_last():
+    import operator
+    m = GraphModel('Multiplicity Test')
+    @m.node(type_='node', multiplicity=Multiplicity.FIRST, key=operator.itemgetter('id'))
+    def node_first():
+        yield {'id': '1', 'v': 'a'}
+        yield {'id': '1', 'v': 'b'}
+
+    b_first = graphinate.builders.NetworkxBuilder(m)
+    g_first = b_first.build()
+    assert g_first.nodes[('1',)]['value'] == [{'id': '1', 'v': 'a'}]
+
+    m2 = GraphModel('Multiplicity Last Test')
+    @m2.node(type_='node', multiplicity=Multiplicity.LAST, key=operator.itemgetter('id'))
+    def node_last():
+        yield {'id': '1', 'v': 'a'}
+        yield {'id': '1', 'v': 'b'}
+
+    b_last = graphinate.builders.NetworkxBuilder(m2)
+    g_last = b_last.build()
+    assert g_last.nodes[('1',)]['value'] == [{'id': '1', 'v': 'b'}]
+
+
+def test_rectify_edge_attributes_dict():
+    import operator
+    m = GraphModel('Edge Attr Dict')
+    @m.node(type_='n', key=operator.itemgetter('id'))
+    def n():
+        yield {'id': '1'}
+        yield {'id': '2'}
+
+    @m.edge()
+    def e():
+        yield {'source': '1', 'target': '2'}
+
+    b = graphinate.builders.NetworkxBuilder(m)
+    g = b.build()
+    b._rectify_edge_attributes(custom_attr={(('1',), ('2',)): 'custom_val'})
+    assert g.edges[(('1',), ('2',))]['custom_attr'] == 'custom_val'
+
+

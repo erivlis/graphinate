@@ -60,11 +60,21 @@ def test_d3_builder_json_format(map_graph_model):
     #             json.loads(v)  # Check if it's a valid JSON string
 
 
-def test_d3_builder_invalid_format(map_graph_model):
-    # arrange
-    _, _, graph_model = map_graph_model
-    builder = graphinate.builders.D3Builder(graph_model)
-
-    # act & assert
     with pytest.raises(ValueError, match="Invalid values format: invalid_format"):
         builder.build(values_format='invalid_format')
+
+
+def test_d3_builder_json_conversions():
+    from datetime import datetime, timedelta
+    m = graphinate.GraphModel('D3 Convert')
+    @m.node(type_='node', key=lambda item: 'node_1')
+    def node():
+        yield {'b': b'hello bytes', 'td': timedelta(seconds=120), 'dt': datetime(2026, 1, 1)}
+
+    b = graphinate.builders.D3Builder(m)
+    res = b.build(values_format='json')
+    assert res['nodes'][0]['value'][0]['b'] == 'hello bytes'
+    assert res['nodes'][0]['value'][0]['td'] == '120.0 s'
+    assert '2026-01-01' in res['nodes'][0]['value'][0]['dt']
+
+
