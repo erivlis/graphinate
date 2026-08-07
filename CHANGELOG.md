@@ -1,3 +1,19 @@
+## v0.15.0 (2026-08-07)
+
+### Feat
+
+- introduces GEP-032 for GraphModel compilation and validation lifecycle
+- improves ParentId DI with case-insensitive matching and validation.
+- introduces ParentId and improves node dependency resolution
+
+### Refactor
+
+- Uses standard library imports for `UTC` and `Self`.
+- Refines ParentId dependency registration validation logic.
+- Uses ParentId to improve dependency resolution in GitHub example.
+- Uses dynamic package version for OpenAPI schema.
+- Updates D3 builder to use `value_handler` for strictify conversion.
+
 ## v0.14.0 (2026-06-20)
 
 ### Feat

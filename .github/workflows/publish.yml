@@ -20,8 +20,7 @@ jobs:
     - name: Set up UV and Python
       uses: astral-sh/setup-uv@v9.0.0
       with:
-        python-version: '3.x'
-        enable-cache: true
+        python-version: '3.14'
     - name: Build package
       run: uv build
     - name: Publish package

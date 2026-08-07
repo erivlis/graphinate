@@ -14,8 +14,7 @@ jobs:
       - name: Set up UV and Python
         uses: astral-sh/setup-uv@v9.0.0
         with:
-          python-version: "3.x"
-          enable-cache: true
+          python-version: "3.14"
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
       - name: Cache mkdocs-materialx dependencies
         uses: actions/cache@v6
