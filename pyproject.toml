@@ -99,6 +99,7 @@ test = [
     "httpx",
     "pytest",
     "pytest-asyncio",
+    "pytest-codspeed",
     "pytest-cov",
     "pytest-mock",
     "pytest-randomly",
