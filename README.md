@@ -70,7 +70,8 @@
     <td>Mentions</td>
     <td>
       <a href="https://www.youtube.com/live/k01G0b0Y0Jg?si=030OT8sK3BqPyy8r&t=1028"><img alt="PythonBytes Podcast" src="https://img.shields.io/badge/Python_Bytes-Ep. 361-D7F9FF?logo=applepodcasts&labelColor=blue"></a>
-      <a href="https://pythonhub.dev/digest/2024-03-10/"><img alt="Static Badge" src="https://img.shields.io/badge/PythonHub-2024.03.10-gold?labelColor=blue"></a>
+      <!-- a href="https://pythonhub.dev/digest/2024-03-10/"><img alt="Static Badge" src="https://img.shields.io/badge/PythonHub-2024.03.10-gold?labelColor=blue"></a -->
+      <a href="https://pythonhub.dev/digest/2024-03-10/"><img alt="Python Hub" src="https://custom-icon-badges.demolab.com/badge/Python%20Hub-2024.03.10-gold?logo=pythonhub&labelColor=grey"></a>
     </td>
   </tr>
   <tr>
