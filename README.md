@@ -41,9 +41,9 @@
     <td>
       <a href="https://github.com/erivlis/graphinate/actions/workflows/test.yml"><img alt="Test" src="https://github.com/erivlis/graphinate/actions/workflows/test.yml/badge.svg"></a>
       <a href="https://github.com/erivlis/graphinate/actions/workflows/test-beta.yml"><img alt="Test (Beta)" src="https://github.com/erivlis/graphinate/actions/workflows/test-beta.yml/badge.svg"></a>
+      <a href="https://github.com/erivlis/graphinate/actions/workflows/codspeed.yml"><img alt="CodSpeed" src="https://github.com/erivlis/graphinate/actions/workflows/codspeed.yml/badge.svg"></a>
       <a href="https://github.com/erivlis/graphinate/actions/workflows/publish.yml"><img alt="Publish" src="https://github.com/erivlis/graphinate/actions/workflows/publish.yml/badge.svg"></a>
       <a href="https://github.com/erivlis/graphinate/actions/workflows/publish-docs.yaml"><img alt="Publish Docs" src="https://github.com/erivlis/graphinate/actions/workflows/publish-docs.yaml/badge.svg"></a>
-      <a href="https://app.codspeed.io/erivlis/graphinate?utm_source=badge"><img src="https://img.shields.io/endpoint?url=https://codspeed.io/badge.json" alt="CodSpeed"/></a>
     </td>
   </tr>
   <tr style="vertical-align: middle;">
@@ -63,6 +63,7 @@
       <a href="https://app.deepsource.com/gh/erivlis/graphinate/" target="_blank"><img alt="DeepSource" title="DeepSource" src="https://app.deepsource.com/gh/erivlis/graphinate.svg/?label=active+issues&show_trend=true&token=5n11jDEmcZB-6eyGR34rQaxF"/></a>
       <a href="https://app.deepsource.com/gh/erivlis/graphinate/" target="_blank"><img alt="DeepSource" title="DeepSource" src="https://app.deepsource.com/gh/erivlis/graphinate.svg/?label=resolved+issues&show_trend=true&token=5n11jDEmcZB-6eyGR34rQaxF"/></a>
       <a href="https://snyk.io/test/github/erivlis/graphinate"><img alt="Snyk" src="https://snyk.io/test/github/erivlis/Graphinate/badge.svg"></a>
+      <a href="https://app.codspeed.io/erivlis/graphinate?utm_source=badge"><img src="https://img.shields.io/endpoint?url=https://codspeed.io/badge.json" alt="CodSpeed"/></a>
     </td>
   </tr>
   <tr>
