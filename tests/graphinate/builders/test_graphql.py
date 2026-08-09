@@ -136,3 +136,24 @@ def test_graphql_builder__ast_model__graph_query(ast_graph_model, graphql_query)
     assert actual_graph['graph']['name'] == 'AST Graph'
     node_types_counts = {c['name']: c['value'] for c in actual_graph['graph']['nodeTypeCounts']}
     assert node_types_counts
+
+
+def test_graphql_builder_empty_graph_model():
+    empty_model = graphinate.model('Empty Model')
+    builder = graphinate.builders.GraphQLBuilder(empty_model)
+
+    import strawberry
+    schema: strawberry.Schema = builder.build()
+    assert schema is not None
+
+    result = schema.execute_sync("{ graph { name nodeCount edgeCount } nodes { id } }")
+    assert result.errors is None
+    assert result.data == {
+        "graph": {
+            "name": "Empty Model",
+            "nodeCount": 0,
+            "edgeCount": 0,
+        },
+        "nodes": [],
+    }
+

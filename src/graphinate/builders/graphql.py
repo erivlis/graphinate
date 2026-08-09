@@ -266,18 +266,22 @@ class GraphQLBuilder(NetworkxBuilder):
     def _populate_graph_node_type_enum(self, node_types: list[str]):
         from strawberry.types.enum import EnumValue
 
-        for v in node_types:
-            self.GraphNodeType._member_names_.append(v)
-            self.GraphNodeType._member_map_[v] = v
-            self.GraphNodeType._value2member_map_[v] = v
+        types_to_populate = node_types if node_types else ['node']
 
-            self.GraphNodeType.__strawberry_definition__.values.append(
-                EnumValue(
-                    name=v,
-                    value=v,
-                    description=f"Graph Node Type: {v}"
+        for v in types_to_populate:
+            if v not in self.GraphNodeType._member_names_:
+                self.GraphNodeType._member_names_.append(v)
+                self.GraphNodeType._member_map_[v] = v
+                self.GraphNodeType._value2member_map_[v] = v
+
+                self.GraphNodeType.__strawberry_definition__.values.append(
+                    EnumValue(
+                        name=v,
+                        value=v,
+                        description=f"Graph Node Type: {v}"
+                    )
                 )
-            )
+
 
     @property
     @functools.lru_cache
