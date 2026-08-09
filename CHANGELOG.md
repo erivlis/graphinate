@@ -1,3 +1,9 @@
+## v0.15.1 (2026-08-09)
+
+### Fix
+
+- GraphQL builder robustly populates enums and handles empty models.
+
 ## v0.15.0 (2026-08-07)
 
 ### Feat
