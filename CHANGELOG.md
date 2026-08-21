@@ -1,3 +1,9 @@
+## v0.15.2 (2026-08-21)
+
+### Fix
+
+- correct debug mode support to CLI and GraphQL server configuration
+
 ## v0.15.1 (2026-08-09)
 
 ### Fix
