@@ -97,6 +97,7 @@ def test_import_from_string_nested_module_not_found(monkeypatch):
     import importlib
     def mock_import(name):
         raise ModuleNotFoundError("No module named 'other_pkg'", name="other_pkg")
+
     monkeypatch.setattr(importlib, 'import_module', mock_import)
 
     with pytest.raises(ModuleNotFoundError):
@@ -115,14 +116,48 @@ def test_save_model_file_exists_confirm(octagonal_graph_model, runner):
 def test_server_command(octagonal_graph_model, runner, monkeypatch):
     import graphinate.renderers.graphql as graphql_renderer
     called = []
-    def mock_server(schema, port, browse, **kwargs):
-        called.append((port, browse))
+
+    def mock_server(schema, port, browse, debug=False, **kwargs):
+        called.append((port, browse, debug))
 
     monkeypatch.setattr(graphql_renderer, 'server', mock_server)
     result = runner.invoke(cli, ['server', '-m', octagonal_graph_model, '-p', '8080'])
     assert result.exit_code == 0
     assert len(called) == 1
-    assert called[0] == (8080, False)
+    assert called[0] == (8080, False, False)
+
+    called.clear()
+    result_debug = runner.invoke(cli, ['server', '-m', octagonal_graph_model, '-p', '8080', '--debug'])
+    assert result_debug.exit_code == 0
+    assert called[0] == (8080, False, True)
+
+    called.clear()
+    result_global_debug = runner.invoke(cli, ['--debug', 'server', '-m', octagonal_graph_model, '-p', '8080'])
+    assert result_global_debug.exit_code == 0
+    assert called[0] == (8080, False, True)
+
+    called.clear()
+    result_env_debug = runner.invoke(cli, ['server', '-m', octagonal_graph_model, '-p', '8080'],
+                                     env={'GRAPHINATE_DEBUG': '1'})
+    assert result_env_debug.exit_code == 0
+    assert called[0] == (8080, False, True)
+
+    called.clear()
+    result_flag_overrides_env = runner.invoke(
+        cli,
+        ['server', '-m', octagonal_graph_model, '-p', '8080', '--no-debug'],
+        env={'GRAPHINATE_DEBUG': '1'}
+    )
+    assert result_flag_overrides_env.exit_code == 0
+    assert called[0] == (8080, False, False)
+
+
+def test_save_model_debug_flag(octagonal_graph_model, runner):
+    with runner.isolated_filesystem():
+        result = runner.invoke(cli, ['--debug', 'save', '-m', octagonal_graph_model])
+        assert result.exit_code == 0
+        result_cmd = runner.invoke(cli, ['save', '-m', octagonal_graph_model, '--debug'], input='y\n')
+        assert result_cmd.exit_code == 0
 
 
 def test_save_model_absolute_or_subdirectory_path(runner):
@@ -137,10 +172,3 @@ def test_save_model_absolute_or_subdirectory_path(runner):
     res_abs = runner.invoke(cli, ['save', '-m', m_abs])
     assert res_abs.exit_code != 0
     assert "Please provide a relative file path" in res_abs.output
-
-
-
-
-
-
-

@@ -69,6 +69,7 @@ def _graphql_app(graphql_schema: strawberry.Schema) -> GraphQL:
 
 def _starlette_app(graphql_app: strawberry.asgi.GraphQL | None = None,
                    port: int = DEFAULT_PORT,
+                   debug: bool = False,
                    **kwargs: Any) -> Starlette:
     def open_url(endpoint):
         webbrowser.open(f'http://localhost:{port}/{endpoint}')
@@ -97,6 +98,7 @@ def _starlette_app(graphql_app: strawberry.asgi.GraphQL | None = None,
         ])
 
     app = Starlette(
+        debug=debug,
         lifespan=lifespan,
         routes=app_routes
     )
@@ -108,21 +110,24 @@ def _starlette_app(graphql_app: strawberry.asgi.GraphQL | None = None,
     return app
 
 
-def server(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT, **kwargs: Any):
+def server(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT, debug: bool = False, **kwargs: Any):
     """
     Args:
         graphql_schema: The Strawberry GraphQL schema.
         port: The port number to run the server on. Defaults to 8072.
+        debug: Whether to run in debug mode. Defaults to False.
 
     Returns:
     """
 
     graphql_app = _graphql_app(graphql_schema)
 
-    app = _starlette_app(graphql_app, port=port, **kwargs)
+    app = _starlette_app(graphql_app, port=port, debug=debug, **kwargs)
 
     import uvicorn
-    uvicorn.run(app, host='0.0.0.0', port=port)
+    uvicorn_log_level = 'debug' if debug else 'info'
+    uvicorn.run(app, host='0.0.0.0', port=port, log_level=kwargs.get('log_level', uvicorn_log_level))
+
 
 
 __all__ = ['server']

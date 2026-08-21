@@ -1,14 +1,22 @@
 import importlib
 import json
+import sys
 from pathlib import Path
 from types import ModuleType
 from typing import Any
 
 import rich_click as click
+from loguru import logger
 from strawberry import Schema
 
 from . import GraphModel, builders, graphql
 from .renderers.graphql import DEFAULT_PORT
+
+
+def _configure_logging(debug: bool = False) -> None:
+    logger.remove()
+    log_level = 'DEBUG' if debug else 'INFO'
+    logger.add(sys.stderr, level=log_level)
 
 
 def _get_kwargs(ctx: click.Context) -> dict:
@@ -79,15 +87,29 @@ model_option = click.option('-m', '--model',
 
 
 @click.group()
+@click.option(
+    '--debug/--no-debug',
+    default=False,
+    envvar='GRAPHINATE_DEBUG',
+    help='Enable or disable debug mode (can also be set via GRAPHINATE_DEBUG env var).'
+)
 @click.pass_context
-def cli(ctx: click.Context) -> None:
+def cli(ctx: click.Context, debug: bool) -> None:
     ctx.ensure_object(dict)
+    ctx.obj['debug'] = debug
+    _configure_logging(debug)
 
 
 @cli.command()
 @model_option
+@click.option('--debug/--no-debug', envvar='GRAPHINATE_DEBUG', default=None,
+              help='Enable or disable debug mode (can also be set via GRAPHINATE_DEBUG env var).')
 @click.pass_context
-def save(ctx: click.Context, model: GraphModel) -> None:
+def save(ctx: click.Context, model: GraphModel, debug: bool | None = None) -> None:
+    if debug is not None:
+        ctx.obj['debug'] = debug
+        _configure_logging(debug)
+
     file_path = Path(f"{model.name}.d3_graph.json")
 
     if file_path.is_absolute():
@@ -109,8 +131,16 @@ def save(ctx: click.Context, model: GraphModel) -> None:
 @model_option
 @click.option('-p', '--port', type=int, default=DEFAULT_PORT, help='Port number.')
 @click.option('-b', '--browse', type=bool, default=False, help='Open server address in browser.')
+@click.option('--debug/--no-debug', envvar='GRAPHINATE_DEBUG', default=None,
+              help='Enable or disable debug mode (can also be set via GRAPHINATE_DEBUG env var).')
 @click.pass_context
-def server(ctx: click.Context, model: GraphModel, port: int, browse: bool) -> None:
+def server(ctx: click.Context, model: GraphModel, port: int, browse: bool, debug: bool | None = None) -> None:
+    if debug is None:
+        debug = ctx.obj.get('debug', False)
+    else:
+        ctx.obj['debug'] = debug
+    _configure_logging(debug)
+
     message = """
      ██████╗ ██████╗  █████╗ ██████╗ ██╗  ██╗██║███╗   ██╗ █████╗ ████████╗███████╗
     ██╔════╝ ██╔══██╗██╔══██╗██╔══██╗██║  ██║██║████╗  ██║██╔══██╗╚══██╔══╝██╔════╝
@@ -120,4 +150,4 @@ def server(ctx: click.Context, model: GraphModel, port: int, browse: bool) -> No
      ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝   ╚══════╝"""
     click.echo(message)
     schema: Schema = builders.GraphQLBuilder(model).build()
-    graphql.server(schema, port=port, browse=browse, **_get_kwargs(ctx))
+    graphql.server(schema, port=port, browse=browse, debug=debug, **_get_kwargs(ctx))

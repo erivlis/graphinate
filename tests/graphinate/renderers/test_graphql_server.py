@@ -238,13 +238,18 @@ def test_root_redirect_and_schema_endpoints(client: TestClient):
 def test_server_runs_uvicorn(fake_schema, monkeypatch):
     import uvicorn
     called = []
-    def mock_run(app, host, port):
-        called.append((host, port))
+    def mock_run(app, host, port, log_level='info'):
+        called.append((host, port, log_level, app.debug))
 
     monkeypatch.setattr(uvicorn, "run", mock_run)
     graphql.server(fake_schema, port=9000)
     assert len(called) == 1
-    assert called[0] == ("0.0.0.0", 9000)
+    assert called[0] == ("0.0.0.0", 9000, "info", False)
+
+    called.clear()
+    graphql.server(fake_schema, port=9001, debug=True)
+    assert called[0] == ("0.0.0.0", 9001, "debug", True)
+
 
 
 def test_package_not_found_fallback(monkeypatch):
