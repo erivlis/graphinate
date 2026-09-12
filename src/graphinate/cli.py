@@ -70,7 +70,7 @@ class GraphModelType(click.ParamType):
     def convert(self,
                 value: Any,
                 param: click.Parameter | None,
-                ctx: click.Context) -> GraphModel:  # type: ignore[override]
+                ctx: click.Context | None) -> GraphModel:  # type: ignore[override]
         if isinstance(value, GraphModel):
             return value
 
