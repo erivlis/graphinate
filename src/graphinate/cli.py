@@ -1,6 +1,7 @@
 import importlib
 import json
 import sys
+from collections.abc import Callable
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -79,11 +80,13 @@ class GraphModelType(click.ParamType):
             self.fail(str(e))
 
 
-model_option = click.option('-m', '--model',
-                            type=GraphModelType(),
-                            help="A GraphModel instance reference {module-name}:{GraphModel-instance-variable-name}"
-                                 " For example given a var `model=GraphModel()` defined in app.py file, then the"
-                                 " reference would be app:model")
+model_option: Callable[[...], click.Option] = click.option(
+    '-m', '--model',
+    type=GraphModelType,
+    help="A GraphModel instance reference {module-name}:{GraphModel-instance-variable-name}"
+         " For example given a var `model=GraphModel()` defined in app.py file, then the"
+         " reference would be app:model"
+)
 
 
 @click.group()
