@@ -12,9 +12,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
       - name: Set up UV and Python
-        uses: astral-sh/setup-uv@v9.0.0
+        uses: astral-sh/setup-uv@v10.3.0
         with:
-          python-version: "3.14"
+          python-version: "3.15"
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
       - name: Cache mkdocs-materialx dependencies
         uses: actions/cache@v6
