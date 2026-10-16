@@ -1,3 +1,4 @@
+from contextlib import chdir
 import sys
 from pathlib import Path
 
@@ -15,8 +16,8 @@ def runner():
     return CliRunner()
 
 
-def test_save_model(octagonal_graph_model, runner):
-    with runner.isolated_filesystem():
+def test_save_model(octagonal_graph_model, runner, tmp_path):
+    with chdir(tmp_path):
         # Act
         result = runner.invoke(cli, ['save', '-m', octagonal_graph_model])
 
@@ -24,11 +25,11 @@ def test_save_model(octagonal_graph_model, runner):
         assert result.exit_code == 0
 
 
-def test_save_model_reference(runner):
+def test_save_model_reference(runner, tmp_path):
     # Arrange
     sys.path.append(str(Path(EXAMPLES_MATH).resolve()))
 
-    with runner.isolated_filesystem():
+    with chdir(tmp_path):
         # Act
         result = runner.invoke(cli, ['save', '-m', "polygonal_graph:model"])
 
@@ -36,8 +37,8 @@ def test_save_model_reference(runner):
         assert result.exit_code == 0
 
 
-def test_save_malformed_model_reference(runner):
-    with runner.isolated_filesystem():
+def test_save_malformed_model_reference(runner, tmp_path):
+    with chdir(tmp_path):
         # Act
         result = runner.invoke(cli, ['save', '-m', "malformed_model_reference"])
 
@@ -104,8 +105,8 @@ def test_import_from_string_nested_module_not_found(monkeypatch):
         import_from_string("some_module:model")
 
 
-def test_save_model_file_exists_confirm(octagonal_graph_model, runner):
-    with runner.isolated_filesystem():
+def test_save_model_file_exists_confirm(octagonal_graph_model, runner, tmp_path):
+    with chdir(tmp_path):
         file_name = f"{octagonal_graph_model.name}.d3_graph.json"
         Path(file_name).write_text("{}")
 
@@ -152,8 +153,8 @@ def test_server_command(octagonal_graph_model, runner, monkeypatch):
     assert called[0] == (8080, False, False)
 
 
-def test_save_model_debug_flag(octagonal_graph_model, runner):
-    with runner.isolated_filesystem():
+def test_save_model_debug_flag(octagonal_graph_model, runner, tmp_path):
+    with chdir(tmp_path):
         result = runner.invoke(cli, ['--debug', 'save', '-m', octagonal_graph_model])
         assert result.exit_code == 0
         result_cmd = runner.invoke(cli, ['save', '-m', octagonal_graph_model, '--debug'], input='y\n')
