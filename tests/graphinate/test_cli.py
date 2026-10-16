@@ -1,5 +1,5 @@
-from contextlib import chdir
 import sys
+from contextlib import chdir
 from pathlib import Path
 
 import pytest
