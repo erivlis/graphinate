@@ -1,3 +1,10 @@
+## v0.15.3 (2026-10-17)
+
+### Fix
+
+- Corrects InfNumber scalar definition using NewType and config.
+- Corrects `model_option` type instantiation and refines its type hint.
+
 ## v0.15.2 (2026-08-21)
 
 ### Fix
