@@ -30,6 +30,7 @@ classifiers = [
 ]
 keywords = ['graph', 'declarative']
 dependencies = [
+    "httpx2",
     "inflect",
     "loguru",
     "mappingtools",
