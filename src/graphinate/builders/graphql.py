@@ -8,12 +8,13 @@ from collections.abc import Callable
 from datetime import datetime
 from enum import Enum
 from enum import EnumMeta as EnumType  # support Python 3.10
-from typing import Any, Optional
+from typing import Any, NewType, Optional
 
 import inflect
 import networkx as nx
 import strawberry
 from strawberry.extensions import ParserCache, QueryDepthLimiter, ValidationCache
+from strawberry.schema.config import StrawberryConfig
 from strawberry.types.base import StrawberryType
 
 from .. import color, converters
@@ -35,12 +36,7 @@ class GraphQLBuilder(NetworkxBuilder):
 
     # region - Strawberry Types
 
-    InfNumber = strawberry.scalar(
-        converters.InfNumber,
-        description='Integer, Decimal or Float including Infinity and -Infinity',
-        serialize=converters.infnum_to_value,
-        parse_value=converters.value_to_infnum,
-    )
+    InfNumber = NewType('InfNumber', object)
 
     @strawberry.type
     class Measure:
@@ -497,10 +493,20 @@ class GraphQLBuilder(NetworkxBuilder):
             mutation=self._graphql_mutation(),
             types=self._graphql_types.values(),
             extensions=[
-                ParserCache(maxsize=100),
-                QueryDepthLimiter(max_depth=10),
-                ValidationCache(maxsize=100)
-            ]
+                lambda: ParserCache(maxsize=100),
+                lambda: QueryDepthLimiter(max_depth=10),
+                lambda: ValidationCache(maxsize=100),
+            ],
+            config=StrawberryConfig(
+                scalar_map={
+                    GraphQLBuilder.InfNumber: strawberry.scalar(
+                        name='InfNumber',
+                        description='Integer, Decimal or Float including Infinity and -Infinity',
+                        serialize=converters.infnum_to_value,
+                        parse_value=converters.value_to_infnum,
+                    )
+                }
+            ),
         )
 
     def build(self,
