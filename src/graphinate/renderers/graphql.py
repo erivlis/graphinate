@@ -110,8 +110,28 @@ def _starlette_app(graphql_app: strawberry.asgi.GraphQL | None = None,
     return app
 
 
-def server(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT, debug: bool = False, **kwargs: Any):
+def create_app(graphql_schema: strawberry.Schema,
+               port: int = DEFAULT_PORT,
+               debug: bool = False,
+               **kwargs: Any) -> Starlette:
+    """Creates and configures the Starlette ASGI application for the GraphQL schema.
+
+    Args:
+        graphql_schema: The Strawberry GraphQL schema.
+        port: The port number used for browser launch URLs. Defaults to 8072.
+        debug: Whether to run in debug mode. Defaults to False.
+        **kwargs: Additional configuration options (e.g., `browse=True`).
+
+    Returns:
+        Starlette: The configured Starlette ASGI application.
     """
+    graphql_app = _graphql_app(graphql_schema)
+    return _starlette_app(graphql_app, port=port, debug=debug, **kwargs)
+
+
+def server(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT, debug: bool = False, **kwargs: Any):
+    """Runs the Graphinate ASGI application using Uvicorn.
+
     Args:
         graphql_schema: The Strawberry GraphQL schema.
         port: The port number to run the server on. Defaults to 8072.
@@ -119,15 +139,11 @@ def server(graphql_schema: strawberry.Schema, port: int = DEFAULT_PORT, debug: b
 
     Returns:
     """
-
-    graphql_app = _graphql_app(graphql_schema)
-
-    app = _starlette_app(graphql_app, port=port, debug=debug, **kwargs)
+    app = create_app(graphql_schema, port=port, debug=debug, **kwargs)
 
     import uvicorn
     uvicorn_log_level = 'debug' if debug else 'info'
     uvicorn.run(app, host='0.0.0.0', port=port, log_level=kwargs.get('log_level', uvicorn_log_level))
 
 
-
-__all__ = ['server']
+__all__ = ['create_app', 'server']
