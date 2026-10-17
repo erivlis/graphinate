@@ -21,7 +21,7 @@ icon: lucide/package
 
       The `GraphModel` Class which is used to declaratively register, Edge and/or Node data supplier functions.
       Using the [`GraphModel.node()`](../reference/graphinate/modeling.md#graphinate.modeling.GraphModel.node)
-      and [`GraphMode.edge()`](../reference/graphinate/modeling.md#graphinate.modeling.GraphModel.edge) decorators.
+      and [`GraphModel.edge()`](../reference/graphinate/modeling.md#graphinate.modeling.GraphModel.edge) decorators.
 
 ### Builders
 

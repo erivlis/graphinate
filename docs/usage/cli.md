@@ -23,11 +23,12 @@ Commands:
 Usage: python -m graphinate save [OPTIONS]
 
 Options:
-  -m, --model MODEL  A GraphModel instance reference {module-
-                     name}:{GraphModel-instance-variable-name} For example,
-                     given var `model=GraphModel()` defined in app.py file,
-                     then the reference should be app:model
-  --help             Show this message and exit.
+  -m, --model MODEL       A GraphModel instance reference {module-
+                          name}:{GraphModel-instance-variable-name} For example,
+                          given var `model=GraphModel()` defined in app.py file,
+                          then the reference should be app:model
+  --debug / --no-debug    Enable debug logging.  [env var: GRAPHINATE_DEBUG]
+  --help                  Show this message and exit.
 ```
 
 ### Server
@@ -44,10 +45,12 @@ Options:
 Usage: python -m graphinate server [OPTIONS]
 
 Options:
-  -m, --model MODEL   A GraphModel instance reference {module-
-                      name}:{GraphModel-instance-variable-name} For example,
-                      given var `model=GraphModel()` defined in app.py file,
-                      then the  reference should be app:model
-  -p, --port INTEGER  Port number.
-  --help              Show this message and exit.
+  -m, --model MODEL            A GraphModel instance reference {module-
+                               name}:{GraphModel-instance-variable-name} For example,
+                               given var `model=GraphModel()` defined in app.py file,
+                               then the reference should be app:model
+  -p, --port INTEGER           Port number.
+  -b, --browse / --no-browse   Open web browser on start.
+  --debug / --no-debug         Enable debug logging.  [env var: GRAPHINATE_DEBUG]
+  --help                       Show this message and exit.
 ```
