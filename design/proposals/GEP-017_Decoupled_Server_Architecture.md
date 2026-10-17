@@ -5,7 +5,7 @@
 | **GEP**     | 17                            |
 | **Title**   | Decoupled Server Architecture |
 | **Author**  | Eran Rivlis                   |
-| **Status**  | Draft                         |
+| **Status**  | Active                        |
 | **Type**    | Standards Track               |
 | **Created** | 2025-12-25                    |
 
@@ -28,13 +28,23 @@ This proposal suggests separating the app creation from the server execution.
 Refactor `renderers.graphql` to expose a factory function:
 
 ```python
-def create_app(schema: Schema, **kwargs) -> Starlette:
+def create_app(
+    graphql_schema: strawberry.Schema,
+    port: int = DEFAULT_PORT,
+    debug: bool = False,
+    **kwargs: Any,
+) -> Starlette:
     # ... construct and return the app ...
     return app
 
 
-def server(schema: Schema, **kwargs):
-    app = create_app(schema, **kwargs)
+def server(
+    graphql_schema: strawberry.Schema,
+    port: int = DEFAULT_PORT,
+    debug: bool = False,
+    **kwargs: Any,
+) -> None:
+    app = create_app(graphql_schema, port=port, debug=debug, **kwargs)
     uvicorn.run(app, ...)
 ```
 
@@ -42,3 +52,13 @@ def server(schema: Schema, **kwargs):
 
 The `server` function signature will remain the same, ensuring backward compatibility. The new `create_app` function
 will be an additive change.
+
+## Reference Implementation
+
+- [`src/graphinate/renderers/graphql.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/renderers/graphql.py)
+- [`tests/graphinate/renderers/test_graphql_server.py`](file:///C:/dev/erivlis/graphinate/tests/graphinate/renderers/test_graphql_server.py)
+
+## Change Log
+
+- **2025-12-25:** Initial draft.
+- **2026-10-17:** Implemented `create_app` in `graphinate.renderers.graphql` and refactored `server()` to delegate to `create_app`. Updated status to `Active`.
