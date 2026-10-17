@@ -157,3 +157,100 @@ def test_graphql_builder_empty_graph_model():
         "nodes": [],
     }
 
+
+def test_graphql_builder_weakly_connected_components_and_neighbor_type_filter():
+    import strawberry
+
+    from graphinate.enums import GraphType
+
+    m = graphinate.model("DirectedModel")
+
+    @m.node()
+    def service():
+        yield "svc1"
+
+    @m.node(parent_type="service")
+    def endpoint(service_id):
+        yield f"{service_id}/ep1"
+
+    @m.node(parent_type="service")
+    def database(service_id):
+        yield f"{service_id}/db1"
+
+    builder = graphinate.builders.GraphQLBuilder(m, graph_type=GraphType.DiGraph)
+
+    @strawberry.type
+    class ServiceValue:
+        name: str
+
+    schema = builder.build(
+        node_value_graphql_type_supplier=lambda nt: strawberry.scalars.JSON if nt == "service" else None
+    )
+
+    query = """
+    {
+      weakly: measure(measure: number_weakly_connected_components) {
+        name
+        value
+      }
+      services {
+        label
+        epNeighbors: neighbors(type: endpoint) {
+          type
+          label
+        }
+      }
+    }
+    """
+    result = schema.execute_sync(query)
+    assert result.errors is None
+    assert result.data == {
+        "weakly": {
+            "name": "number_weakly_connected_components",
+            "value": 1,
+        },
+        "services": [
+            {
+                "label": "svc1",
+                "epNeighbors": [
+                    {
+                        "type": "endpoint",
+                        "label": "svc1/ep1",
+                    }
+                ],
+            }
+        ],
+    }
+
+
+def test_graphql_builder_enum_isolation_and_reserved_identifiers():
+    m1 = graphinate.model("FirstModel")
+
+    @m1.node()
+    def alpha():
+        yield "a1"
+
+    schema1 = graphinate.builders.GraphQLBuilder(m1).build()
+    assert schema1 is not None
+
+    m2 = graphinate.model("SecondModel")
+
+    @m2.node(type_="list")
+    def list_nodes():
+        yield "item1"
+
+    builder2 = graphinate.builders.GraphQLBuilder(m2)
+    schema2 = builder2.build()
+
+    introspection = schema2.execute_sync(
+        '{ __type(name: "GraphNodeType") { enumValues { name } } }'
+    )
+    assert introspection.errors is None
+    enum_names = [ev["name"] for ev in introspection.data["__type"]["enumValues"]]
+    assert enum_names == ["list_"]
+    assert "alpha" not in enum_names
+
+    custom_enum = graphinate.builders.GraphQLBuilder._graphql_enum("CustomEnum", ["class", "123"])
+    assert hasattr(custom_enum, "__strawberry_definition__")
+
+

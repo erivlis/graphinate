@@ -38,11 +38,13 @@ def test_graph_model_validate_node_parameters():
     # Arrange
     graph_model = graphinate.model(name='Graph with invalid node supplier')
 
+    @graph_model.node()
+    def invalid_node_supplier(unregistered_id):
+        yield 1
+
     # Act & Assert
     with pytest.raises(graphinate.modeling.GraphModelError):
-        @graph_model.node()
-        def invalid_node_supplier(unregistered_id):
-            yield 1
+        graph_model.compile()
 
 
 def test_validate_type_identifier_and_callable():
@@ -310,14 +312,20 @@ def test_invalid_explicit_dependency_target():
     from typing import Annotated
 
     from graphinate import ParentId, model
+    from graphinate.builders import NetworkxBuilder
     from graphinate.modeling import GraphModelError
 
     m = model(name='Invalid Dependency Model')
 
+    @m.node(type_='child')
+    def children(pid: Annotated[str, ParentId('unregistered')]):
+        yield {'id': 'c1'}
+
     with pytest.raises(GraphModelError):
-        @m.node(type_='child')
-        def children(pid: Annotated[str, ParentId('unregistered')]):
-            yield {'id': 'c1'}
+        m.compile()
+
+    with pytest.raises(GraphModelError):
+        NetworkxBuilder(m).build()
 
 
 def test_explicit_dependency_injection_with_enum():
@@ -381,6 +389,106 @@ def test_recursive_node_lineage():
     assert ('root',) in graph.nodes
     assert ('sub1',) in graph.nodes
     assert (('root',), ('sub1',)) in graph.edges
+
+
+def test_recursive_non_unique_node_lineage():
+    import operator
+    from typing import Annotated
+
+    from graphinate import ParentId, model
+    from graphinate.builders import NetworkxBuilder
+
+    m = model(name='Deep Recursive Non-Unique Model')
+
+    @m.node(type_='folder', key=operator.itemgetter('id'), unique=False)
+    def root_folder():
+        yield {'id': 'root'}
+
+    @m.node(type_='folder', parent_type='folder', key=operator.itemgetter('id'), unique=False)
+    def subfolders(folder_id: Annotated[str, ParentId('folder')]):
+        if folder_id == 'root':
+            yield {'id': 'sub1'}
+        elif folder_id == 'sub1':
+            yield {'id': 'sub2'}
+
+    graph = NetworkxBuilder(m).build()
+
+    assert ('root',) in graph.nodes
+    assert ('root', 'sub1') in graph.nodes
+    assert ('root', 'sub1', 'sub2') in graph.nodes
+    assert (('root',), ('root', 'sub1')) in graph.edges
+    assert (('root', 'sub1'), ('root', 'sub1', 'sub2')) in graph.edges
+
+
+def test_out_of_order_registration_and_cross_model_composition():
+    import operator
+    from typing import Annotated
+
+    from graphinate import ParentId, model
+    from graphinate.builders import NetworkxBuilder
+
+    # Child registered BEFORE parent on partial model A
+    model_a = model(name='Model A')
+
+    @model_a.node(type_='commit', parent_type='Repository', key=operator.itemgetter('id'))
+    def commits(rid: Annotated[str, ParentId('repository')]):
+        if rid == 'repo1':
+            yield {'id': 'c1'}
+
+    # Parent registered on partial model B
+    model_b = model(name='Model B')
+
+    @model_b.node(type_='Repository', key=operator.itemgetter('id'))
+    def repos():
+        yield {'id': 'repo1'}
+
+    combined = model_a + model_b
+    graph = NetworkxBuilder(combined).build()
+
+    assert ('repo1',) in graph.nodes
+    assert ('c1',) in graph.nodes
+    assert (('repo1',), ('c1',)) in graph.edges
+
+
+def test_compile_does_not_mutate_original_model():
+    from graphinate import model
+    from graphinate.builders import NetworkxBuilder
+
+    m = model(name='Edge Only Model')
+
+    @m.edge()
+    def edges():
+        yield {'source': 'a', 'target': 'b'}
+
+    assert len(m.node_models) == 0
+    graph = NetworkxBuilder(m).build()
+    assert ('a',) in graph.nodes
+    assert ('b',) in graph.nodes
+    # Original model must remain unmutated!
+    assert len(m.node_models) == 0
+
+
+def test_dynamic_callable_node_type_children():
+    import operator
+
+    from graphinate import model
+    from graphinate.builders import NetworkxBuilder
+
+    m = model(name='Dynamic Type Children')
+
+    @m.node(type_=operator.itemgetter('kind'), key=operator.itemgetter('id'))
+    def entities():
+        yield {'kind': 'service', 'id': 'svc1'}
+
+    @m.node(type_='endpoint', parent_type='service', key=operator.itemgetter('id'))
+    def endpoints(service_id):
+        if service_id == 'svc1':
+            yield {'id': 'ep1'}
+
+    graph = NetworkxBuilder(m).build()
+    assert ('svc1',) in graph.nodes
+    assert ('ep1',) in graph.nodes
+    assert (('svc1',), ('ep1',)) in graph.edges
 
 
 def test_case_insensitive_dependency_injection():
