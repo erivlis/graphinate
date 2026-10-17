@@ -1,8 +1,14 @@
 # GEP-031: High-Performance Vectorized Operations
 
-*   **Status:** Draft
-*   **Type:** Standards Track
-*   **Created:** 2023-10-27
+| Field       | Value                                  |
+|:------------|:---------------------------------------|
+| **GEP**     | 31                                     |
+| **Title**   | High-Performance Vectorized Operations |
+| **Author**  | Eran Rivlis                            |
+| **Status**  | Draft                                  |
+| **Type**    | Standards Track                        |
+| **Created** | 2023-10-27                             |
+| **Updated** | 2026-10-17                             |
 
 ## Abstract
 

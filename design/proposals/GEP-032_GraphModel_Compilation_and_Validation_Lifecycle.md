@@ -5,10 +5,10 @@
 | **GEP**     | 32                                              |
 | **Title**   | GraphModel Compilation and Validation Lifecycle |
 | **Author**  | Eran Rivlis                                     |
-| **Status**  | Draft                                           |
+| **Status**  | Active                                          |
 | **Type**    | Standards Track                                 |
 | **Created** | 2026-06-22                                      |
-| **Updated** | 2026-06-22                                      |
+| **Updated** | 2026-10-17                                      |
 
 ## Abstract
 
@@ -132,10 +132,12 @@ This proposal serves as the structural glue between several critical enhancement
 ## Reference Implementation
 
 * **Source File:** [modeling.py](file:///C:/dev/erivlis/graphinate/src/graphinate/modeling.py)
-* **Builder Integration:** [builder.py](file:///C:/dev/erivlis/graphinate/src/graphinate/builders/builder.py)
+* **Builder Integration:** [networkx.py](file:///C:/dev/erivlis/graphinate/src/graphinate/builders/networkx.py)
 
 ---
 
 ## Change Log
 
 * 2026-06-22: Initial Draft outlining the compilation phases, late validation, and synergies with GEP-010, GEP-012, and GEP-024.
+* 2026-10-17: Implemented `GraphModel.compile()`, `_validate_structural_dependencies()`, deferred dependency validation, and immutable model compilation in `NetworkxBuilder`.
+

@@ -5,9 +5,10 @@
 | **GEP**     | 16                                 |
 | **Title**   | CLI Argument Parsing & Path Safety |
 | **Author**  | Eran Rivlis                        |
-| **Status**  | Draft                              |
+| **Status**  | Active                             |
 | **Type**    | Standards Track                    |
 | **Created** | 2025-12-25                         |
+| **Updated** | 2026-10-17                         |
 
 ## Abstract
 

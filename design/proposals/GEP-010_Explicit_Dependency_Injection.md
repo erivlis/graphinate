@@ -5,10 +5,10 @@
 | **GEP**     | 10                            |
 | **Title**   | Explicit Dependency Injection |
 | **Author**  | Eran Rivlis                   |
-| **Status**  | Accepted                      |
+| **Status**  | Active                        |
 | **Type**    | Standards Track               |
 | **Created** | 2025-12-25                    |
-| **Updated** | 2026-06-21                    |
+| **Updated** | 2026-10-17                    |
 
 ## Abstract
 
@@ -144,16 +144,17 @@ and resolved within [modeling.py](file:///C:/dev/erivlis/graphinate/src/graphina
 * 2025-12-25: Initial Draft
 * 2026-06-21: Accepted Option 2 (Type Hinting) and implemented the injection engine.
 * 2026-06-22: Documented remaining structural and validation constraints as open issues/future work.
+* 2026-10-17: Resolved all 5 open issues (deferred compilation validation via GEP-032, immutable `compile()` clone, explicit `_lineage` tuple tracking for non-unique recursive nodes, case-insensitive lineage resolution, and removal of `NodeModel.parameters`).
 
-## Open Issues & Future Work
+## Resolved Issues (Formerly Open Issues)
 
-During the design review of the GEP-010 implementation, the Council of Principles identified the following remaining issues and areas for future work:
+During the initial design review of the GEP-010 implementation, the Council of Principles identified five follow-up items, all of which have now been resolved:
 
-1. **Eager Registration Validation:** Parameter validation (`_validate_node_dependency_registration`) currently runs eagerly at decorator execution time. This creates a strict topological import/decoration order constraint and prevents modular model composition (e.g., merging `ModelA + ModelB` where cross-dependencies are resolved only after composition). Future work will explore deferring validation to graph build time.
-2. **In-place Model Mutation (`rectify`):** The builder mutates the shared `GraphModel` instance in-place during the build phase via `rectify()`. This represents a potential concurrency side-effect. Future updates should clone the model or perform mutations on localized registries.
-3. **Recursive Lineage Namespace Collision:** In recursive structures (e.g., `folder -> folder`), overwriting the `folder_id` key in `kwargs` destroys the parent lineage chain, which causes parent ID resolution to fail when nodes are registered with `unique=False`. Passing an explicit lineage tuple during traversal will solve this collision.
-4. **Lineage Casing Asymmetry:** While injection lookup is case-insensitive, the early-break check in `_parent_node_id` remains case-sensitive, creating potential lineage pollution for mixed-case types.
-5. **Dead Code Cleanup (`NodeModel.parameters`):** The `parameters` attribute on `NodeModel` is currently obsolete and should be cleaned up.
+1. **Deferred Registration Validation (Resolved via GEP-032):** Parameter validation (`_validate_node_dependency_registration`) now runs during `GraphModel.compile()` rather than eagerly at decorator execution time, removing topological decoration-order constraints and enabling cross-model composition (`ModelA + ModelB`).
+2. **Immutable Model Compilation (Resolved via GEP-032):** `NetworkxBuilder` now compiles a clone of the `GraphModel` via `self.model.compile(...)` instead of mutating the shared `GraphModel` in-place via `rectify()`.
+3. **Recursive Lineage Namespace Collision (Resolved):** `_populate_nodes` and `_populate_node_type` now track an explicit `_lineage` tuple across recursion depth, preventing `folder -> folder` self-parenting key collisions when `unique=False`.
+4. **Lineage Casing Symmetry (Resolved):** `node_children_types`, `_validate_node_dependency_registration`, and `_parent_node_id` now resolve parent types case-insensitively.
+5. **Dead Code Cleanup (`NodeModel.parameters`) (Resolved):** Removed the obsolete `parameters` attribute from `NodeModel`.
 
 ## Copyright
 
