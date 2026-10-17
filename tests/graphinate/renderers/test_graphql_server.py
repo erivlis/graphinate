@@ -10,9 +10,9 @@ from starlette.testclient import TestClient
 from graphinate.renderers import graphql
 from graphinate.renderers.graphql import (
     GRAPHQL_ROUTE_PATH,
-    _graphql_app,
     _openapi_schema,
     _starlette_app,
+    create_app,
 )
 
 # region --- Helper Classes ---
@@ -79,8 +79,7 @@ def client() -> Generator[TestClient, Any, None]:
     with a dummy GraphQL schema.
     """
     # Arrange
-    graphql_app = _graphql_app(FAKE_SCHEMA)
-    app = _starlette_app(graphql_app)
+    app = create_app(FAKE_SCHEMA)
     with TestClient(app) as test_client:
         yield test_client
 
