@@ -1,3 +1,13 @@
+## v0.16.0 (2026-10-17)
+
+### Feat
+
+- **GEP-017**: Exposes `create_app` for Starlette application setup.
+
+### Fix
+
+- Adds model compilation and refines node and GraphQL builders.
+
 ## v0.15.3 (2026-10-17)
 
 ### Fix
