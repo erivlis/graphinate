@@ -33,36 +33,51 @@ class NetworkxBuilder(Builder):
 
         return self._graph.edges(**params)
 
-    def _populate_node_type(self, node_type: Union[Hashable, UniverseNode] = UniverseNode, **kwargs):
+    def _populate_node_type(
+            self,
+            node_type: Union[Hashable, UniverseNode] = UniverseNode,
+            _lineage: tuple | None = None,
+            **kwargs: Any
+    ):
         for parent_node_type, child_node_types in self.model.node_children_types(node_type).items():
             for child_node_type in child_node_types:
                 node_type_absolute_id = (parent_node_type, child_node_type)
-                self._populate_nodes(node_type_absolute_id, **kwargs)
+                self._populate_nodes(node_type_absolute_id, _lineage=_lineage, **kwargs)
 
     @staticmethod
     def _parent_node_id(node_type_absolute_id: NodeTypeAbsoluteId, **kwargs: Any):
-        if node_type_absolute_id[0] is UniverseNode:
+        parent_type = node_type_absolute_id[0]
+        if parent_type is UniverseNode:
             return UniverseNode
 
+        parent_type_lower = parent_type.lower() if isinstance(parent_type, str) else parent_type
         ids = []
         for k, v in kwargs.items():
             if k.endswith('_id'):
                 ids.append(v)
-                if k[:-3] == node_type_absolute_id[0]:
+                if k[:-3].lower() == parent_type_lower:
                     break
 
         return tuple(ids)
 
-
-
-    def _populate_nodes(self, node_type_absolute_id: NodeTypeAbsoluteId, **kwargs: Any):
+    def _populate_nodes(
+            self,
+            node_type_absolute_id: NodeTypeAbsoluteId,
+            _lineage: tuple | None = None,
+            **kwargs: Any
+    ):
         """Populate graph nodes based on the provided model and ID."""
         for node_model in self.model.node_models[node_type_absolute_id]:
             unique = node_model.uniqueness
             node_model_label = node_model.label
             is_label_callable = callable(node_model_label)
 
-            parent_node_id = self._parent_node_id(node_type_absolute_id, **kwargs)
+            if node_model.parent_type is UniverseNode:
+                parent_node_id = UniverseNode
+            elif _lineage is not None:
+                parent_node_id = _lineage
+            else:
+                parent_node_id = self._parent_node_id(node_type_absolute_id, **kwargs)
 
             for node in node_model.generator(**kwargs):
                 node_lineage = (*parent_node_id, node.key) if parent_node_id is not UniverseNode else (node.key,)
@@ -111,7 +126,9 @@ class NetworkxBuilder(Builder):
 
                 new_kwargs = kwargs.copy()
                 new_kwargs[f'{node_type}_id'] = node.key
-                self._populate_node_type(node_model.type, **new_kwargs)
+                self._populate_node_type(node_model.type, _lineage=node_id, **new_kwargs)
+                if node_type != node_model.type.lower():
+                    self._populate_node_type(node_type, _lineage=node_id, **new_kwargs)
 
     def _populate_edges(self, **kwargs: Any):
         """Populate graph edges based on defined connections."""
@@ -219,7 +236,7 @@ class NetworkxBuilder(Builder):
     def _rectify_model(self, node_attributes: Mapping):
         default_type = node_attributes.get('type')
         default_label = node_attributes.get('label')
-        self.model.rectify(_type=default_type, parent_type=default_type, label=default_label)
+        self.model = self.model.compile(_type=default_type, parent_type=default_type, label=default_label)
 
     def _build_graph(self, node_attributes: Mapping, **kwargs: Any):
         self._initialize_graph()

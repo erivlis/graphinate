@@ -106,24 +106,24 @@ class NodeModel:
     Args:
         type: the type of the Node.
         parent_type: the type of the node's parent. Defaults to UniverseNode.
-        parameters: parameters of the a Node instance. Defaults to None.
         label: label source. Defaults to None.
         uniqueness: is the Node universally unique. Defaults to True.
         multiplicity: Multiplicity of the Node. Defaults to ALL.
         dependencies: Node type dependencies. Defaults to None.
         generator: Nodes type generator method. Defaults to None.
+        dynamic_type: Whether the node type is resolved dynamically at runtime via a callable. Defaults to False.
 
     Properties:
         absolute_id: return the NodeModel absolute_id.
     """
     type: str
     parent_type: str | UniverseNode | None = UniverseNode
-    parameters: set[str] | None = None
     label: Callable[[Any], str | None] = None
     uniqueness: bool = True
     multiplicity: Multiplicity = Multiplicity.ALL
     dependencies: dict[str, str] | None = None
     generator: Callable[[], Iterable[Node]] | None = None
+    dynamic_type: bool = False
 
 
     @property
@@ -195,7 +195,13 @@ class GraphModel:
         Returns:
             List of children Node Types.
         """
-        return MappingProxyType({k: v for k, v in self._node_children.items() if k == _type})
+        if _type is UniverseNode:
+            return MappingProxyType({k: v for k, v in self._node_children.items() if k is UniverseNode})
+        type_lower = _type.lower() if isinstance(_type, str) else _type
+        return MappingProxyType({
+            k: v for k, v in self._node_children.items()
+            if k == _type or (isinstance(k, str) and k.lower() == type_lower)
+        })
 
     @staticmethod
     def _validate_type(node_type: Any):
@@ -231,15 +237,60 @@ class GraphModel:
             GraphModelError: If a dependency target does not match a registered
                 node type.
         """
-        node_types = self.node_types
+        if any(nm.dynamic_type for nm in itertools.chain.from_iterable(self._node_models.values())):
+            return
+        node_types_lower = {t.lower() for t in self.node_types}
         if registering_type is not None:
-            node_types = [*list(node_types), registering_type]
+            node_types_lower.add(registering_type.lower())
         for param_name, dep_type in dependencies.items():
-            if dep_type is not UniverseNode and dep_type not in node_types:
+            if dep_type is not UniverseNode and dep_type.lower() not in node_types_lower:
                 msg = (f"Illegal Arguments: dependency target '{dep_type}' for parameter '{param_name}' "
                        "is not a registered node type. Dependencies must refer to a registered node type.")
 
                 raise GraphModelError(msg)
+
+    def _validate_structural_dependencies(self):
+        """Verifies that all registered node dependencies exist within the compiled model.
+
+        Raises:
+            GraphModelError: If any node model references a parent/dependency type
+                not present in the compiled model's nodes.
+        """
+        for node_models in self._node_models.values():
+            for node_model in node_models:
+                if node_model.dependencies:
+                    self._validate_node_dependency_registration(
+                        node_model.dependencies,
+                        registering_type=node_model.type
+                    )
+
+    def compile(
+            self,
+            _type: Extractor | None = None,
+            parent_type: str | None = UniverseNode,
+            key: Extractor | None = None,
+            value: Extractor | None = None,
+            label: Extractor | None = None
+    ) -> 'GraphModel':
+        """Compiles and validates a copy of the graph model.
+
+        Returns:
+            A rectified and validated GraphModel clone.
+
+        Raises:
+            GraphModelError: If the model configuration has unresolved dependencies.
+        """
+        compiled_model = GraphModel(name=self.name)
+        for k, v in self._node_models.items():
+            compiled_model._node_models[k] = list(v)
+        for k, v in self._node_children.items():
+            compiled_model._node_children[k] = list(v)
+        for k, v in self._edge_generators.items():
+            compiled_model._edge_generators[k] = list(v)
+
+        compiled_model.rectify(_type=_type, parent_type=parent_type, key=key, value=value, label=label)
+        compiled_model._validate_structural_dependencies()
+        return compiled_model
 
     def node(self,
              type_: Extractor | None = None,
@@ -267,19 +318,10 @@ class GraphModel:
             multiplicity: Multiplicity of the Node. Defaults to ALL.
 
         Generator Function Signature:
-            The decorated generator function may accept arguments to receive context from parent nodes.
-            These arguments MUST conform to the following strict naming convention:
-            1. The argument name must be lowercase.
-            2. The argument name must end with '_id'.
-            3. The prefix (before '_id') must match an existing registered Node Type.
-
-            Example:
-                If you have a parent node type 'user', your child node generator can accept 'user_id'.
-
-                @model.node(parent_type='user')
-                def get_posts(user_id): ...
-
-            Note: Arbitrary arguments (e.g., configuration flags) are currently NOT supported.
+            The decorated generator function may accept parent node IDs via explicit
+            `Annotated[str, ParentId('parent_type')]` type annotations or implicit
+            `{parent_type}_id` parameter naming, as well as arbitrary configuration
+            parameters passed at build time.
 
         Returns:
             None
@@ -308,7 +350,6 @@ class GraphModel:
                 hints = {}
 
             sig = inspect.signature(f)
-            parameters = list(sig.parameters.keys())
 
             for param_name, param in sig.parameters.items():
                 hint = hints.get(param_name)
@@ -350,16 +391,14 @@ class GraphModel:
 
                 yield from elements(f(**f_kwargs), node_type, key=key, value=value)
 
-            self._validate_node_dependency_registration(dependencies, registering_type=model_type)
-
             node_model = NodeModel(type=model_type,
                                    parent_type=actual_parent_type,
-                                   parameters=set(parameters),
                                    dependencies=dependencies,
                                    label=label,
                                    uniqueness=unique,
                                    multiplicity=multiplicity,
-                                   generator=node_generator)
+                                   generator=node_generator,
+                                   dynamic_type=callable(node_type))
             self._node_models[node_model.absolute_id].append(node_model)
             self._node_children[actual_parent_type].append(model_type)
 

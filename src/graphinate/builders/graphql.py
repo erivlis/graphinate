@@ -28,6 +28,7 @@ from ..converters import (
 )
 from ..enums import GraphType
 from ..modeling import GraphModel
+from ..tools import VariableNameManager
 from .networkx import NetworkxBuilder
 
 
@@ -173,7 +174,7 @@ class GraphQLBuilder(NetworkxBuilder):
         number_of_isolates = 'number_of_isolates'
         number_connected_components = 'number_connected_components'
         number_strongly_connected_components = 'number_strongly_connected_components'
-        number_weakly_connected_components = ' number_weakly_connected_components'
+        number_weakly_connected_components = 'number_weakly_connected_components'
         number_attracting_components = 'number_attracting_components'
         node_connectivity = 'node_connectivity'
         transitivity = 'transitivity'
@@ -193,6 +194,7 @@ class GraphQLBuilder(NetworkxBuilder):
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
         super().__init__(model, graph_type)
         self._node_value_graphql_type_supplier: Callable[[str], StrawberryType | None] | None = None
+        self._cached_graphql_types: dict[str, type[GraphQLBuilder.GraphNode]] | None = None
 
     @staticmethod
     def add_field_resolver(class_dict: dict, field_name: str, resolver: Callable, graphql_type: Any | None = None):
@@ -248,8 +250,9 @@ class GraphQLBuilder(NetworkxBuilder):
 
     @staticmethod
     def _graphql_enum(name: str, values: list[str]) -> EnumType:
+        name_manager = VariableNameManager()
         return strawberry.enum(
-            Enum(name, {v: v for v in values}),
+            Enum(name, {name_manager.make_valid(v): v for v in values}),
             name=name,
             description=f"{name} Enumeration"
         )
@@ -263,50 +266,56 @@ class GraphQLBuilder(NetworkxBuilder):
         from strawberry.types.enum import EnumValue
 
         types_to_populate = node_types if node_types else ['node']
+        name_manager = VariableNameManager()
+
+        self.GraphNodeType.__strawberry_definition__.values.clear()
 
         for v in types_to_populate:
-            if v not in self.GraphNodeType._member_names_:
-                self.GraphNodeType._member_names_.append(v)
-                self.GraphNodeType._member_map_[v] = v
-                self.GraphNodeType._value2member_map_[v] = v
+            member_name = name_manager.make_valid(v)
+            if member_name not in self.GraphNodeType._member_names_:
+                self.GraphNodeType._member_names_.append(member_name)
+            self.GraphNodeType._member_map_[member_name] = v
+            self.GraphNodeType._value2member_map_[v] = v
 
-                self.GraphNodeType.__strawberry_definition__.values.append(
-                    EnumValue(
-                        name=v,
-                        value=v,
-                        description=f"Graph Node Type: {v}"
-                    )
+            self.GraphNodeType.__strawberry_definition__.values.append(
+                EnumValue(
+                    name=member_name,
+                    value=v,
+                    description=f"Graph Node Type: {v}"
                 )
-
+            )
 
     @property
-    @functools.lru_cache
     def _graphql_types(self) -> dict[str, type['GraphQLBuilder.GraphNode']]:
+        if self._cached_graphql_types is not None:
+            return self._cached_graphql_types
+
         node_types = list(self._graph.graph['node_types'].keys())
 
         self._populate_graph_node_type_enum(node_types)
 
-        def neighbors_resolver():
+        def neighbors_resolver(current_node_type: str):
             graph = self._graph
 
-            children_types = set(self._children_types(self.model, node_type))
+            children_types = set(self._children_types(self.model, current_node_type))
 
             def node_neighbors(self,
                                type: 'GraphQLBuilder.GraphNodeType | None' = None,
                                children: bool = False) -> list['GraphQLBuilder.GraphNode']:
                 node = decode_node_id(self.id)
-                items = (GraphQLBuilder._graph_node(graphql_types[d['type']], n, d)
-                         for n, d in graph.nodes(data=True)
-                         if n in graph.neighbors(node))
+                items = (
+                    GraphQLBuilder._graph_node(graphql_types[(d := graph.nodes[n])['type']], n, d)
+                    for n in graph.neighbors(node)
+                )
 
                 if type is not None:
-                    items = (item for item in items if item.type == type)
+                    target_type = getattr(type, 'value', type)
+                    items = (item for item in items if item.type == target_type)
 
                 if children and children_types:
                     items = (item for item in items if item.type in children_types)
 
-                items = list(items)
-                return items
+                return list(items)
 
             return node_neighbors
 
@@ -320,10 +329,11 @@ class GraphQLBuilder(NetworkxBuilder):
 
             return node_edges
 
+        class_name_manager = VariableNameManager()
         # Create classes for nodes according to their type
         graphql_types: dict[str, type[GraphQLBuilder.GraphNode]] = {}
         for node_type in node_types:
-            class_name = node_type.capitalize()
+            class_name = class_name_manager.make_valid(node_type.capitalize())
             bases = (GraphQLBuilder.GraphNode,)
             class_dict = {
                 '__doc__': f"A {class_name} Graph Node",
@@ -336,13 +346,14 @@ class GraphQLBuilder(NetworkxBuilder):
             ):
                 class_dict['value'] = list[value_graphql_type]
 
-            self.add_field_resolver(class_dict, 'neighbors', neighbors_resolver())
+            self.add_field_resolver(class_dict, 'neighbors', neighbors_resolver(node_type))
             self.add_field_resolver(class_dict, 'edges', edges_resolver())
 
             # noinspection PyTypeChecker
             graphql_type: type[GraphQLBuilder.GraphNode] = type(class_name, bases, class_dict)
             graphql_types[node_type] = GraphQLBuilder._graphql_type(node_type, graphql_type)
 
+        self._cached_graphql_types = graphql_types
         return graphql_types
 
     def _graphql_query(self):  # noqa: C901
@@ -434,8 +445,9 @@ class GraphQLBuilder(NetworkxBuilder):
         # endregion
 
         # region - Defining GraphQL Query Class dict - fields for GraphQL types implementing 'GraphNode' interface
+        field_name_manager = VariableNameManager()
         for node_type, graphql_type in self._graphql_types.items():
-            field_name = inflection.plural(node_type)
+            field_name = field_name_manager.make_valid(inflection.plural(node_type))
             resolver = graph_nodes_resolver(graphql_type, node_type)
             self.add_field_resolver(query_class_dict, field_name, resolver)
 
@@ -521,6 +533,7 @@ class GraphQLBuilder(NetworkxBuilder):
         Returns:
             Strawberry GraphQL Schema
         """
+        self._cached_graphql_types = None
         super().build(**kwargs)
 
         self._node_value_graphql_type_supplier = node_value_graphql_type_supplier
