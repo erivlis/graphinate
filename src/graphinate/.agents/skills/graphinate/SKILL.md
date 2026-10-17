@@ -103,9 +103,9 @@ print(mermaid_string)
 ## 5. Gotchas & Best Practices
 
 - **The Command Center (`graphinate.cli`)**: For quick builds or serving, use the CLI:
-    - `graphinate build --model <path/to/model.py>`
-    - `graphinate serve --model <path/to/model.py>`
-- **The Broadcaster (`graphinate.server`)**: The `serve` command requires optional dependencies. If it fails, the user
+    - `graphinate save --model <module:model>`
+    - `graphinate server --model <module:model>`
+- **The Broadcaster (`graphinate.server`)**: The `server` command requires optional dependencies. If it fails, the user
   needs to run:
   ```bash
   pip install "graphinate[server]"
