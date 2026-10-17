@@ -159,7 +159,7 @@ or
 uv add graphinate[server] 
 ```
 
-**Graphinate** officially supports Python >= 3.10.
+**Graphinate** officially supports Python >= 3.11.
 
 ### Example
 
@@ -202,7 +202,7 @@ mermaid_markdown: str = graphinate.mermaid.markdown(diagram)
 mermaid_html: str = graphinate.mermaid.html(diagram, title=graph_model.name)
 
 # or use the GraphQL Builder
-builder = graphinate.builders.GraphQLBuilder(.graph_model)
+builder = graphinate.builders.GraphQLBuilder(graph_model)
 
 # to create a Strawberry GraphQL schema
 schema = builder.build()
