@@ -1,3 +1,10 @@
+---
+title: "GEP-001: The Graphinate Mission"
+description: "Core purpose, philosophy, and Council Framework architectural pillars for the Graphinate library."
+icon: lucide/compass
+status: active
+---
+
 # GEP-001: The Graphinate Mission
 
 | Field       | Value                  |
@@ -5,14 +12,16 @@
 | **GEP**     | 1                      |
 | **Title**   | The Graphinate Mission |
 | **Author**  | Eran Rivlis            |
+| **Delegate**| The Council            |
 | **Status**  | Active                 |
 | **Type**    | Informational          |
 | **Created** | 2025-12-25             |
+| **Updated** | 2026-10-22             |
 
 ## Abstract
 
 This document defines the core purpose, philosophy, and architectural pillars of the Graphinate library. It serves as
-the "North Star" for all future development and GEPs.
+the "North Star" for all future development, architectural decisions, and GEP evaluations.
 
 ## Mission Statement
 
@@ -41,12 +50,12 @@ definition.
 
 ### 4. Magic with Consent
 
-We automate the tedious parts of graph building (ID generation, context propagation, schema derivation). However, this "
-Magic" must always have an escape hatch. Explicit configuration should always override implicit convention.
+We automate the tedious parts of graph building (ID generation, context propagation, schema derivation). However, this
+"Magic" must always have an escape hatch. Explicit configuration should always override implicit convention.
 
 ## Architectural Pillars (The Council)
 
-All contributions must adhere to the **Council Framework**:
+All contributions and GEPs must adhere to the **Council Framework**:
 
 1. **Symmetry (Noether):** Balanced APIs.
 2. **Falsifiability (Popper):** Testable designs.
@@ -60,3 +69,8 @@ All contributions must adhere to the **Council Framework**:
 
 We value critical dissent. If an abstraction feels wrong, "magical", or bloated, we stop and debate. We build for the
 Architect who values robustness over speed.
+
+## Change Log
+
+* **2025-12-25:** Initial draft.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

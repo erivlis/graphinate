@@ -1,3 +1,10 @@
+---
+title: "GEP-032: GraphModel Compilation and Validation Lifecycle"
+description: "This proposal introduces a formal compilation and validation lifecycle for `GraphModel` instances. It decouples the **Definition/Registration phase..."
+icon: lucide/git-branch
+status: active
+---
+
 # GEP-032: GraphModel Compilation and Validation Lifecycle
 
 | Field       | Value                                           |
@@ -5,10 +12,11 @@
 | **GEP**     | 32                                              |
 | **Title**   | GraphModel Compilation and Validation Lifecycle |
 | **Author**  | Eran Rivlis                                     |
+| **Delegate**| The Council                   |
 | **Status**  | Active                                          |
 | **Type**    | Standards Track                                 |
 | **Created** | 2026-06-22                                      |
-| **Updated** | 2026-10-17                                      |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 

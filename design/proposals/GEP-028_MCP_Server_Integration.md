@@ -1,3 +1,10 @@
+---
+title: "GEP-028: MCP Server Integration"
+description: "This proposal advocates for exposing Graphinate as a **Model Context Protocol (MCP) Server**. This will allow Large Language Models (LLMs) like Cla..."
+icon: lucide/git-branch
+status: draft
+---
+
 # GEP-028: MCP Server Integration
 
 | Field       | Value                  |
@@ -5,10 +12,11 @@
 | **GEP**     | 28                     |
 | **Title**   | MCP Server Integration |
 | **Author**  | Eran Rivlis            |
+| **Delegate**| The Council                   |
 | **Status**  | Draft                  |
 | **Type**    | Standards Track        |
 | **Created** | 2026-01-01             |
-| **Updated** | 2026-01-01             |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 
@@ -109,3 +117,22 @@ This fits into **Layer 4 (Integrations)** of the Modularization Strategy (GEP-00
 1.  **Code Analysis:** "Read this repo and build a dependency graph."
 2.  **Knowledge Graph:** "Extract all people and companies from this article."
 3.  **Debugging:** "Visualize the call stack I just pasted."
+## Rationale
+
+Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
+- **Safety (The Golem):** Read-only graph query tools keep LLM agents within safe inspection bounds.
+- **Clarity (Feynman):** Standard Model Context Protocol (MCP) tool schemas expose Graphinate models to LLM agents.
+
+## Backwards Compatibility
+
+Purely additive; core `graphinate` library is unaffected.
+
+## Reference Implementation
+
+- Companion package: `graphinate-mcp` or example fastmcp recipe.
+
+## Change Log
+
+* **2025-12-30:** Initial draft.
+* **2026-10-17:** Allocated to Phase 4 (Exploratory / Spin-Off Track) in roadmap audit.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

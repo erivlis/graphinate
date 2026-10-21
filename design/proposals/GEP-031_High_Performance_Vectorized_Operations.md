@@ -1,3 +1,10 @@
+---
+title: "GEP-031: High-Performance Vectorized Operations"
+description: "This proposal advocates for the optional integration of high-performance numerical libraries, specifically **NumPy** and **Numba**, to accelerate c..."
+icon: lucide/git-branch
+status: draft
+---
+
 # GEP-031: High-Performance Vectorized Operations
 
 | Field       | Value                                  |
@@ -5,10 +12,11 @@
 | **GEP**     | 31                                     |
 | **Title**   | High-Performance Vectorized Operations |
 | **Author**  | Eran Rivlis                            |
+| **Delegate**| The Council                   |
 | **Status**  | Draft                                  |
 | **Type**    | Standards Track                        |
 | **Created** | 2023-10-27                             |
-| **Updated** | 2026-10-17                             |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 
@@ -86,3 +94,9 @@ None.
 ## Reference Implementation
 
 See `src/graphinate/color.py` for the initial implementation of this pattern.
+
+## Change Log
+
+* **2026-06-22:** Initial Draft.
+* **2026-10-17:** Vectorized color map benchmarks documented in color.py.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

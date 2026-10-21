@@ -1,3 +1,10 @@
+---
+title: "GEP-015: Refactored Graph Population Strategies"
+description: "The `NetworkxBuilder` class currently contains complex, monolithic logic for node identity generation (lineage) and"
+icon: lucide/git-branch
+status: superseded
+---
+
 # GEP-015: Refactored Graph Population Strategies
 
 | Field             | Value                                  |
@@ -5,10 +12,11 @@
 | **GEP**           | 15                                     |
 | **Title**         | Refactored Graph Population Strategies |
 | **Author**        | Eran Rivlis                            |
+| **Delegate**| The Council                   |
 | **Status**        | Superseded                             |
 | **Type**          | Standards Track                        |
 | **Created**       | 2025-12-25                             |
-| **Updated**       | 2025-12-28                             |
+| **Updated** | 2026-10-22                    |
 | **Superseded-By** | GEP-024                                |
 
 > **Note:** This proposal has been superseded by **GEP-024: The Graph Engine**, which proposes extracting the population
@@ -56,3 +64,17 @@ might need updates.
 
 * 2025-12-25: Initial Draft
 * 2025-12-28: Superseded by GEP-024
+## Rationale
+
+Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
+- **Harmony (The Steward):** Superseded by [GEP-024](GEP-024_The_Graph_Engine.md) (The Graph Engine), which achieves a cleaner decoupling of producer vs consumer without proliferating strategy classes.
+
+## Reference Implementation
+
+- Superseded by: `src/graphinate/engine/` ([GEP-024](GEP-024_The_Graph_Engine.md))
+
+## Change Log
+
+* **2025-12-25:** Initial draft.
+* **2025-12-28:** Superseded by GEP-024.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

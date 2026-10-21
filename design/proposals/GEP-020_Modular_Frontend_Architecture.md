@@ -1,3 +1,10 @@
+---
+title: "GEP-020: Modular Frontend Architecture"
+description: "The Graphinate Viewer is currently implemented as a single monolithic `index.html` file containing HTML, CSS, and"
+icon: lucide/git-branch
+status: draft
+---
+
 # GEP-020: Modular Frontend Architecture
 
 | Field       | Value                         |
@@ -5,9 +12,11 @@
 | **GEP**     | 20                            |
 | **Title**   | Modular Frontend Architecture |
 | **Author**  | Eran Rivlis                   |
+| **Delegate**| The Council                   |
 | **Status**  | Draft                         |
 | **Type**    | Standards Track               |
 | **Created** | 2025-12-25                    |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 
@@ -81,3 +90,18 @@ export function createPanel(title, url) {
 ## Backwards Compatibility
 
 This is an internal refactoring of the frontend. No external API changes.
+## Rationale
+
+Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
+- **Clarity (Feynman):** Splitting monolithic inline JavaScript in `viewer/index.html` into ES modules makes frontend logic maintainable and readable.
+- **Safety (The Golem):** Modular JS allows isolated testing of UI components (panels, graph controllers, themes).
+- **Harmony (The Steward):** Retains standalone static hosting without requiring an external Node.js build step.
+
+## Reference Implementation
+
+- Viewer frontend modules: `src/graphinate/server/web/viewer/js/`
+
+## Change Log
+
+* **2025-12-26:** Initial draft.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

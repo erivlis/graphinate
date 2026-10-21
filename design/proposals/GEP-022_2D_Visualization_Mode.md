@@ -1,3 +1,10 @@
+---
+title: "GEP-022: 2D Visualization Mode"
+description: "The current viewer uses `3d-force-graph` to render the graph in a 3D space. While visually impressive (\"Wonder\"), 3D"
+icon: lucide/git-branch
+status: superseded
+---
+
 # GEP-022: 2D Visualization Mode
 
 | Field       | Value                 |
@@ -5,10 +12,11 @@
 | **GEP**     | 22                    |
 | **Title**   | 2D Visualization Mode |
 | **Author**  | Eran Rivlis           |
+| **Delegate**| The Council                   |
 | **Status**  | Superseded            |
 | **Type**    | Standards Track       |
 | **Created** | 2025-12-26            |
-| **Updated** | 2025-12-30            |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 
@@ -55,3 +63,17 @@ Ensure that filtering, coloring, and physics parameters (where applicable) are s
 ## Backwards Compatibility
 
 The 3D mode will remain the default to preserve the "Wow" factor. The 2D mode will be an opt-in feature.
+## Rationale
+
+Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
+- **Harmony (The Steward):** Superseded by [GEP-026](GEP-026_Pluggable_Visualization_and_Notebook_Support.md) (Pluggable Visualization), which provides a generalized multi-engine abstraction for 2D, 3D, and notebook contexts.
+
+## Reference Implementation
+
+- Superseded by: GEP-026.
+
+## Change Log
+
+* **2025-12-27:** Initial draft.
+* **2025-12-30:** Superseded by GEP-026.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

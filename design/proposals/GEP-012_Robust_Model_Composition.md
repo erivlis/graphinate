@@ -1,3 +1,10 @@
+---
+title: "GEP-012: Robust Model Composition"
+description: "The `GraphModel` class supports composition via the `__add__` operator. Currently, this operation blindly merges"
+icon: lucide/git-branch
+status: draft
+---
+
 # GEP-012: Robust Model Composition
 
 | Field       | Value                    |
@@ -5,9 +12,11 @@
 | **GEP**     | 12                       |
 | **Title**   | Robust Model Composition |
 | **Author**  | Eran Rivlis              |
+| **Delegate**| The Council                   |
 | **Status**  | Draft                    |
 | **Type**    | Standards Track          |
 | **Created** | 2025-12-25               |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 
@@ -44,3 +53,18 @@ Define a `CompositionStrategy` enum and allow `__add__` (or a new `merge` method
 
 The default behavior should remain `APPEND` to preserve existing functionality, but a warning could be issued if
 conflicts are detected.
+## Rationale
+
+Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
+- **Symmetry (Noether):** Model addition (`ModelA + ModelB`) acts as a categorical pushout over shared node types.
+- **Consistency (Russell):** Resolves naming collisions deterministically between distinct models.
+- **Safety (The Golem):** Protects against unintentional overwrites of generator functions during merging.
+
+## Reference Implementation
+
+- Model composition methods: `src/graphinate/modeling.py`
+
+## Change Log
+
+* **2025-12-25:** Initial draft.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

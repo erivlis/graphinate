@@ -1,3 +1,10 @@
+---
+title: "GEP-018: Relay Support"
+description: "This proposal advocates for adding support for"
+icon: lucide/git-branch
+status: draft
+---
+
 # GEP-018: Relay Support
 
 | Field       | Value           |
@@ -5,9 +12,11 @@
 | **GEP**     | 18              |
 | **Title**   | Relay Support   |
 | **Author**  | Eran Rivlis     |
+| **Delegate**| The Council                   |
 | **Status**  | Draft           |
 | **Type**    | Standards Track |
 | **Created** | 2025-12-25      |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 
@@ -88,3 +97,18 @@ This is a **Breaking Change** for the GraphQL API.
 ## Reference Implementation
 
 Strawberry provides built-in support for Relay via `strawberry.relay`. We will leverage this to minimize boilerplate.
+## Rationale
+
+Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
+- **Symmetry (Noether):** Conforms Graphinate's GraphQL schema to the standard Relay Object Identification and Cursor Connections specifications.
+- **Efficiency (Shannon):** Replaces unbounded list allocations with scalable cursor-based pagination for large graphs.
+- **Clarity (Feynman):** Global IDs make any node universally fetchable across client caches.
+
+## Reference Implementation
+
+- Relay interfaces and connection resolvers: `src/graphinate/builders/graphql.py`
+
+## Change Log
+
+* **2025-12-25:** Initial draft.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

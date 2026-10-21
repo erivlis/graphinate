@@ -1,3 +1,10 @@
+---
+title: "GEP-029: Extraction Strategies"
+description: "This proposal formalizes the \"Extraction\" (E) phase of Graphinate. It introduces a set of algorithmic primitives—**Scan**, **Walk**, and **Listen**..."
+icon: lucide/git-branch
+status: draft
+---
+
 # GEP-029: Extraction Strategies
 
 | Field       | Value                 |
@@ -5,9 +12,11 @@
 | **GEP**     | 29                    |
 | **Title**   | Extraction Strategies |
 | **Author**  | Eran Rivlis           |
+| **Delegate**| The Council                   |
 | **Status**  | Draft                 |
 | **Type**    | Standards Track       |
 | **Created** | 2026-01-01            |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 
@@ -213,3 +222,21 @@ These strategies are **Helpers**. They return generators (sync or async) that fi
 2.  Implement `walk` (Sync version).
 3.  Implement `walk` (Async version with concurrency).
 4.  Implement `listen` (Async iterator wrapper).
+## Rationale
+
+Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
+- **Clarity (Feynman):** Encapsulates common generator patterns (`walk`, `scan`, `listen`) to guide user modeling.
+- **Symmetry (Noether):** Categorical extraction functors mapping arbitrary data sources into GraphModels.
+
+## Backwards Compatibility
+
+Additive helper functions and cookbook documentation; no breaking changes to core `GraphModel`.
+
+## Reference Implementation
+
+- Helpers: `src/graphinate/strategies/` or documentation recipes.
+
+## Change Log
+
+* **2025-12-30:** Initial draft.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

@@ -1,3 +1,10 @@
+---
+title: "GEP-014: Explicit GraphQL Schema Generation"
+description: "The current `GraphQLBuilder` dynamically generates Python classes at runtime to represent GraphQL types for each node"
+icon: lucide/git-branch
+status: draft
+---
+
 # GEP-014: Explicit GraphQL Schema Generation
 
 | Field       | Value                              |
@@ -5,9 +12,11 @@
 | **GEP**     | 14                                 |
 | **Title**   | Explicit GraphQL Schema Generation |
 | **Author**  | Eran Rivlis                        |
+| **Delegate**| The Council                   |
 | **Status**  | Draft                              |
 | **Type**    | Standards Track                    |
 | **Created** | 2025-12-25                         |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 
@@ -125,3 +134,18 @@ builder = GraphQLBuilder(model, mode=SchemaMode.STATIC)
 
 By making `DYNAMIC` the default, we preserve full backwards compatibility. The refactoring of the dynamic mode should be
 functionally equivalent to the current implementation.
+## Rationale
+
+Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
+- **Clarity (Feynman):** Replacing runtime `type()` closure metaprogramming with `strawberry.tools.create_type` and ASGI context injection (`info.context["graph"]`) makes schema definitions transparent and debuggable.
+- **Safety (The Golem):** Eliminates cross-schema mutable state pollution and closure-captured builder leaks.
+- **Falsifiability (Popper):** Decoupled resolvers can be tested with standard unit fixtures without running the builder loop.
+
+## Reference Implementation
+
+- Schema builder: `src/graphinate/builders/graphql.py`
+
+## Change Log
+
+* **2025-12-25:** Initial draft.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

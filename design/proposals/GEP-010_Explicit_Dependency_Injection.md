@@ -1,3 +1,10 @@
+---
+title: "GEP-010: Explicit Dependency Injection"
+description: "Explicit dependency injection mechanism for GraphModel child generators using ParentId typing annotations and flexible parameter bindings."
+icon: lucide/git-merge
+status: active
+---
+
 # GEP-010: Explicit Dependency Injection
 
 | Field       | Value                         |
@@ -5,10 +12,11 @@
 | **GEP**     | 10                            |
 | **Title**   | Explicit Dependency Injection |
 | **Author**  | Eran Rivlis                   |
+| **Delegate**| The Council                   |
 | **Status**  | Active                        |
 | **Type**    | Standards Track               |
 | **Created** | 2025-12-25                    |
-| **Updated** | 2026-10-17                    |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 

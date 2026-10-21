@@ -1,3 +1,10 @@
+---
+title: "GEP-030: Node Type Taxonomy"
+description: "This proposal introduces a hierarchical Type System for Graphinate nodes. By moving from simple string-based types to a structured taxonomy (e.g., ..."
+icon: lucide/git-branch
+status: draft
+---
+
 # GEP-030: Node Type Taxonomy
 
 | Field       | Value              |
@@ -5,10 +12,11 @@
 | **GEP**     | 30                 |
 | **Title**   | Node Type Taxonomy |
 | **Author**  | Eran Rivlis        |
+| **Delegate**| The Council                   |
 | **Status**  | Draft              |
 | **Type**    | Standards Track    |
 | **Created** | 2026-01-01         |
-| **Updated** | 2026-01-01         |
+| **Updated** | 2026-10-22                    |
 
 > **⚠️ WORK IN PROGRESS**
 > This proposal is in an early conceptual stage. The taxonomy and implementation details are subject to significant change.
@@ -77,3 +85,25 @@ Maps the web's vocabulary to the core.
 *   How rigid should this be?
 *   Should it support multiple inheritance (Poly-hierarchy)?
 *   How does this map to GraphQL interfaces?
+## Rationale
+
+Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
+- **Harmony (The Steward):** Preserved in Phase 4 (Exploratory / Cookbook Track) to prevent bloating the core library with rigid universal schemas.
+
+## Specification
+
+User-space taxonomy presets (e.g. `graphinate.taxonomy.c4`, `graphinate.taxonomy.schema_org`) providing standard NodeModel typing configurations.
+
+## Backwards Compatibility
+
+Purely additive opt-in presets; default untyped/string nodes remain fully supported.
+
+## Reference Implementation
+
+- Cookbook recipes and domain extension modules.
+
+## Change Log
+
+* **2025-12-30:** Initial draft.
+* **2026-10-17:** Allocated to Phase 4 (Exploratory / Cookbook Track) in roadmap audit.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

@@ -1,3 +1,10 @@
+---
+title: "GEP-023: Async Support"
+description: "This proposal advocates for adding support for asynchronous generators (`async def`) in `GraphModel`. This will allow"
+icon: lucide/git-branch
+status: draft
+---
+
 # GEP-023: Async Support
 
 | Field       | Value           |
@@ -5,10 +12,11 @@
 | **GEP**     | 23              |
 | **Title**   | Async Support   |
 | **Author**  | Eran Rivlis     |
+| **Delegate**| The Council                   |
 | **Status**  | Draft           |
 | **Type**    | Standards Track |
 | **Created** | 2025-12-25      |
-| **Updated** | 2025-12-28      |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 
@@ -66,3 +74,20 @@ process independent branches of the hierarchy in parallel.
 
 * 2025-12-25: Initial Draft
 * 2025-12-28: Updated to reference GEP-024
+## Rationale
+
+Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
+- **Efficiency (Shannon):** Unlocks non-blocking concurrent I/O for API crawlers and streaming ingestion via `async def` generators.
+- **Symmetry (Noether):** Symmetric `run()` and `arun()` interfaces in `GraphEngine` ([GEP-024](GEP-024_The_Graph_Engine.md)).
+- **Safety (The Golem):** Preserves synchronous `build()` execution path with zero regressions for synchronous models.
+
+## Reference Implementation
+
+- Async engine execution: `src/graphinate/engine/`
+- Builder async facade: `src/graphinate/builders/networkx.py` (`abuild()`)
+
+## Change Log
+
+* **2025-12-25:** Initial draft.
+* **2025-12-28:** Updated to reference GEP-024.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

@@ -1,3 +1,10 @@
+---
+title: "GEP-003: Graphinate Development Roadmap"
+description: "Living development roadmap and multi-phase execution strategy for Graphinate Enhancement Proposals."
+icon: lucide/map
+status: active
+---
+
 # GEP-003: Graphinate Development Roadmap
 
 | Field       | Value                   |
@@ -5,10 +12,11 @@
 | **GEP**     | 3                       |
 | **Title**   | Development Roadmap     |
 | **Author**  | Eran Rivlis             |
+| **Delegate**| The Council             |
 | **Status**  | Active                  |
 | **Type**    | Process                 |
 | **Created** | 2025-12-30              |
-| **Updated** | 2026-10-17              |
+| **Updated** | 2026-10-22              |
 
 ## Abstract
 
@@ -118,5 +126,11 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
 | **GEP-015** | Refactored Graph Population Strategies | **Superseded**    | Replaced by **GEP-024** (The Graph Engine).                            |
 | **GEP-022** | 2D Visualization Mode                  | **Superseded**    | Replaced by **GEP-026** (Pluggable Visualization).                     |
 | **GEP-027** | Advanced Three.js Visualizations       | **Informational** | Exploratory design concepts (Spin-Off / Showcase Track).               |
+
+## Change Log
+
+* **2025-12-30:** Initial roadmap draft.
+* **2026-10-17:** Completed Phase 1 (GEP-010, GEP-016, GEP-017, GEP-025, GEP-032). Added Council assessment and 4-phase trajectory.
+* **2026-10-22:** Rebased GEP-003 on EP standard and GEP-000. Updated GEP-019 to Accepted.
 
 

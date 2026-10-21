@@ -1,3 +1,10 @@
+---
+title: "GEP-007: Theoretical Foundations"
+description: "Mathematical and theoretical underpinnings of Graphinate framed via Category Theory, Type Theory, Functors, and Pushouts."
+icon: lucide/binary
+status: active
+---
+
 # GEP-007: Theoretical Foundations
 
 | Field       | Value                   |
@@ -5,9 +12,11 @@
 | **GEP**     | 7                       |
 | **Title**   | Theoretical Foundations |
 | **Author**  | Eran Rivlis             |
+| **Delegate**| The Council             |
 | **Status**  | Active                  |
 | **Type**    | Informational           |
 | **Created** | 2026-01-01              |
+| **Updated** | 2026-10-22              |
 
 ## Abstract
 
@@ -67,3 +76,8 @@ Thinking in these terms prevents ad-hoc design.
 *   When we design **Pipelines**, we are composing **Functors**.
 
 Graphinate is not just a library; it is a **Structure-Preserving Map** from Data to Knowledge.
+
+## Change Log
+
+* **2026-01-01:** Initial draft.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

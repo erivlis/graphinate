@@ -1,3 +1,10 @@
+---
+title: "GEP-013: Stable ID Serialization"
+description: "The current ID encoding mechanism in `graphinate.converters` relies on Python's `repr()` combined with Base64 encoding"
+icon: lucide/git-branch
+status: withdrawn
+---
+
 # GEP-013: Stable ID Serialization
 
 | Field       | Value                   |
@@ -5,10 +12,11 @@
 | **GEP**     | 13                      |
 | **Title**   | Stable ID Serialization |
 | **Author**  | Eran Rivlis             |
+| **Delegate**| The Council                   |
 | **Status**  | Withdrawn               |
 | **Type**    | Standards Track         |
 | **Created** | 2025-12-25              |
-| **Updated** | 2025-12-29              |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 
@@ -85,3 +93,14 @@ This is a breaking change. IDs generated with the old method will not be decodab
 ## Reference Implementation
 
 (Withdrawn)
+## Rationale
+
+Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
+- **Efficiency (Shannon):** Evaluated custom serializers vs standard `repr()`.
+- **Harmony (The Steward):** Withdrawn in favor of `repr()` + opt-in HMAC signing ([GEP-025](GEP-025_Signed_ID_Serialization.md)).
+
+## Change Log
+
+* **2025-12-25:** Initial draft.
+* **2026-06-21:** Withdrawn in favor of GEP-025.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

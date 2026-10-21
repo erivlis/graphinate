@@ -1,3 +1,10 @@
+---
+title: "GEP-026: Pluggable Visualization & Notebook Support"
+description: "This proposal aims to enable Graphinate to render graphs directly within Jupyter Notebooks, Google Colab, and ObservableHQ, as well as export stand..."
+icon: lucide/git-branch
+status: draft
+---
+
 # GEP-026: Pluggable Visualization & Notebook Support
 
 | Field       | Value                                       |
@@ -5,10 +12,11 @@
 | **GEP**     | 26                                          |
 | **Title**   | Pluggable Visualization & Notebook Support  |
 | **Author**  | Eran Rivlis                                 |
+| **Delegate**| The Council                   |
 | **Status**  | Draft                                       |
 | **Type**    | Standards Track                             |
 | **Created** | 2025-12-30                                  |
-| **Updated** | 2025-12-30                                  |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 
@@ -169,3 +177,18 @@ We considered using **HTMX** to simplify the frontend interactions.
 ## Future Work (ObservableHQ)
 
 For Observable, we can export the JSON data. The user can then import a generic "Graphinate Viewer" notebook and pass the JSON to it.
+## Rationale
+
+Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
+- **Harmony (The Steward):** Kept as an optional companion package/recipe track (Phase 4) to avoid pulling heavy frontend dependencies into core Graphinate.
+- **Symmetry (Noether):** Provides uniform renderer bindings across 2D (ForceGraph2D), 3D, and Jupyter widgets.
+
+## Reference Implementation
+
+- Companion package / recipes: `graphinate-jupyter` or cookbook guides.
+
+## Change Log
+
+* **2025-12-29:** Initial draft.
+* **2026-10-17:** Allocated to Phase 4 (Exploratory / Spin-Off Track) in roadmap audit.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

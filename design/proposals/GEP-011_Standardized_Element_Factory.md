@@ -1,3 +1,10 @@
+---
+title: "GEP-011: Standardized Element Factory"
+description: "The current `element` factory function exhibits polymorphic return behavior, returning either a `tuple` or a"
+icon: lucide/git-branch
+status: draft
+---
+
 # GEP-011: Standardized Element Factory
 
 | Field       | Value                        |
@@ -5,9 +12,11 @@
 | **GEP**     | 11                           |
 | **Title**   | Standardized Element Factory |
 | **Author**  | Eran Rivlis                  |
+| **Delegate**| The Council                   |
 | **Status**  | Draft                        |
 | **Type**    | Standards Track              |
 | **Created** | 2025-12-25                   |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 
@@ -48,3 +57,18 @@ generic field names.
 ## Backwards Compatibility
 
 The existing `element` function can be deprecated and aliased to the new implementations for a transition period.
+## Rationale
+
+Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
+- **Symmetry (Noether):** Standard tuple factory guarantees symmetric handling of source/target/type/attributes across all node and edge generators.
+- **Safety (The Golem):** Named factories prevent subtle index misalignment when instantiating raw tuples.
+- **Clarity (Feynman):** Provides explicit, readable constructors instead of opaque magic tuples.
+
+## Reference Implementation
+
+- Modeling factory: `src/graphinate/modeling.py`
+
+## Change Log
+
+* **2025-12-25:** Initial draft.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.

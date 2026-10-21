@@ -1,3 +1,10 @@
+---
+title: "GEP-027: Advanced Three.js Visualizations"
+description: "This proposal explores advanced visualization concepts using raw Three.js to transcend standard force-directed layouts."
+icon: lucide/git-branch
+status: draft
+---
+
 # GEP-027: Advanced Three.js Visualizations
 
 | Field       | Value                            |
@@ -5,10 +12,11 @@
 | **GEP**     | 27                               |
 | **Title**   | Advanced Three.js Visualizations |
 | **Author**  | Eran Rivlis                      |
+| **Delegate**| The Council                   |
 | **Status**  | Draft                            |
 | **Type**    | Informational                    |
 | **Created** | 2025-12-30                       |
-| **Updated** | 2025-12-30                       |
+| **Updated** | 2026-10-22                    |
 
 ## Abstract
 
@@ -92,3 +100,8 @@ Each concept would be a distinct `engine` implementation (e.g., `engine='galaxy'
 ## Recommendation
 
 Start with **The Galaxy** as a performance-focused alternative to the default renderer.
+
+## Change Log
+
+* **2025-12-30:** Initial concept draft.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment. Marked for Exploratory / Showcase Track.

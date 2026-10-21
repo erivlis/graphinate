@@ -1,3 +1,10 @@
+---
+title: "GEP-002: Modularization Strategy"
+description: "Architectural strategy for internal modularization, virtual layer separation, and optional dependencies via extras."
+icon: lucide/layers
+status: active
+---
+
 # GEP-002: Modularization Strategy
 
 | Field       | Value                   |
@@ -5,9 +12,11 @@
 | **GEP**     | 2                       |
 | **Title**   | Modularization Strategy |
 | **Author**  | Eran Rivlis             |
+| **Delegate**| The Council             |
 | **Status**  | Active                  |
 | **Type**    | Process                 |
 | **Created** | 2025-12-30              |
+| **Updated** | 2026-10-22              |
 
 ## Abstract
 
@@ -82,3 +91,8 @@ All heavy dependencies must be moved to `[project.optional-dependencies]`. The `
 ## Future Considerations
 
 If a specific layer (e.g., the Frontend assets) grows too large or requires a different release cadence, we may consider splitting it into a separate PyPI package (`graphinate-web`) in the future. For now, the Monorepo + Extras approach provides the best balance of Agility and Hygiene.
+
+## Change Log
+
+* **2025-12-30:** Initial draft.
+* **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.
