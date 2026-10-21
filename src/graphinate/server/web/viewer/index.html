@@ -3,29 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>Graphinate Viewer</title>
-    <link rel="modulepreload"
-          href="https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/dist/tweakpane.min.js"
-          integrity="sha256-DN53dubYps0y0SjSHj8gO34VKtxaXqipuG/3jAJ2aWw="
-          crossorigin="anonymous">
-    <link rel="modulepreload"
-          href="https://cdn.jsdelivr.net/npm/@tweakpane/plugin-essentials@0.2.1/dist/tweakpane-plugin-essentials.min.js"
-          integrity="sha256-VYrWNKBoz1vsS026wJe4Zvb5/r8kGOSTfIBcmLdOA1g="
-          crossorigin="anonymous">
+    <link rel="modulepreload" href="/static/vendor/tweakpane.min.js">
+    <link rel="modulepreload" href="/static/vendor/tweakpane-plugin-essentials.min.js">
+    <link rel="modulepreload" href="/static/vendor/three.module.min.js">
+    <script src="/static/vendor/murmurhash3_gc.min.js"></script>
+    <script src="/static/vendor/3d-force-graph.min.js"></script>
+    <script src="/static/vendor/d3.min.js"></script>
     <script type="module">
-        // Import ES module
-        import * as Tweakpane from 'https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/dist/tweakpane.min.js';
-        import * as TweakpaneEssentialsPlugin
-            from 'https://cdn.jsdelivr.net/npm/@tweakpane/plugin-essentials@0.2.1/dist/tweakpane-plugin-essentials.min.js';
-        // Export it as a global variable
+        import * as Tweakpane from '/static/vendor/tweakpane.min.js';
+        import * as TweakpaneEssentialsPlugin from '/static/vendor/tweakpane-plugin-essentials.min.js';
+        import * as THREE from '/static/vendor/three.module.min.js';
+
         globalThis.Tweakpane = Tweakpane;
         globalThis.TweakpaneEssentialsPlugin = TweakpaneEssentialsPlugin;
+        globalThis.THREE = THREE;
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/3d-force-graph@1.79.0/dist/3d-force-graph.min.js"
-            integrity="sha256-Khop08zFFZ8EobULFj/LkDMzwCaxIr/4WKcJZbLDjoc="
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/murmurhash-js@1.0.0/murmurhash3_gc.min.js"
-            integrity="sha384-RTcg9S2mr/vVW+vsvQZB7G2cYWnhkBdsMvqKzHxL41KG4zTgrMSzGfm7mzw0aYU2"
-            crossorigin="anonymous"></script>
     <!-- Append this element into the head element to apply the theme -->
     <style>
         body {
@@ -66,8 +58,8 @@
 <body>
 <div id="3d-graph"></div>
 <script type="module">
-    import * as THREE from 'https://esm.sh/three';
-    import {scaleLinear, interpolateRgb, color as d3Color} from 'https://esm.sh/d3';
+    const { scaleLinear, interpolateRgb, color: d3Color } = d3;
+    const THREE = globalThis.THREE;
 
     // region FloatingIFramePanel
     let highestZIndex = 0;
