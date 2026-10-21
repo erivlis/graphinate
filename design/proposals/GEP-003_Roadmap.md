@@ -121,6 +121,7 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
 | **GEP-013** | Stable ID Serialization                | **Withdrawn**     | `repr()` deemed sufficient and more robust for Python types.           |
 | **GEP-016** | CLI Argument Parsing & Path Safety     | **Active**        | Implemented Typer CLI with safe dynamic argument parsing & paths.      |
 | **GEP-017** | Decoupled Server Architecture          | **Active**        | Exposed `create_app()` ASGI factory in `graphinate.renderers.graphql`. |
+| **GEP-019** | Offline Viewer Support                 | **Active**        | In-package vendoring under `static/vendor/` for 100% offline 3D viewer.|
 | **GEP-025** | Signed ID Serialization                | **Active**        | Implemented as an optional, opt-in HMAC-SHA256 signature layer.        |
 | **GEP-032** | GraphModel Compilation & Validation    | **Active**        | Implemented `GraphModel.compile()` and deferred validation.            |
 | **GEP-015** | Refactored Graph Population Strategies | **Superseded**    | Replaced by **GEP-024** (The Graph Engine).                            |
@@ -131,6 +132,6 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
 
 * **2025-12-30:** Initial roadmap draft.
 * **2026-10-17:** Completed Phase 1 (GEP-010, GEP-016, GEP-017, GEP-025, GEP-032). Added Council assessment and 4-phase trajectory.
-* **2026-10-22:** Rebased GEP-003 on EP standard and GEP-000. Updated GEP-019 to Accepted.
+* **2026-10-22:** Rebased all 27 GEPs on EP standard and GEP-000. Completed and activated GEP-019 (Offline Viewer Support).
 
 

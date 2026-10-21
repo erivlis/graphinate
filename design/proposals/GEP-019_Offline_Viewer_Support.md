@@ -2,7 +2,7 @@
 title: "GEP-019: Offline Viewer Support"
 description: "Vendor core 3D graph viewer JavaScript dependencies locally to guarantee reliable, air-gapped, and offline visualization."
 icon: lucide/eye-off
-status: accepted
+status: active
 ---
 
 # GEP-019: Offline Viewer Support
@@ -13,10 +13,10 @@ status: accepted
 | **Title**   | Offline Viewer Support                     |
 | **Author**  | Eran Rivlis                                |
 | **Delegate**| The Council                                |
-| **Status**  | Accepted                                   |
+| **Status**  | Active                                     |
 | **Type**    | Standards Track                            |
 | **Created** | 2025-12-25                                 |
-| **Updated** | 2026-10-21                                 |
+| **Updated** | 2026-10-22                                 |
 
 ## Abstract
 
@@ -139,3 +139,4 @@ Ensure `pyproject.toml` and packaging configurations include all non-Python asse
 
 * **2025-12-25:** Initial draft proposing vendor vs. installer options.
 * **2026-10-21:** Council review accepted Option 1 (in-package vendoring) for core 3D viewer assets; refactored proposal to adhere to PEP/EP standard and GEP-000.
+* **2026-10-22:** Implemented in-package vendoring under `src/graphinate/server/web/static/vendor/`. Refactored `viewer/index.html` to eliminate all external CDN calls. Added regression test `test_offline_viewer_vendored_assets`. Status updated to `Active`.
