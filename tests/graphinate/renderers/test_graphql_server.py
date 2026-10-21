@@ -1,4 +1,5 @@
 from collections.abc import Generator
+from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, patch
 
@@ -262,6 +263,40 @@ def test_package_not_found_fallback(monkeypatch):
     import graphinate.renderers.graphql as gql
     importlib.reload(gql)
     assert gql.__version__ == "0.0.0"
+
+
+def test_offline_viewer_vendored_assets(client: TestClient):
+    """
+    Verifies GEP-019: viewer/index.html contains no external CDN references
+    and all vendored JavaScript assets are accessible offline via /static/vendor/.
+    """
+    viewer_path = (
+        Path(__file__).parents[3] / "src" / "graphinate" / "server" / "web" / "viewer" / "index.html"
+    )
+    viewer_html = viewer_path.read_text(encoding="utf-8")
+
+    # Assert zero external CDN URLs in viewer template
+    assert "https://cdn.jsdelivr.net" not in viewer_html
+    assert "https://esm.sh" not in viewer_html
+    assert "https://unpkg.com" not in viewer_html
+
+    # Assert viewer is served
+    viewer_res = client.get("/viewer")
+    assert viewer_res.status_code == 200
+
+    # Assert all expected vendor assets are served with HTTP 200
+    vendor_assets = [
+        "/static/vendor/3d-force-graph.min.js",
+        "/static/vendor/tweakpane.min.js",
+        "/static/vendor/tweakpane-plugin-essentials.min.js",
+        "/static/vendor/murmurhash3_gc.min.js",
+        "/static/vendor/three.module.min.js",
+        "/static/vendor/d3.min.js",
+    ]
+    for asset in vendor_assets:
+        res = client.get(asset)
+        assert res.status_code == 200, f"Failed to load vendored asset: {asset}"
+        assert len(res.content) > 0
 
 
 
