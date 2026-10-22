@@ -539,3 +539,17 @@ class GraphQLBuilder(NetworkxBuilder):
         self._node_value_graphql_type_supplier = node_value_graphql_type_supplier
 
         return self.schema()
+
+    async def abuild(
+        self,
+        node_value_graphql_type_supplier: Callable[[str], StrawberryType | None] | None = None,
+        **kwargs: Any,
+    ) -> strawberry.Schema:
+        """Asynchronously build a Strawberry GraphQL Schema."""
+        self._cached_graphql_types = None
+        await super().abuild(**kwargs)
+
+        self._node_value_graphql_type_supplier = node_value_graphql_type_supplier
+
+        return self.schema()
+

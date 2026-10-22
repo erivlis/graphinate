@@ -56,3 +56,12 @@ class Builder(ABC):
             **kwargs: Any additional parameters for the build process.
         """
         self._cached_build_kwargs = MappingProxyType(kwargs)
+
+    async def abuild(self, **kwargs: Any) -> GraphRepresentation:
+        """Asynchronously build the graph representation.
+
+        Args:
+            **kwargs: Any additional parameters for the build process.
+        """
+        self._cached_build_kwargs = MappingProxyType(kwargs)
+

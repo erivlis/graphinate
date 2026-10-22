@@ -55,6 +55,20 @@ class D3Builder(NetworkxBuilder):
             case _:
                 raise ValueError(f"Invalid values format: {values_format}")
 
+    async def abuild(self, values_format: Literal['json', 'python'] = 'python', **kwargs: Any) -> dict:
+        """Asynchronously build a D3 Graph."""
+        await super().abuild(**kwargs)
+        color.convert_colors_to_hex(self._graph)
+        d3graph: dict = self.from_networkx(self._graph)
+
+        match values_format:
+            case 'json':
+                return mappingtools.transformers.strictify(d3graph, value_handler=_convert)
+            case 'python':
+                return d3graph
+            case _:
+                raise ValueError(f"Invalid values format: {values_format}")
+
     @staticmethod
     def from_networkx(nx_graph: nx.Graph) -> dict:
         d3_graph: dict = nx.node_link_data(nx_graph, nodes='nodes', edges='links')

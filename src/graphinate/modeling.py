@@ -2,7 +2,7 @@ import inspect
 import itertools
 import typing
 from collections import defaultdict, namedtuple
-from collections.abc import Callable, Iterable, Mapping
+from collections.abc import AsyncIterable, Callable, Iterable, Mapping
 from dataclasses import dataclass
 from functools import lru_cache
 from types import MappingProxyType
@@ -133,6 +133,57 @@ def elements(iterable: Iterable[Any],
 
         kwargs = {k: extractor(item, v) for k, v in getters.items()}
         yield create_element(**kwargs) if field_names else create_element()
+
+
+async def aelements(
+    iterable: AsyncIterable[Any] | Iterable[Any],
+    element_type: Extractor | None = None,
+    **getters: Extractor,
+) -> AsyncIterable[Element]:
+    """Asynchronous Generator of Graph elements (nodes or edges).
+
+    Args:
+        iterable: async or sync source of payload
+        element_type: Optional[Extractor] source of type of the element.
+        getters: Extractor node field sources
+
+    Yields:
+        Element instances.
+    """
+    is_dynamic_type = callable(element_type)
+    static_create_element = None
+    field_names = tuple(getters.keys())
+
+    if not is_dynamic_type:
+        _type = element_type
+        if not _type.isidentifier():
+            raise ValueError(f"Invalid Type: {_type}. Must be a valid Python identifier.")
+        static_create_element = named_element(_type, field_names) if field_names else tuple_element()
+
+    if isinstance(iterable, AsyncIterable):
+        async for item in iterable:
+            if is_dynamic_type:
+                _type = element_type(item)
+                if not _type.isidentifier():
+                    raise ValueError(f"Invalid Type: {_type}. Must be a valid Python identifier.")
+                create_element = named_element(_type, field_names) if field_names else tuple_element()
+            else:
+                create_element = static_create_element
+
+            kwargs = {k: extractor(item, v) for k, v in getters.items()}
+            yield create_element(**kwargs) if field_names else create_element()
+    else:
+        for item in iterable:
+            if is_dynamic_type:
+                _type = element_type(item)
+                if not _type.isidentifier():
+                    raise ValueError(f"Invalid Type: {_type}. Must be a valid Python identifier.")
+                create_element = named_element(_type, field_names) if field_names else tuple_element()
+            else:
+                create_element = static_create_element
+
+            kwargs = {k: extractor(item, v) for k, v in getters.items()}
+            yield create_element(**kwargs) if field_names else create_element()
 
 
 @dataclass
@@ -430,6 +481,55 @@ class GraphModel:
         compiled_model._validate_structural_dependencies()
         return compiled_model
 
+    @staticmethod
+    def _extract_node_dependencies(f: Items, sig: inspect.Signature) -> dict[str, str]:
+        dependencies = {}
+        try:
+            hints = typing.get_type_hints(f, include_extras=True)
+        except Exception:
+            hints = {}
+
+        for param_name in sig.parameters:
+            hint = hints.get(param_name)
+            dep_type = None
+
+            if hint is not None and typing.get_origin(hint) is typing.Annotated:
+                for metadata in typing.get_args(hint)[1:]:
+                    if isinstance(metadata, ParentId):
+                        dep_type = metadata.node_type
+                        break
+
+            if (
+                dep_type is None
+                and param_name.endswith('_id')
+                and param_name == param_name.lower()
+            ):
+                dep_type = param_name[:-3]
+
+            if dep_type is not None:
+                dependencies[param_name] = dep_type
+
+        return dependencies
+
+    @staticmethod
+    def _prepare_node_kwargs(
+        sig: inspect.Signature,
+        dependencies: dict[str, str],
+        kwargs: dict[str, Any],
+    ) -> dict[str, Any]:
+        f_kwargs = {}
+        for param_name, param in sig.parameters.items():
+            if param.kind == inspect.Parameter.VAR_KEYWORD:
+                f_kwargs.update(kwargs)
+            elif param_name in dependencies:
+                dep_key = f"{dependencies[param_name]}_id".lower()
+                f_kwargs[param_name] = next((v for k, v in kwargs.items() if k.lower() == dep_key), None)
+            elif param_name in kwargs:
+                f_kwargs[param_name] = kwargs[param_name]
+            elif param.default is inspect.Parameter.empty:
+                f_kwargs[param_name] = None
+        return f_kwargs
+
     def node(self,
              type_: Extractor | None = None,
              parent_type: str | None = UniverseNode,
@@ -467,67 +567,29 @@ class GraphModel:
 
         def register_node(f: Items):
             from enum import Enum
-            actual_type = type_
-            if isinstance(actual_type, Enum):
-                actual_type = actual_type.value
-
-            actual_parent_type = parent_type
-            if isinstance(actual_parent_type, Enum):
-                actual_parent_type = actual_parent_type.value
+            actual_type = type_.value if isinstance(type_, Enum) else type_
+            actual_parent_type = parent_type.value if isinstance(parent_type, Enum) else parent_type
 
             node_type = actual_type or f.__name__
             self._validate_type(node_type)
             self._validate_type(actual_parent_type)
 
             model_type = f.__name__ if callable(node_type) else node_type
-
-            dependencies = {}
-            try:
-                hints = typing.get_type_hints(f, include_extras=True)
-            except Exception:
-                hints = {}
-
             sig = inspect.signature(f)
+            dependencies = self._extract_node_dependencies(f, sig)
 
-            for param_name, param in sig.parameters.items():
-                hint = hints.get(param_name)
-                dep_type = None
-
-                if hint is not None and typing.get_origin(hint) is typing.Annotated:
-                    for metadata in typing.get_args(hint)[1:]:
-                        if isinstance(metadata, ParentId):
-                            dep_type = metadata.node_type
-                            break
-
-                if (
-                        dep_type is None
-                        and param_name.endswith('_id')
-                        and param_name == param_name.lower()
-                ):
-                    dep_type = param_name[:-3]
-
-                if dep_type is not None:
-                    dependencies[param_name] = dep_type
-
-            def node_generator(**kwargs: Any) -> Iterable[Node]:
-                f_kwargs = {}
-                for param_name, param in sig.parameters.items():
-                    if param.kind == inspect.Parameter.VAR_KEYWORD:
-                        f_kwargs.update(kwargs)
-                        continue
-
-                    if param_name in dependencies:
-                        dep_type = dependencies[param_name]
-                        dep_key = f"{dep_type}_id".lower()
-                        f_kwargs[param_name] = next((v for k, v in kwargs.items() if k.lower() == dep_key), None)
-                    elif param_name in kwargs:
-                        f_kwargs[param_name] = kwargs[param_name]
-                    elif param.default is not inspect.Parameter.empty:
-                        pass
-                    else:
-                        f_kwargs[param_name] = None
-
-                yield from elements(f(**f_kwargs), node_type, key=key, value=value)
+            if inspect.isasyncgenfunction(f) or inspect.iscoroutinefunction(f):
+                async def node_generator(**kwargs: Any) -> AsyncIterable[Node]:
+                    f_kwargs = self._prepare_node_kwargs(sig, dependencies, kwargs)
+                    res = f(**f_kwargs)
+                    if inspect.isawaitable(res):
+                        res = await res
+                    async for item in aelements(res, node_type, key=key, value=value):
+                        yield item
+            else:
+                def node_generator(**kwargs: Any) -> Iterable[Node]:
+                    f_kwargs = self._prepare_node_kwargs(sig, dependencies, kwargs)
+                    yield from elements(f(**f_kwargs), node_type, key=key, value=value)
 
             node_model = NodeModel(type=model_type,
                                    parent_type=actual_parent_type,
@@ -586,8 +648,16 @@ class GraphModel:
                 'weight': weight
             }
 
-            def edge_generator(**kwargs: Any) -> Iterable[Edge]:
-                yield from elements(f(**kwargs), edge_type, **getters)
+            if inspect.isasyncgenfunction(f) or inspect.iscoroutinefunction(f):
+                async def edge_generator(**kwargs: Any) -> AsyncIterable[Edge]:
+                    res = f(**kwargs)
+                    if inspect.isawaitable(res):
+                        res = await res
+                    async for item in aelements(res, edge_type, **getters):
+                        yield item
+            else:
+                def edge_generator(**kwargs: Any) -> Iterable[Edge]:
+                    yield from elements(f(**kwargs), edge_type, **getters)
 
             self._edge_generators[model_type].append(edge_generator)
 
@@ -639,5 +709,6 @@ def model(name: str):
     return GraphModel(name=name)
 
 
-__all__ = ('GraphModel', 'elements', 'model', 'named_element', 'tuple_element')
+__all__ = ('GraphModel', 'aelements', 'elements', 'model', 'named_element', 'tuple_element')
+
 

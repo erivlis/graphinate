@@ -1,5 +1,5 @@
 from . import builders, engine, renderers
-from .builders import build
+from .builders import abuild, build
 from .engine import EdgeEvent, GraphEngine, GraphObserver, NodeEvent
 from .enums import CompositionStrategy, GraphType, Multiplicity
 from .modeling import GraphModel, model
@@ -16,6 +16,7 @@ __all__ = (
     'Multiplicity',
     'NodeEvent',
     'ParentId',
+    'abuild',
     'build',
     'builders',
     'engine',
@@ -25,5 +26,6 @@ __all__ = (
     'model',
     'renderers',
 )
+
 
 

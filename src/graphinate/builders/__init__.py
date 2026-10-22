@@ -17,7 +17,7 @@ Main Classes:
     - `GraphQLBuilder`: Constructs GraphQL schema representations of graphs.
 """
 
-__all__ = ['Builder', 'D3Builder', 'GraphQLBuilder', 'MermaidBuilder', 'NetworkxBuilder', 'build']
+__all__ = ['Builder', 'D3Builder', 'GraphQLBuilder', 'MermaidBuilder', 'NetworkxBuilder', 'abuild', 'build']
 
 from collections.abc import Mapping
 from typing import Any
@@ -53,3 +53,17 @@ def build(builder_cls: type[Builder],
     builder = builder_cls(graph_model, graph_type)
     materialized_graph = builder.build(default_node_attributes=default_node_attributes, **kwargs)
     return materialized_graph
+
+
+async def abuild(
+    builder_cls: type[Builder],
+    graph_model: GraphModel,
+    graph_type: GraphType = GraphType.Graph,
+    default_node_attributes: Mapping | None = None,
+    **kwargs: Any,
+) -> Any:
+    """Asynchronously build a graph from a graph model."""
+    builder = builder_cls(graph_model, graph_type)
+    materialized_graph = await builder.abuild(default_node_attributes=default_node_attributes, **kwargs)
+    return materialized_graph
+

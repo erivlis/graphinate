@@ -81,7 +81,11 @@ class NetworkxBuilder(Builder, GraphObserver):
         edge_type = event.type.lower() if event.type else 'edge'
         logger.debug('Adding edge. Source: {}, Target: {}', *edge_id)
 
-        if isinstance(self._graph, nx.MultiGraph) or edge_id not in self._graph.edges:
+        if (
+            isinstance(self._graph, nx.MultiGraph)
+            or edge_id not in self._graph.edges
+            or 'value' not in self._graph.edges[edge_id]
+        ):
             self._graph.add_edge(
                 *edge_id,
                 label=event.label,
@@ -225,6 +229,12 @@ class NetworkxBuilder(Builder, GraphObserver):
         engine.run(**kwargs)
         self._finalize_graph(**node_attributes)
 
+    async def _abuild_graph(self, node_attributes: Mapping, **kwargs: Any):
+        engine = GraphEngine(self.model, compile_model=False)
+        engine.subscribe(self)
+        await engine.arun(**kwargs)
+        self._finalize_graph(**node_attributes)
+
     def build(self, **kwargs: Any) -> nx.Graph:
         """Build a NetworkX graph representation.
 
@@ -243,4 +253,24 @@ class NetworkxBuilder(Builder, GraphObserver):
         self._rectify_model(default_node_attributes)
         self._build_graph(default_node_attributes, **kwargs)
         return self._graph
+
+    async def abuild(self, **kwargs: Any) -> nx.Graph:
+        """Asynchronously build a NetworkX graph representation.
+
+        Args:
+            **kwargs:
+
+        Returns:
+            NetworkX Graph
+        """
+        await super().abuild(**kwargs)
+
+        default_node_attributes = dict(**self.default_node_attributes)
+        if 'default_node_attributes' in kwargs:
+            default_node_attributes.update(kwargs.pop('default_node_attributes') or {})
+
+        self._rectify_model(default_node_attributes)
+        await self._abuild_graph(default_node_attributes, **kwargs)
+        return self._graph
+
 

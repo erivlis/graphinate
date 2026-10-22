@@ -43,3 +43,18 @@ class MermaidBuilder(NetworkxBuilder):
         color.convert_colors_to_hex(self._graph)
         nxm_builder = nxm.DiagramBuilder(orientation=orientation, node_shape=node_shape)
         return nxm_builder.build(self._graph, title=title, with_edge_labels=with_edge_labels)
+
+    async def abuild(
+        self,
+        orientation: nxm.DiagramOrientation = nxm.DiagramOrientation.LEFT_RIGHT,
+        node_shape: nxm.DiagramNodeShape = nxm.DiagramNodeShape.DEFAULT,
+        title: str | None = None,
+        with_edge_labels: bool = False,
+        **kwargs: Any,
+    ) -> nxm.typing.MermaidDiagram:
+        """Asynchronously build a Mermaid Graph."""
+        await super().abuild(**kwargs)
+        color.convert_colors_to_hex(self._graph)
+        nxm_builder = nxm.DiagramBuilder(orientation=orientation, node_shape=node_shape)
+        return nxm_builder.build(self._graph, title=title, with_edge_labels=with_edge_labels)
+
