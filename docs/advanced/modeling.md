@@ -59,6 +59,41 @@ def get_posts(user_id):
 Validation has been relaxed to permit arbitrary parameters (such as `limit`, `since_date`, etc.). These parameters are ignored by the dependency injection system and will be passed directly from the builder's runtime arguments (e.g., `builder.build(limit=5)`).
 
 
+## Model Composition
+
+You can combine multiple `GraphModel` instances into a unified model using either the `+` operator or the explicit `merge()` method with a `CompositionStrategy`:
+
+```python
+from graphinate import CompositionStrategy, model
+
+model_a = model(name='Users')
+model_b = model(name='Repositories')
+
+# Default composition (CompositionStrategy.APPEND)
+combined = model_a + model_b
+
+# Explicit conflict resolution strategy
+overridden = model_a.merge(model_b, strategy=CompositionStrategy.OVERRIDE, name='Unified')
+```
+
+### Composition Strategies
+
+| Strategy | Behavior |
+|:---------|:---------|
+| `CompositionStrategy.APPEND` | Default (`model_a + model_b`). Concatenates all node models and edge generators from both models. |
+| `CompositionStrategy.OVERRIDE` | Right-hand model definitions replace left-hand definitions for matching `(parent_type, type)` node keys or edge types. |
+| `CompositionStrategy.MERGE` | Combines generators while adopting right-hand metadata (`label`, `uniqueness`, `multiplicity`), merging `dependencies`, and deduplicating identical generator functions. |
+| `CompositionStrategy.FAIL` | Raises a `GraphModelError` if any node `(parent_type, type)` or edge type overlaps between the two models. |
+
+
+## Element Factories
+
+Under the hood, Graphinate constructs lightweight element data carriers using explicit factories in `graphinate.modeling`:
+
+* `named_element(element_type, field_names)`: Returns a cached `namedtuple` class for the given valid Python identifier and non-empty field names.
+* `tuple_element()`: Returns the built-in `tuple` constructor when no named fields are specified.
+
+
 ## Example
 
 See the following examples for practical usage of this
@@ -69,3 +104,4 @@ It demonstrates a deep hierarchy using dependency injection.
 flowchart LR
     U(user) --> R(repository) --> C(commit) --> F(file)
 ```
+
