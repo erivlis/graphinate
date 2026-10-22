@@ -578,4 +578,180 @@ def test_edge_generator_callable_type():
     assert len(g.edges) == 1
 
 
+def test_tuple_element_and_named_element():
+    from graphinate.modeling import element, elements, named_element, tuple_element
+
+    assert tuple_element() is tuple
+    assert element(None) is tuple
+    assert element('Node', None) is tuple
+    assert element('Node', []) is tuple
+
+    cls = named_element('UserNode', ['id', 'name'])
+    inst = cls(id='u1', name='Alice')
+    assert inst.id == 'u1'
+    assert inst.name == 'Alice'
+
+    with pytest.raises(ValueError, match="Invalid Type"):
+        named_element('123invalid', ['id'])
+
+    with pytest.raises(ValueError, match="field_names must not be empty"):
+        named_element('UserNode', [])
+
+    # elements with no getters falls back to tuple_element
+    empty_getters_res = list(elements([1, 2], element_type='UserNode'))
+    assert empty_getters_res == [(), ()]
+
+    empty_dynamic_res = list(elements([1], element_type=lambda _: 'UserNode'))
+    assert empty_dynamic_res == [()]
+
+
+def test_graph_model_merge_append():
+    import operator
+
+    from graphinate import CompositionStrategy, model
+    from graphinate.builders import NetworkxBuilder
+
+    m1 = model('M1')
+    m2 = model('M2')
+
+    @m1.node(type_='user', key=operator.itemgetter('id'))
+    def users_a():
+        yield {'id': 'u1'}
+
+    @m2.node(type_='user', key=operator.itemgetter('id'))
+    def users_b():
+        yield {'id': 'u2'}
+
+    merged = m1.merge(m2, strategy=CompositionStrategy.APPEND, name='Custom')
+    assert merged.name == 'Custom'
+    g = NetworkxBuilder(merged).build()
+    assert ('u1',) in g.nodes
+    assert ('u2',) in g.nodes
+
+
+def test_graph_model_merge_override():
+    import operator
+
+    from graphinate import CompositionStrategy, model
+    from graphinate.builders import NetworkxBuilder
+
+    m1 = model('M1')
+    m2 = model('M2')
+
+    @m1.node(type_='user', key=operator.itemgetter('id'), label= lambda _: 'Old')
+    def users_a():
+        yield {'id': 'u1'}
+
+    @m1.node(type_='org', key=operator.itemgetter('id'))
+    def orgs():
+        yield {'id': 'o1'}
+
+    @m1.edge(type_='rel')
+    def edges_a():
+        yield {'source': 'o1', 'target': 'u1'}
+
+    @m2.node(type_='user', key=operator.itemgetter('id'), label=lambda _: 'New')
+    def users_b():
+        yield {'id': 'u2'}
+
+    @m2.edge(type_='rel')
+    def edges_b():
+        yield {'source': 'o1', 'target': 'u2'}
+
+    merged = m1.merge(m2, strategy=CompositionStrategy.OVERRIDE)
+    g = NetworkxBuilder(merged).build()
+    assert ('o1',) in g.nodes
+    assert ('u1',) not in g.nodes
+    assert ('u2',) in g.nodes
+    assert g.nodes[('u2',)]['label'] == 'New'
+    assert (('o1',), ('u2',)) in g.edges
+    assert (('o1',), ('u1',)) not in g.edges
+
+
+def test_graph_model_merge_strategy_merge():
+    import operator
+
+    from graphinate import CompositionStrategy, Multiplicity, model
+    from graphinate.builders import NetworkxBuilder
+
+    m1 = model('M1')
+    m2 = model('M2')
+
+    @m1.node(type_='user', key=operator.itemgetter('id'), label=lambda _: 'Label1', multiplicity=Multiplicity.ALL)
+    def users_a():
+        yield {'id': 'u1'}
+
+    @m1.edge(type_='rel')
+    def edges_a():
+        yield {'source': 'u1', 'target': 'u2'}
+
+    @m2.node(type_='user', key=operator.itemgetter('id'), label=lambda _: 'Label2', multiplicity=Multiplicity.LAST)
+    def users_b(org_id=None):
+        yield {'id': 'u2'}
+
+    @m2.node(type_='org', key=operator.itemgetter('id'))
+    def orgs():
+        yield {'id': 'o1'}
+
+    # Register duplicate edge generator on m2 to verify deduplication
+    m2._edge_generators['rel'].append(m1._edge_generators['rel'][0])
+
+    merged = m1.merge(m2, strategy=CompositionStrategy.MERGE)
+    user_models = merged.node_models[(graphinate.typing.UniverseNode, 'user')]
+    assert len(user_models) == 2
+    assert user_models[0].multiplicity == Multiplicity.LAST
+    assert 'org_id' in user_models[0].dependencies
+    assert len(merged.edge_generators['rel']) == 1
+
+    g = NetworkxBuilder(merged).build()
+    assert ('u1',) in g.nodes
+    assert ('u2',) in g.nodes
+    assert ('o1',) in g.nodes
+
+
+def test_graph_model_merge_fail():
+    from graphinate import CompositionStrategy, model
+    from graphinate.modeling import GraphModelError
+
+    m1 = model('M1')
+    m2 = model('M2')
+    m3 = model('M3')
+
+    @m1.node(type_='user')
+    def users_a():
+        yield 'u1'
+
+    @m2.node(type_='user')
+    def users_b():
+        yield 'u2'
+
+    @m3.node(type_='org')
+    def orgs():
+        yield 'o1'
+
+    with pytest.raises(GraphModelError, match="Model composition conflict under FAIL strategy"):
+        m1.merge(m2, strategy=CompositionStrategy.FAIL)
+
+    # Disjoint models succeed under FAIL
+    merged = m1.merge(m3, strategy=CompositionStrategy.FAIL)
+    assert 'user' in merged.node_types
+    assert 'org' in merged.node_types
+
+    # Edge conflict under FAIL
+    e1 = model('E1')
+    e2 = model('E2')
+
+    @e1.edge(type_='link')
+    def links_a():
+        yield {'source': 'a', 'target': 'b'}
+
+    @e2.edge(type_='link')
+    def links_b():
+        yield {'source': 'b', 'target': 'c'}
+
+    with pytest.raises(GraphModelError, match="edge types"):
+        e1.merge(e2, strategy=CompositionStrategy.FAIL)
+
+
+
 
