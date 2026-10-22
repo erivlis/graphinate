@@ -7,38 +7,37 @@ status: active
 
 # GEP-003: Graphinate Development Roadmap
 
-| Field       | Value                   |
-|:------------|:------------------------|
-| **GEP**     | 3                       |
-| **Title**   | Development Roadmap     |
-| **Author**  | Eran Rivlis             |
-| **Delegate**| The Council             |
-| **Status**  | Active                  |
-| **Type**    | Process                 |
-| **Created** | 2025-12-30              |
-| **Updated** | 2026-10-22              |
+| Field        | Value               |
+|:-------------|:--------------------|
+| **GEP**      | 3                   |
+| **Title**    | Development Roadmap |
+| **Author**   | Eran Rivlis         |
+| **Delegate** | The Council         |
+| **Status**   | Active              |
+| **Type**     | Process             |
+| **Created**  | 2025-12-30          |
+| **Updated**  | 2026-10-22          |
 
 ## Abstract
 
-This document outlines the strategic execution plan for the Graphinate Enhancement Proposals (GEPs). It serves as a living document to track the prioritization and status of major initiatives.
+This document outlines the strategic execution plan for the Graphinate Enhancement Proposals (GEPs). It serves as a
+living document to track the prioritization and status of major initiatives.
 
 ## Phase 1: Stabilization (Completed)
 
-*Focus: Fixing brittle code, security risks, and "bad magic". All Phase 1 stabilization proposals (**GEP-010**, **GEP-016**, **GEP-017**, **GEP-025**, **GEP-032**) have been implemented and archived.*
+*Focus: Fixing brittle code, security risks, and "bad magic". All Phase 1 stabilization proposals (**GEP-010**,
+**GEP-016**, **GEP-017**, **GEP-019**, **GEP-025**, **GEP-032**) have been implemented and archived.*
 
 ## Phase 2: Core Spine & Architectural Health
 
 *Focus: Strengthening the core execution engine, schema generation, and modularity.*
 
-| GEP         | Title                                         | Impact   | Difficulty | Rationale                                                                                                                            |
-|:------------|:----------------------------------------------|:---------|:-----------|:-------------------------------------------------------------------------------------------------------------------------------------|
-| **GEP-024** | **The Graph Engine**                          | **High** | **Hard**   | **Core Architecture.** Extracting the execution logic is the foundation for Async, Realtime, and better testing. Supersedes GEP-015. |
-| **GEP-014** | **Explicit GraphQL Schema Generation**        | **High** | **Hard**   | **Major Refactor.** Refactoring dynamic class generation to `strawberry.tools.create_type` and context-injected resolvers.           |
-| **GEP-023** | **Async Support**                             | **High** | **Hard**   | **Performance.** Massive gains for I/O-bound crawling (`async def` generators). Dependent on GEP-024.                                |
-| **GEP-019** | **Offline Viewer Support**                    | Medium   | Easy       | **Reliability.** GraphiQL/Voyager are vendored; completing local vendoring for `viewer` removes remaining CDN dependencies.          |
-| **GEP-031** | **High-Performance Vectorized Operations**    | Medium   | Medium     | **Performance.** Progressive enhancement via optional NumPy/Numba (partially active in `color.py`).                                  |
-| **GEP-011** | **Standardized Element Factory**              | Low      | Easy       | **Cleanup.** Minor API improvement for element tuple construction.                                                                   |
-| **GEP-012** | **Robust Model Composition**                  | Low      | Easy       | **Cleanup.** Handling advanced edge cases in `ModelA + ModelB` merging.                                                              |
+| GEP         | Title                                      | Impact   | Difficulty | Rationale                                                                                                                            |
+|:------------|:-------------------------------------------|:---------|:-----------|:-------------------------------------------------------------------------------------------------------------------------------------|
+| **GEP-024** | **The Graph Engine**                       | **High** | **Hard**   | **Core Architecture.** Extracting the execution logic is the foundation for Async, Realtime, and better testing. Supersedes GEP-015. |
+| **GEP-014** | **Explicit GraphQL Schema Generation**     | **High** | **Hard**   | **Major Refactor.** Refactoring dynamic class generation to `strawberry.tools.create_type` and context-injected resolvers.           |
+| **GEP-023** | **Async Support**                          | **High** | **Hard**   | **Performance.** Massive gains for I/O-bound crawling (`async def` generators). Dependent on GEP-024.                                |
+| **GEP-031** | **High-Performance Vectorized Operations** | Medium   | Medium     | **Performance.** Progressive enhancement via optional NumPy/Numba (partially active in `color.py`).                                  |
 
 ## Phase 3: Focused Expansion
 
@@ -52,7 +51,9 @@ This document outlines the strategic execution plan for the Graphinate Enhanceme
 
 ## Phase 4: Exploratory & Spin-Off Track (Ideation / Brainstorming)
 
-*Focus: Ideas originating from exploratory brainstorming sessions. Rather than bloating the core `graphinate` package, these proposals should be treated as candidates for standalone companion packages, external integrations, or example recipes.*
+*Focus: Ideas originating from exploratory brainstorming sessions. Rather than bloating the core `graphinate` package,
+these proposals should be treated as candidates for standalone companion packages, external integrations, or example
+recipes.*
 
 | GEP         | Title                                          | Recommended Vehicle                  | Rationale                                                                                                                     |
 |:------------|:-----------------------------------------------|:-------------------------------------|:------------------------------------------------------------------------------------------------------------------------------|
@@ -67,18 +68,29 @@ This document outlines the strategic execution plan for the Graphinate Enhanceme
 
 ### 1. Engineering Assessment: The Three Buckets
 
-The trajectory from **Graphinate 0.x** (a synchronous, decorator-based NetworkX/GraphQL builder) toward **Graphinate 2.0** (an observable, async-capable, type-safe Graph Synthesis Engine) is architecturally cohesive and well-differentiated in the Python ecosystem—provided that **implementation consolidation takes precedence over scope expansion**.
+The trajectory from **Graphinate 0.x** (a synchronous, decorator-based NetworkX/GraphQL builder) toward **Graphinate
+2.0** (an observable, async-capable, type-safe Graph Synthesis Engine) is architecturally cohesive and
+well-differentiated in the Python ecosystem—provided that **implementation consolidation takes precedence over scope
+expansion**.
 
 Across the GEP archive, proposals fall naturally into three distinct tiers:
 
 1. **The Core Structural Spine (`GEP-010` → `GEP-032` → `GEP-012` → `GEP-024` → `GEP-023`)**:
-   - This is the true heart of Graphinate: moving from implicit `_id` naming magic to explicit `ParentId` dependency injection (**GEP-010**), compiling immutable validated models (**GEP-032**), decoupling traversal (`GraphEngine`, **GEP-024**) from storage (`NetworkxBuilder`), and unlocking `async def` generators (**GEP-023**).
-   - Every link in this chain directly enables the next and strengthens the library's core value proposition.
+    - This is the true heart of Graphinate: moving from implicit `_id` naming magic to explicit `ParentId` dependency
+      injection (**GEP-010**), compiling immutable validated models (**GEP-032**), decoupling traversal (`GraphEngine`,
+      **GEP-024**) from storage (`NetworkxBuilder`), and unlocking `async def` generators (**GEP-023**).
+    - Every link in this chain directly enables the next and strengthens the library's core value proposition.
 2. **Boundary & Hygiene Refactorings (`GEP-002`, `GEP-014`, `GEP-016`, `GEP-017`, `GEP-019`, `GEP-020`, `GEP-031`)**:
-   - Practical engineering debt paydown: exposing `create_app()` (**GEP-017**), replacing fragile dynamic class construction in `GraphQLBuilder` with `strawberry.tools.create_type` and context injection (**GEP-014**), and keeping heavy dependencies optional (**GEP-002**).
+    - Practical engineering debt paydown: exposing `create_app()` (**GEP-017**), replacing fragile dynamic class
+      construction in `GraphQLBuilder` with `strawberry.tools.create_type` and context injection (**GEP-014**), and
+      keeping heavy dependencies optional (**GEP-002**).
 3. **Exploratory Ideation / Ambition Creep (`GEP-026`, `GEP-027`, `GEP-028`, `GEP-029`, `GEP-030`)**:
-   - These proposals originated in exploratory brainstorming sessions. While intellectually rich, features like custom Three.js shaders/procedural cities (**GEP-027**), universal class ontologies mapping Schema.org/C4/Pygments (**GEP-030**), and multi-engine WebGL abstractions (**GEP-026**) risk pulling a focused ~1,200-line Python library into maintaining a sprawling JavaScript/WebGL framework or ontology library ("Second-System Syndrome").
-   - **Strategic Decision:** Treat Tier 3 proposals as **Exploratory / Spin-Off Candidates** (separate high-level projects, plugin packages, or cookbook examples) so the core library stays lean and faithful to **GEP-001**.
+    - These proposals originated in exploratory brainstorming sessions. While intellectually rich, features like custom
+      Three.js shaders/procedural cities (**GEP-027**), universal class ontologies mapping Schema.org/C4/Pygments
+      (**GEP-030**), and multi-engine WebGL abstractions (**GEP-026**) risk pulling a focused ~1,200-line Python library
+      into maintaining a sprawling JavaScript/WebGL framework or ontology library ("Second-System Syndrome").
+    - **Strategic Decision:** Treat Tier 3 proposals as **Exploratory / Spin-Off Candidates** (separate high-level
+      projects, plugin packages, or cookbook examples) so the core library stays lean and faithful to **GEP-001**.
 
 ### 2. The Council's Opinion (By Pillar)
 
@@ -98,40 +110,44 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
 
 ## Summary Priority Matrix (Core Library)
 
-| Priority | GEP         | Title                                      | Phase   |
-|:---------|:------------|:-------------------------------------------|:--------|
-| 1        | **GEP-024** | The Graph Engine                           | Phase 2 |
-| 2        | **GEP-014** | Explicit GraphQL Schema Generation         | Phase 2 |
-| 3        | **GEP-023** | Async Support                              | Phase 2 |
-| 4        | **GEP-019** | Offline Viewer Support                     | Phase 2 |
-| 5        | **GEP-031** | High-Performance Vectorized Operations     | Phase 2 |
-| 6        | **GEP-018** | Relay Support                              | Phase 3 |
-| 7        | **GEP-020** | Modular Frontend Architecture              | Phase 3 |
-| 8        | **GEP-029** | Extraction Strategies (Helpers / Recipes)  | Phase 3 |
+| Priority | GEP         | Title                                     | Phase   |
+|:---------|:------------|:------------------------------------------|:--------|
+| 1        | **GEP-024** | The Graph Engine                          | Phase 2 |
+| 2        | **GEP-014** | Explicit GraphQL Schema Generation        | Phase 2 |
+| 3        | **GEP-023** | Async Support                             | Phase 2 |
+| 4        | **GEP-031** | High-Performance Vectorized Operations    | Phase 2 |
+| 5        | **GEP-018** | Relay Support                             | Phase 3 |
+| 6        | **GEP-020** | Modular Frontend Architecture             | Phase 3 |
+| 7        | **GEP-029** | Extraction Strategies (Helpers / Recipes) | Phase 3 |
 
 ## Archive (Completed / Withdrawn / Superseded)
 
-| GEP         | Title                                  | Status            | Reason                                                                 |
-|:------------|:---------------------------------------|:------------------|:-----------------------------------------------------------------------|
-| **GEP-000** | Graphinate Enhancement Proposals       | **Active**        | Process definition.                                                    |
-| **GEP-001** | The Graphinate Mission                 | **Active**        | Mission statement.                                                     |
-| **GEP-002** | Modularization Strategy                | **Active**        | Architectural principle.                                               |
-| **GEP-007** | Theoretical Foundations                | **Active**        | Informational / Theory.                                                |
-| **GEP-010** | Explicit Dependency Injection          | **Active**        | Implemented explicit dependency injection using `ParentId`.            |
-| **GEP-013** | Stable ID Serialization                | **Withdrawn**     | `repr()` deemed sufficient and more robust for Python types.           |
-| **GEP-016** | CLI Argument Parsing & Path Safety     | **Active**        | Implemented Typer CLI with safe dynamic argument parsing & paths.      |
-| **GEP-017** | Decoupled Server Architecture          | **Active**        | Exposed `create_app()` ASGI factory in `graphinate.renderers.graphql`. |
-| **GEP-019** | Offline Viewer Support                 | **Active**        | In-package vendoring under `static/vendor/` for 100% offline 3D viewer.|
-| **GEP-025** | Signed ID Serialization                | **Active**        | Implemented as an optional, opt-in HMAC-SHA256 signature layer.        |
-| **GEP-032** | GraphModel Compilation & Validation    | **Active**        | Implemented `GraphModel.compile()` and deferred validation.            |
-| **GEP-015** | Refactored Graph Population Strategies | **Superseded**    | Replaced by **GEP-024** (The Graph Engine).                            |
-| **GEP-022** | 2D Visualization Mode                  | **Superseded**    | Replaced by **GEP-026** (Pluggable Visualization).                     |
-| **GEP-027** | Advanced Three.js Visualizations       | **Informational** | Exploratory design concepts (Spin-Off / Showcase Track).               |
+| GEP         | Title                                  | Status            | Reason                                                                  |
+|:------------|:---------------------------------------|:------------------|:------------------------------------------------------------------------|
+| **GEP-000** | Graphinate Enhancement Proposals       | **Active**        | Process definition.                                                     |
+| **GEP-001** | The Graphinate Mission                 | **Active**        | Mission statement.                                                      |
+| **GEP-002** | Modularization Strategy                | **Active**        | Architectural principle.                                                |
+| **GEP-007** | Theoretical Foundations                | **Active**        | Informational / Theory.                                                 |
+| **GEP-010** | Explicit Dependency Injection          | **Active**        | Implemented explicit dependency injection using `ParentId`.             |
+| **GEP-011** | Standardized Element Factory           | **Active**        | Split polymorphic `element` into `tuple_element` and `named_element`.   |
+| **GEP-012** | Robust Model Composition               | **Active**        | Implemented `GraphModel.merge()` and `CompositionStrategy`.             |
+| **GEP-013** | Stable ID Serialization                | **Withdrawn**     | `repr()` deemed sufficient and more robust for Python types.            |
+| **GEP-016** | CLI Argument Parsing & Path Safety     | **Active**        | Implemented Typer CLI with safe dynamic argument parsing & paths.       |
+| **GEP-017** | Decoupled Server Architecture          | **Active**        | Exposed `create_app()` ASGI factory in `graphinate.renderers.graphql`.  |
+| **GEP-019** | Offline Viewer Support                 | **Active**        | In-package vendoring under `static/vendor/` for 100% offline 3D viewer. |
+| **GEP-025** | Signed ID Serialization                | **Active**        | Implemented as an optional, opt-in HMAC-SHA256 signature layer.         |
+| **GEP-032** | GraphModel Compilation & Validation    | **Active**        | Implemented `GraphModel.compile()` and deferred validation.             |
+| **GEP-015** | Refactored Graph Population Strategies | **Superseded**    | Replaced by **GEP-024** (The Graph Engine).                             |
+| **GEP-022** | 2D Visualization Mode                  | **Superseded**    | Replaced by **GEP-026** (Pluggable Visualization).                      |
+| **GEP-027** | Advanced Three.js Visualizations       | **Informational** | Exploratory design concepts (Spin-Off / Showcase Track).                |
 
 ## Change Log
 
 * **2025-12-30:** Initial roadmap draft.
-* **2026-10-17:** Completed Phase 1 (GEP-010, GEP-016, GEP-017, GEP-025, GEP-032). Added Council assessment and 4-phase trajectory.
-* **2026-10-22:** Rebased all 27 GEPs on EP standard and GEP-000. Completed and activated GEP-019 (Offline Viewer Support).
+* **2026-10-17:** Completed Phase 1 (GEP-010, GEP-016, GEP-017, GEP-025, GEP-032). Added Council assessment and 4-phase
+  trajectory.
+* **2026-10-22:** Rebased all 27 GEPs on EP standard and GEP-000. Completed and activated GEP-019 (Offline Viewer
+  Support), GEP-011 (Standardized Element Factory), and GEP-012 (Robust Model Composition).
+
 
 
