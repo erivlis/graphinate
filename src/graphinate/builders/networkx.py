@@ -7,6 +7,7 @@ from loguru import logger
 from mappingtools.transformers import simplify
 
 from .. import color
+from ..engine import EdgeEvent, GraphEngine, GraphObserver, NodeEvent
 from ..enums import GraphType, Multiplicity
 from ..modeling import GraphModel
 from ..tools import utcnow
@@ -14,16 +15,89 @@ from ..typing import NodeTypeAbsoluteId, UniverseNode
 from .builder import Builder
 
 
-class NetworkxBuilder(Builder):
-    """Build a NetworkX Graph"""
+class NetworkxBuilder(Builder, GraphObserver):
+    """Build a NetworkX Graph by observing a GraphEngine run."""
 
     def __init__(self, model: GraphModel, graph_type: GraphType = GraphType.Graph):
         super().__init__(model, graph_type)
         self._graph: nx.Graph | None = None
 
-    def _initialize_graph(self):
+    def _initialize_graph(self, name: str | None = None):
         """Initialize an empty NetworkX graph with metadata and default attributes."""
-        self._graph: nx.Graph = self.graph_type.value(name=self.model.name, node_types=Counter(), edge_types=Counter())
+        graph_name = self.model.name if name is None else name
+        self._graph: nx.Graph = self.graph_type.value(
+            name=graph_name,
+            node_types=Counter(),
+            edge_types=Counter(),
+        )
+
+    def on_start(self, name: str) -> None:
+        """Called when GraphEngine execution starts."""
+        self._initialize_graph(name=name)
+
+    def on_node(self, event: NodeEvent) -> None:
+        """Mutate the in-memory NetworkX graph in response to a NodeEvent."""
+        node_id = event.node_id
+        label = event.label
+        node_type = event.type
+
+        if node_id in self._graph:
+            logger.debug('Updating node. ID: {}, Label: {}', node_id, label)
+
+            match event.multiplicity:
+                case Multiplicity.ADD:
+                    self._graph.nodes[node_id]['value'] = [self._graph.nodes[node_id]['value'] + event.value]
+                case Multiplicity.ALL:
+                    self._graph.nodes[node_id]['value'].append(event.value)
+                case Multiplicity.FIRST:
+                    ...
+                case Multiplicity.LAST:
+                    self._graph.nodes[node_id]['value'] = [event.value]
+
+            self._graph.nodes[node_id]['magnitude'] += event.magnitude
+            self._graph.nodes[node_id]['updated'] = utcnow()
+        else:
+            logger.debug('Adding node. ID: {}, Label: {}', node_id, label)
+            self._graph.add_node(
+                node_id,
+                label=label,
+                type=node_type,
+                value=[event.value],
+                magnitude=event.magnitude,
+                lineage=list(event.lineage),
+                created=event.created,
+            )
+
+            self._graph.graph['node_types'][node_type] += 1
+
+    def on_edge(self, event: EdgeEvent) -> None:
+        """Add or update an edge in the in-memory NetworkX graph in response to an EdgeEvent."""
+        if event.is_hierarchy:
+            logger.debug('Adding edge. Source: {}, Target: {}', event.source_id, event.target_id)
+            self._graph.add_edge(event.source_id, event.target_id, created=event.created)
+            return
+
+        edge_id = (event.source_id, event.target_id)
+        edge_type = event.type.lower() if event.type else 'edge'
+        logger.debug('Adding edge. Source: {}, Target: {}', *edge_id)
+
+        if isinstance(self._graph, nx.MultiGraph) or edge_id not in self._graph.edges:
+            self._graph.add_edge(
+                *edge_id,
+                label=event.label,
+                type=edge_type,
+                value=[event.value],
+                weight=event.weight,
+                created=event.created,
+            )
+            self._graph.graph['edge_types'][edge_type] += 1
+        else:
+            self._graph.edges[edge_id]['value'].append(event.value)
+            self._graph.edges[edge_id]['weight'] += event.weight
+            self._graph.edges[edge_id]['updated'] = utcnow()
+
+    def on_finish(self) -> None:
+        """Called when GraphEngine execution completes."""
 
     def _graph_edges(self, data, default=None):
         params = {'data': data, 'default': default}
@@ -33,129 +107,36 @@ class NetworkxBuilder(Builder):
 
         return self._graph.edges(**params)
 
-    def _populate_node_type(
-            self,
-            node_type: Union[Hashable, UniverseNode] = UniverseNode,
-            _lineage: tuple | None = None,
-            **kwargs: Any
-    ):
-        for parent_node_type, child_node_types in self.model.node_children_types(node_type).items():
-            for child_node_type in child_node_types:
-                node_type_absolute_id = (parent_node_type, child_node_type)
-                self._populate_nodes(node_type_absolute_id, _lineage=_lineage, **kwargs)
-
     @staticmethod
     def _parent_node_id(node_type_absolute_id: NodeTypeAbsoluteId, **kwargs: Any):
-        parent_type = node_type_absolute_id[0]
-        if parent_type is UniverseNode:
-            return UniverseNode
+        return GraphEngine._parent_node_id(node_type_absolute_id, **kwargs)
 
-        parent_type_lower = parent_type.lower() if isinstance(parent_type, str) else parent_type
-        ids = []
-        for k, v in kwargs.items():
-            if k.endswith('_id'):
-                ids.append(v)
-                if k[:-3].lower() == parent_type_lower:
-                    break
-
-        return tuple(ids)
+    def _populate_node_type(
+        self,
+        node_type: Union[Hashable, UniverseNode] = UniverseNode,
+        _lineage: tuple | None = None,
+        **kwargs: Any,
+    ):
+        engine = GraphEngine(self.model, compile_model=False)
+        engine.subscribe(self)
+        engine._populate_node_type(node_type=node_type, _lineage=_lineage, **kwargs)
 
     def _populate_nodes(
-            self,
-            node_type_absolute_id: NodeTypeAbsoluteId,
-            _lineage: tuple | None = None,
-            **kwargs: Any
+        self,
+        node_type_absolute_id: NodeTypeAbsoluteId,
+        _lineage: tuple | None = None,
+        **kwargs: Any,
     ):
-        """Populate graph nodes based on the provided model and ID."""
-        for node_model in self.model.node_models[node_type_absolute_id]:
-            unique = node_model.uniqueness
-            node_model_label = node_model.label
-            is_label_callable = callable(node_model_label)
-
-            if node_model.parent_type is UniverseNode:
-                parent_node_id = UniverseNode
-            elif _lineage is not None:
-                parent_node_id = _lineage
-            else:
-                parent_node_id = self._parent_node_id(node_type_absolute_id, **kwargs)
-
-            for node in node_model.generator(**kwargs):
-                node_lineage = (*parent_node_id, node.key) if parent_node_id is not UniverseNode else (node.key,)
-                node_id = (node.key,) if unique else node_lineage
-
-                label = node.key
-                if node_model_label is not None:
-                    label = node_model_label(node.value) if is_label_callable else node_model_label
-
-                node_type = node.__class__.__name__.lower()
-                if node_type == 'tuple':
-                    node_type = node_model.type.lower()
-
-                if node_id in self._graph:
-                    logger.debug('Updating node. ID: {}, Label: {}', node_id, label)
-
-                    match node_model.multiplicity:
-                        case Multiplicity.ADD:
-                            self._graph.nodes[node_id]['value'] = [self._graph.nodes[node_id]['value'] + node.value]
-                        case Multiplicity.ALL:
-                            self._graph.nodes[node_id]['value'].append(node.value)
-                        case Multiplicity.FIRST:
-                            ...
-                        case Multiplicity.LAST:
-                            self._graph.nodes[node_id]['value'] = [node.value]
-
-                    self._graph.nodes[node_id]['magnitude'] += 1
-                    self._graph.nodes[node_id]['updated'] = utcnow()
-                else:
-                    logger.debug('Adding node. ID: {}, Label: {}', node_id, label)
-                    self._graph.add_node(
-                        node_id,
-                        label=label,
-                        type=node_type,
-                        value=[node.value],
-                        magnitude=1,
-                        lineage=list(node_lineage),
-                        created=utcnow(),
-                    )
-
-                    self._graph.graph['node_types'][node_type] += 1
-
-                if node_model.parent_type is not UniverseNode:
-                    logger.debug('Adding edge. Source: {}, Target: {}', parent_node_id, node_id)
-                    self._graph.add_edge(parent_node_id, node_id, created=utcnow())
-
-                new_kwargs = kwargs.copy()
-                new_kwargs[f'{node_type}_id'] = node.key
-                self._populate_node_type(node_model.type, _lineage=node_id, **new_kwargs)
-                if node_type != node_model.type.lower():
-                    self._populate_node_type(node_type, _lineage=node_id, **new_kwargs)
+        """Populate graph nodes based on the provided model and ID by delegating to GraphEngine."""
+        engine = GraphEngine(self.model, compile_model=False)
+        engine.subscribe(self)
+        engine._populate_nodes(node_type_absolute_id, _lineage=_lineage, **kwargs)
 
     def _populate_edges(self, **kwargs: Any):
-        """Populate graph edges based on defined connections."""
-        for edge_model, edge_generators in self.model.edge_generators.items():
-            logger.debug("Adding from {}", edge_model)
-            for edge_generator in edge_generators:
-                for edge in edge_generator(**kwargs):
-                    edge_id = ((edge.source,), (edge.target,))
-                    edge_label = edge.label(edge_id) if callable(edge.label) else edge.label
-                    edge_weight = edge.weight or 1.0
-                    edge_type = edge.type.lower()
-                    logger.debug('Adding edge. Source: {}, Target: {}', *edge_id)
-
-                    if isinstance(self._graph, nx.MultiGraph) or edge_id not in self._graph.edges:
-                        self._graph.add_edge(
-                            *edge_id,
-                            label=edge_label,
-                            type=edge_type,
-                            value=[edge.value],
-                            weight=edge_weight,
-                            created=utcnow(),
-                        )
-                        self._graph.graph['edge_types'][edge_type] += 1
-                    else:
-                        self._graph.edges[edge_id]['value'].append(edge.value)
-                        self._graph.edges[edge_id]['weight'] += edge_weight
-                        self._graph.edges[edge_id]['updated'] = utcnow()
+        """Populate graph edges based on defined connections by delegating to GraphEngine."""
+        engine = GraphEngine(self.model, compile_model=False)
+        engine.subscribe(self)
+        engine._populate_edges(**kwargs)
 
     def _apply_defaults(self, elements_iter, defaults: Mapping, is_node: bool):
         """Apply defaults to elements in a single pass."""
@@ -239,9 +220,9 @@ class NetworkxBuilder(Builder):
         self.model = self.model.compile(_type=default_type, parent_type=default_type, label=default_label)
 
     def _build_graph(self, node_attributes: Mapping, **kwargs: Any):
-        self._initialize_graph()
-        self._populate_node_type(**kwargs)
-        self._populate_edges(**kwargs)
+        engine = GraphEngine(self.model, compile_model=False)
+        engine.subscribe(self)
+        engine.run(**kwargs)
         self._finalize_graph(**node_attributes)
 
     def build(self, **kwargs: Any) -> nx.Graph:
@@ -262,3 +243,4 @@ class NetworkxBuilder(Builder):
         self._rectify_model(default_node_attributes)
         self._build_graph(default_node_attributes, **kwargs)
         return self._graph
+
