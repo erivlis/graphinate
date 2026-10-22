@@ -61,3 +61,25 @@ engine.run()
 
 * **`NodeEvent`**: Immutable dataclass carrying `node_id`, `type`, `label`, `value`, `magnitude`, `lineage`, `multiplicity`, and `created`.
 * **`EdgeEvent`**: Immutable dataclass carrying `source_id`, `target_id`, `type`, `label`, `value`, `weight`, `is_hierarchy`, and `created`.
+
+## Asynchronous Execution (`async def`)
+
+`@model.node` and `@model.edge` support asynchronous generator functions (`async def ... yield`) as well as coroutine functions (`async def ... return [...]`). You can mix synchronous and asynchronous generators freely within the same `GraphModel` and execute them with `await engine.arun(...)` or `await builder.abuild(...)` (or `await graphinate.abuild(BuilderCls, model)`):
+
+```python
+import asyncio
+from graphinate import abuild, model
+from graphinate.builders import NetworkxBuilder
+
+async_model = model(name="Async Pipeline")
+
+@async_model.node()
+async def repository():
+    await asyncio.sleep(0.01)
+    yield "graphinate"
+
+async def main():
+    graph = await abuild(NetworkxBuilder, async_model)
+    print(graph.nodes)
+```
+
