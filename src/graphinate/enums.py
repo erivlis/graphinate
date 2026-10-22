@@ -49,3 +49,13 @@ class Multiplicity(Enum):
     ALL = auto()
     FIRST = auto()
     LAST = auto()
+
+
+class CompositionStrategy(Enum):
+    """Conflict resolution strategies when composing GraphModel instances."""
+
+    APPEND = auto()
+    OVERRIDE = auto()
+    MERGE = auto()
+    FAIL = auto()
+

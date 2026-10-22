@@ -8,7 +8,7 @@ from functools import lru_cache
 from types import MappingProxyType
 from typing import Any, Union
 
-from .enums import Multiplicity
+from .enums import CompositionStrategy, Multiplicity
 from .typing import Edge, Element, Extractor, Items, Node, NodeTypeAbsoluteId, ParentId, UniverseNode
 
 
@@ -17,11 +17,45 @@ class GraphModelError(Exception):
 
 
 @lru_cache(maxsize=128)
-def _get_namedtuple_element_class(type_name: str, field_names: tuple[str] | str) -> type[Element]:
+def _get_namedtuple_element_class(type_name: str, field_names: tuple[str, ...] | str) -> type[Element]:
     return namedtuple(type_name, field_names)
 
 
-def element(element_type: str | None, field_names: Iterable[str] | str | None = None) -> Callable[[], Element]:
+def tuple_element() -> type[tuple]:
+    """Return the standard tuple element factory.
+
+    Returns:
+        The built-in `tuple` constructor.
+    """
+    return tuple
+
+
+def named_element(element_type: str, field_names: Iterable[str] | str) -> type[Element]:
+    """Return a named tuple element factory for the given type and field names.
+
+    Args:
+        element_type: Valid Python identifier for the named tuple class name.
+        field_names: Field names as an iterable of strings or space/comma-separated string.
+
+    Returns:
+        A cached namedtuple class for the specified type and fields.
+
+    Raises:
+        ValueError: If element_type is empty/invalid or field_names is empty.
+    """
+    if not element_type or not isinstance(element_type, str) or not element_type.isidentifier():
+        raise ValueError(f"Invalid Type: {element_type}. Must be a valid Python identifier.")
+
+    if not isinstance(field_names, str):
+        field_names = tuple(field_names)
+
+    if not field_names:
+        raise ValueError("field_names must not be empty for named_element.")
+
+    return _get_namedtuple_element_class(element_type, field_names)
+
+
+def element(element_type: str | None, field_names: Iterable[str] | str | None = None) -> Callable[..., Element]:
     """Graph Element Supplier Callable
 
     Args:
@@ -31,11 +65,12 @@ def element(element_type: str | None, field_names: Iterable[str] | str | None = 
     Returns:
         Element Supplier Callable
     """
-
-    if not isinstance(field_names, str):
+    if field_names is not None and not isinstance(field_names, str):
         field_names = tuple(field_names)
 
-    return _get_namedtuple_element_class(element_type, field_names) if element_type and field_names else tuple
+    if element_type and field_names:
+        return named_element(element_type, field_names)
+    return tuple_element()
 
 
 def extractor(obj: Any, key: Extractor | None = None) -> str | None:
@@ -75,6 +110,7 @@ def elements(iterable: Iterable[Any],
     """
     is_dynamic_type = callable(element_type)
     static_create_element = None
+    field_names = tuple(getters.keys())
 
     if not is_dynamic_type:
         _type = element_type
@@ -84,19 +120,19 @@ def elements(iterable: Iterable[Any],
         if not _type.isidentifier():
             raise ValueError(f"Invalid Type: {_type}. Must be a valid Python identifier.")
 
-        static_create_element = element(_type, getters.keys())
+        static_create_element = named_element(_type, field_names) if field_names else tuple_element()
 
     for item in iterable:
         if is_dynamic_type:
             _type = element_type(item)
             if not _type.isidentifier():
                 raise ValueError(f"Invalid Type: {_type}. Must be a valid Python identifier.")
-            create_element = element(_type, getters.keys())
+            create_element = named_element(_type, field_names) if field_names else tuple_element()
         else:
             create_element = static_create_element
 
         kwargs = {k: extractor(item, v) for k, v in getters.items()}
-        yield create_element(**kwargs)
+        yield create_element(**kwargs) if field_names else create_element()
 
 
 @dataclass
@@ -148,19 +184,121 @@ class GraphModel:
         self._edge_generators: dict[str, list[Callable[[], Iterable[Edge]]]] = defaultdict(list)
         self._networkx_graph = None
 
-    def __add__(self, other: 'GraphModel') -> 'GraphModel':
-        graph_model = GraphModel(name=f"{self.name} + {other.name}")
+    def _check_merge_conflicts(self, other: 'GraphModel'):
+        overlapping_nodes = set(self._node_models.keys()) & set(other._node_models.keys())
+        overlapping_edges = set(self._edge_generators.keys()) & set(other._edge_generators.keys())
+        if overlapping_nodes or overlapping_edges:
+            conflicts = []
+            if overlapping_nodes:
+                conflicts.append(f"node types {sorted(str(k) for k in overlapping_nodes)}")
+            if overlapping_edges:
+                conflicts.append(f"edge types {sorted(overlapping_edges)}")
+            raise GraphModelError(
+                f"Model composition conflict under FAIL strategy: overlapping {', '.join(conflicts)}."
+            )
+
+    def _merge_append(self, other: 'GraphModel', target: 'GraphModel'):
         for m in (self, other):
             for k, v in m._node_models.items():
-                graph_model._node_models[k].extend(v)
-
+                target._node_models[k].extend(v)
             for k, v in m._node_children.items():
-                graph_model._node_children[k].extend(v)
-
+                target._node_children[k].extend(v)
             for k, v in m._edge_generators.items():
-                graph_model._edge_generators[k].extend(v)
+                target._edge_generators[k].extend(v)
+
+    def _merge_override(self, other: 'GraphModel', target: 'GraphModel'):
+        for m in (self, other):
+            for k, v in m._node_models.items():
+                target._node_models[k] = list(v)
+            for k, v in m._edge_generators.items():
+                target._edge_generators[k] = list(v)
+
+        for (parent_type, _), models in target._node_models.items():
+            for nm in models:
+                target._node_children[parent_type].append(nm.type)
+
+    @staticmethod
+    def _merge_node_model_lists(left_models: list[NodeModel], right_models: list[NodeModel]) -> list[NodeModel]:
+        if not right_models:
+            return list(left_models)
+        right_primary = right_models[-1]
+        merged = []
+        for existing in left_models:
+            merged_deps = {**(existing.dependencies or {}), **(right_primary.dependencies or {})}
+            merged.append(
+                NodeModel(
+                    type=right_primary.type,
+                    parent_type=right_primary.parent_type,
+                    label=right_primary.label if right_primary.label is not None else existing.label,
+                    uniqueness=right_primary.uniqueness,
+                    multiplicity=right_primary.multiplicity,
+                    dependencies=merged_deps,
+                    generator=existing.generator,
+                    dynamic_type=existing.dynamic_type,
+                )
+            )
+        seen_generators = {nm.generator for nm in merged}
+        for nm in right_models:
+            if nm.generator not in seen_generators:
+                merged.append(nm)
+                seen_generators.add(nm.generator)
+        return merged
+
+    def _merge_combine(self, other: 'GraphModel', target: 'GraphModel'):
+        for k, v in self._node_models.items():
+            target._node_models[k] = list(v)
+        for k, v in other._node_models.items():
+            if k in target._node_models:
+                target._node_models[k] = self._merge_node_model_lists(target._node_models[k], v)
+            else:
+                target._node_models[k] = list(v)
+
+        for (parent_type, _), models in target._node_models.items():
+            for nm in models:
+                if nm.type not in target._node_children[parent_type]:
+                    target._node_children[parent_type].append(nm.type)
+
+        for m in (self, other):
+            for k, v in m._edge_generators.items():
+                for gen in v:
+                    if gen not in target._edge_generators[k]:
+                        target._edge_generators[k].append(gen)
+
+    def merge(
+        self,
+        other: 'GraphModel',
+        strategy: CompositionStrategy = CompositionStrategy.APPEND,
+        name: str | None = None
+    ) -> 'GraphModel':
+        """Combine this GraphModel with another using an explicit conflict resolution strategy.
+
+        Args:
+            other: The right-hand GraphModel to compose with.
+            strategy: Conflict resolution strategy (APPEND, OVERRIDE, MERGE, or FAIL).
+            name: Optional name for the resulting model. Defaults to ``f"{self.name} + {other.name}"``.
+
+        Returns:
+            A new composed GraphModel instance.
+
+        Raises:
+            GraphModelError: If strategy is FAIL and overlapping node or edge definitions exist.
+        """
+        if strategy == CompositionStrategy.FAIL:
+            self._check_merge_conflicts(other)
+
+        graph_model = GraphModel(name=name or f"{self.name} + {other.name}")
+
+        if strategy in (CompositionStrategy.APPEND, CompositionStrategy.FAIL):
+            self._merge_append(other, graph_model)
+        elif strategy == CompositionStrategy.OVERRIDE:
+            self._merge_override(other, graph_model)
+        elif strategy == CompositionStrategy.MERGE:
+            self._merge_combine(other, graph_model)
 
         return graph_model
+
+    def __add__(self, other: 'GraphModel') -> 'GraphModel':
+        return self.merge(other, strategy=CompositionStrategy.APPEND)
 
     @property
     def node_models(self) -> Mapping[NodeTypeAbsoluteId, list[NodeModel]]:
@@ -501,4 +639,5 @@ def model(name: str):
     return GraphModel(name=name)
 
 
-__all__ = ('GraphModel', 'elements', 'model')
+__all__ = ('GraphModel', 'elements', 'model', 'named_element', 'tuple_element')
+
