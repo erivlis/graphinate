@@ -1,3 +1,20 @@
+## v0.17.0 (2026-10-23)
+
+### Feat
+
+- Introduce SchemaMode enum for GraphQL schema generation modes and update type hints for improved clarity
+- Add asynchronous graph building capabilities across various builders
+- Transition GEP-024 to active status and refactor architecture for GraphEngine and GraphObserver
+- Implement GraphEngine for observable graph execution and event handling
+- Split element factory into explicit tuple_element and named_element constructors for improved type stability and clarity
+- Introduce CompositionStrategy enum and enhance GraphModel merging capabilities
+- Update script imports and add murmurhash3_gc.min.js for improved performance
+- **GEP-XXX**: Add frontmatter and update status for multiple GEP documents
+
+### Refactor
+
+- Update type hints for color mapping functions and add vectorization check for float colors
+
 ## v0.16.0 (2026-10-17)
 
 ### Feat
