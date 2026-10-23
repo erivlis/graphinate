@@ -233,8 +233,6 @@ class GraphEngine:
             parent_node_id = self._resolve_parent_node_id(node_model, node_type_absolute_id, _lineage, **kwargs)
 
             gen = node_model.generator(**kwargs)
-            if inspect.isawaitable(gen):
-                gen = await gen
 
             if isinstance(gen, AsyncIterable):
                 async for node in gen:
@@ -263,8 +261,6 @@ class GraphEngine:
             logger.debug("Adding from {}", edge_model)
             for edge_generator in edge_generators:
                 gen = edge_generator(**kwargs)
-                if inspect.isawaitable(gen):
-                    gen = await gen
 
                 if isinstance(gen, AsyncIterable):
                     async for edge in gen:
