@@ -32,10 +32,9 @@ living document to track the prioritization and status of major initiatives.
 
 *Focus: Strengthening the core execution engine, schema generation, and modularity.*
 
-| GEP         | Title                                      | Impact   | Difficulty | Rationale                                                                                                                  |
-|:------------|:-------------------------------------------|:---------|:-----------|:---------------------------------------------------------------------------------------------------------------------------|
-| **GEP-014** | **Explicit GraphQL Schema Generation**     | **High** | **Hard**   | **Major Refactor.** Refactoring dynamic class generation to `strawberry.tools.create_type` and context-injected resolvers. |
-| **GEP-031** | **High-Performance Vectorized Operations** | Medium   | Medium     | **Performance.** Progressive enhancement via optional NumPy/Numba (partially active in `color.py`).                        |
+| GEP         | Title                                      | Impact | Difficulty | Rationale                                                                                           |
+|:------------|:-------------------------------------------|:-------|:-----------|:----------------------------------------------------------------------------------------------------|
+| **GEP-031** | **High-Performance Vectorized Operations** | Medium | Medium     | **Performance.** Progressive enhancement via optional NumPy/Numba (partially active in `color.py`). |
 
 ## Phase 3: Focused Expansion
 
@@ -100,9 +99,9 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
 | **2. Falsifiability (Popper)** |  **A**  | High branch coverage (~98%) and property-style tests provide a strong safety net. Every Standards Track GEP must be paired with falsifying regression tests before its status transitions to `Active`.                                                                                                                                    |
 | **3. Efficiency (Shannon)**    | **A-**  | `color.py` (**GEP-031**), `VariableNameManager` (`tools.py`), and $O(\text{deg}(v))$ GraphQL neighbor resolution are fast and lean. The primary remaining efficiency win is **GEP-002**: moving heavy packages (`matplotlib`, `strawberry-graphql`) out of mandatory core install dependencies into optional extras.                      |
 | **4. Safety (The Golem)**      | **A-**  | With **GEP-025** (HMAC-SHA256 signed IDs), **GEP-032** (immutable `model.compile()` clones), and isolated `GraphNodeType` schema enums, thread-safety and concurrency hazards have been substantially hardened—critical for Python 3.13t–3.15t free-threaded execution.                                                                   |
-| **5. Clarity (Feynman)**       |  **A**  | The `@model.node` / `@model.edge` declarative DSL remains simple and expressive. Completing **GEP-014** (explicit GraphQL schema generation with context injection) will remove the last major pocket of closure metaprogramming in `builders/graphql.py`.                                                                                |
+| **5. Clarity (Feynman)**       |  **A**  | The `@model.node` / `@model.edge` declarative DSL remains simple and expressive. **GEP-014** (explicit GraphQL schema generation with `create_type` and context injection) has removed closure class metaprogramming in `builders/graphql.py`.                                                                                            |
 | **6. Consistency (Russell)**   | **A-**  | Case-insensitive parent resolution and explicit `_lineage` tuple propagation across recursion depths have unified behavior between `modeling.py` and `builders/networkx.py`.                                                                                                                                                              |
-| **7. Harmony (The Steward)**   | **A-**  | **The Dennis Point:** Resist building custom 3D shaders (**GEP-027**) or rigid taxonomies (**GEP-030**) inside core before the execution spine (`compile()` → `GraphEngine` → `abuild()`) is complete. Keep Graphinate focused on its mission: *"A declarative, Pythonic ETL engine for synthesizing graphs from hierarchical data."*     |
+| **7. Harmony (The Steward)**   |  **A**  | **The Dennis Point:** The execution spine (`compile()` → `GraphEngine` → `abuild()`) and explicit GraphQL schema generation (**GEP-014**) are complete, keeping Graphinate focused on its mission: *"A declarative, Pythonic ETL engine for synthesizing graphs from hierarchical data."*                                                 |
 
 ---
 
@@ -110,11 +109,10 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
 
 | Priority | GEP         | Title                                     | Phase   |
 |:---------|:------------|:------------------------------------------|:--------|
-| 1        | **GEP-014** | Explicit GraphQL Schema Generation        | Phase 2 |
-| 2        | **GEP-031** | High-Performance Vectorized Operations    | Phase 2 |
-| 3        | **GEP-018** | Relay Support                             | Phase 3 |
-| 4        | **GEP-020** | Modular Frontend Architecture             | Phase 3 |
-| 5        | **GEP-029** | Extraction Strategies (Helpers / Recipes) | Phase 3 |
+| 1        | **GEP-031** | High-Performance Vectorized Operations    | Phase 2 |
+| 2        | **GEP-018** | Relay Support                             | Phase 3 |
+| 3        | **GEP-020** | Modular Frontend Architecture             | Phase 3 |
+| 4        | **GEP-029** | Extraction Strategies (Helpers / Recipes) | Phase 3 |
 
 ## Archive (Completed / Withdrawn / Superseded)
 
@@ -128,6 +126,7 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
 | **GEP-011** | Standardized Element Factory           | **Active**        | Split polymorphic `element` into `tuple_element` and `named_element`.   |
 | **GEP-012** | Robust Model Composition               | **Active**        | Implemented `GraphModel.merge()` and `CompositionStrategy`.             |
 | **GEP-013** | Stable ID Serialization                | **Withdrawn**     | `repr()` deemed sufficient and more robust for Python types.            |
+| **GEP-014** | Explicit GraphQL Schema Generation     | **Active**        | Refactored `GraphQLBuilder` to `create_type`, context, & `SchemaMode`.  |
 | **GEP-016** | CLI Argument Parsing & Path Safety     | **Active**        | Implemented Typer CLI with safe dynamic argument parsing & paths.       |
 | **GEP-017** | Decoupled Server Architecture          | **Active**        | Exposed `create_app()` ASGI factory in `graphinate.renderers.graphql`.  |
 | **GEP-019** | Offline Viewer Support                 | **Active**        | In-package vendoring under `static/vendor/` for 100% offline 3D viewer. |
@@ -146,7 +145,8 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
   trajectory.
 * **2026-10-22:** Rebased all 27 GEPs on EP standard and GEP-000. Completed and activated GEP-019 (Offline Viewer
   Support), GEP-011 (Standardized Element Factory), and GEP-012 (Robust Model Composition).
-* **2026-10-23:** Completed and activated GEP-024 (The Graph Engine) and GEP-023 (Async Support), completing the Core Structural Spine.
+* **2026-10-23:** Completed and activated GEP-024 (The Graph Engine), GEP-023 (Async Support), and GEP-014 (Explicit GraphQL Schema Generation).
+
 
 
 
