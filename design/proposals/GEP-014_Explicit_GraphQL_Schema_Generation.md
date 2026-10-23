@@ -1,151 +1,99 @@
 ---
 title: "GEP-014: Explicit GraphQL Schema Generation"
-description: "The current `GraphQLBuilder` dynamically generates Python classes at runtime to represent GraphQL types for each node"
+description: "Refactor GraphQLBuilder to use strawberry.tools.create_type, context-injected resolvers, and an optional SchemaMode.STATIC."
 icon: lucide/git-branch
-status: draft
+status: active
 ---
 
 # GEP-014: Explicit GraphQL Schema Generation
 
-| Field       | Value                              |
-|:------------|:-----------------------------------|
-| **GEP**     | 14                                 |
-| **Title**   | Explicit GraphQL Schema Generation |
-| **Author**  | Eran Rivlis                        |
-| **Delegate**| The Council                   |
-| **Status**  | Draft                              |
-| **Type**    | Standards Track                    |
-| **Created** | 2025-12-25                         |
-| **Updated** | 2026-10-22                    |
+| Field        | Value                              |
+|:-------------|:-----------------------------------|
+| **GEP**      | 14                                 |
+| **Title**    | Explicit GraphQL Schema Generation |
+| **Author**   | Eran Rivlis                        |
+| **Delegate** | The Council                        |
+| **Status**   | Active                             |
+| **Type**     | Standards Track                    |
+| **Created**  | 2025-12-25                         |
+| **Updated**  | 2026-10-23                         |
 
 ## Abstract
 
-The current `GraphQLBuilder` dynamically generates Python classes at runtime to represent GraphQL types for each node
-type in the graph. While this provides a tailored API experience ("Magic"), it is fragile, hard to debug, and lacks IDE
-support. This proposal advocates for a two-pronged approach:
-
-1. Introducing a "Static Mode" that uses a generic schema for robustness.
-2. Refactoring the "Dynamic Mode" to use safer meta-programming practices and standard context injection.
+`GraphQLBuilder` previously used manual `type(name, bases, class_dict)` and `__annotations__` mutation to generate GraphQL types at runtime. This proposal replaces ad-hoc class dictionary metaprogramming with Strawberry's official `strawberry.tools.create_type`, supports GraphQL execution context injection (`info.context["graph"]`), and introduces `SchemaMode` (`DYNAMIC` and `STATIC`) for generic vs. per-node-type schemas.
 
 ## Motivation
 
-The current implementation inspects the `GraphModel` and uses `type()` to create new classes (e.g., `UserNode`,
-`PostNode`) on the fly, manually manipulating `__annotations__`. Furthermore, resolvers are defined as closures that
-capture the builder instance, tightly coupling the schema to the specific builder object.
+The legacy implementation inspected the `GraphModel` and used raw `type()` calls to construct classes (`UserNode`, `PostNode`) on the fly while mutating `__annotations__` and capturing `self._graph` exclusively inside nested closures.
 
 **Issues:**
 
-1. **Opacity:** Developers cannot see the schema definition in the code.
-2. **Tooling:** IDEs and static analysis tools cannot understand these dynamic types.
-3. **Fragility:** The implementation relies on internal details of how `strawberry` parses annotations.
-4. **Coupling:** Resolvers rely on closure-captured state (`self._graph`), making them hard to test and reuse.
+1. **Fragility:** Relying on internal details of how `strawberry` parses manually mutated `__annotations__`.
+2. **Coupling:** Resolvers could only read `self._graph` from closure scope, preventing callers from passing a per-request graph via `info.context['graph']`.
+3. **Lack of Static Mode:** Users with highly dynamic or schema-agnostic graphs had no option to use a single, uniform `GenericGraphNode` type.
+
+## Rationale
+
+Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
+- **Symmetry (Noether):** Both `SchemaMode.DYNAMIC` and `SchemaMode.STATIC` implement the same `GraphNode` interface and share the same resolver factories.
+- **Falsifiability (Popper):** Context injection (`context_value={"graph": custom_nx_graph}`) allows executing the same compiled `strawberry.Schema` against arbitrary test graphs without rebuilding the schema.
+- **Efficiency (Shannon):** `SchemaMode.STATIC` avoids generating N distinct Strawberry types when per-type root fields are not needed.
+- **Safety (The Golem):** Eliminates manual `__annotations__` dictionary mutation in favor of `strawberry.tools.create_type`.
+- **Clarity (Feynman):** Replacing runtime `type()` metaprogramming with `create_type` and `info.context` resolution makes schema construction transparent and maintainable.
+- **Consistency (Russell):** Resolvers uniformly resolve the active graph via `_resolve_graph(info)` across `graph`, `nodes`, `edges`, `measure`, `neighbors`, and `node.edges`.
+- **Harmony (The Steward):** Preserves `SchemaMode.DYNAMIC` and fallback to `self._graph` by default so all existing callers and queries work without modification.
 
 ## Specification
 
-We propose supporting two modes of operation and hardening the implementation.
-
-### 1. Static Mode (Generic)
-
-Use a single, pre-defined `GraphNode` type for all nodes. This mode is robust, IDE-friendly, and easier to debug.
-
-```python
-@strawberry.type
-class GraphNode:
-    id: strawberry.ID
-    type: str
-    label: str
-    data: JSON  # Generic payload
-
-    @strawberry.field
-    def neighbors(self, info, type: str | None = None) -> list['GraphNode']:
-        # Access graph via context
-        graph = info.context['graph']
-        ...
-```
-
-### 2. Dynamic Mode (Refactored)
-
-Preserve the current behavior but refactor the implementation to be safer and more standard.
-
-#### A. Use `strawberry.tools.create_type`
-
-Instead of manually constructing class dictionaries and annotations, use the official utility provided by Strawberry.
-
-```python
-from strawberry.tools import create_type
-
-# Create the type safely
-UserNode = create_type(
-    name="UserNode",
-    fields=fields,
-    interfaces=[GraphNode],
-    description="A User Graph Node"
-)
-```
-
-#### B. Stateless Resolvers & Context Injection
-
-Move resolver logic out of closures into standalone functions. Pass the graph data via the GraphQL execution context (
-`info.context`) rather than capturing it.
-
-**Current (Closure):**
-
-```python
-def neighbors_resolver():
-    graph = self._graph  # Captured from builder
-
-    def resolve(root):
-        return graph.neighbors(root.id)
-
-    return resolve
-```
-
-**Proposed (Context):**
-
-```python
-def resolve_neighbors(root, info, type: str | None = None) -> list[GraphNode]:
-    graph = info.context['graph']  # Injected via ASGI app context
-    return [n for n in graph.neighbors(root.id) if ...]
-
-
-# Usage in create_type
-fields = [
-    strawberry.field(name="neighbors", resolver=resolve_neighbors, type=list[GraphNode])
-]
-```
-
-This decouples the schema definition from the builder instance, making the resolvers testable and the architecture
-cleaner.
-
-### Configuration
-
-The `GraphQLBuilder` will accept a configuration flag:
+### 1. `SchemaMode` Enum (`graphinate.enums`)
 
 ```python
 class SchemaMode(Enum):
     DYNAMIC = auto()
     STATIC = auto()
-
-
-builder = GraphQLBuilder(model, mode=SchemaMode.STATIC)
 ```
+
+Exported at the top-level `graphinate` package (`from graphinate import SchemaMode`).
+
+### 2. `strawberry.tools.create_type` & Context-Aware Resolvers
+
+- `GraphQLBuilder.__init__(model, graph_type=GraphType.Graph, mode=SchemaMode.DYNAMIC)` accepts `mode: SchemaMode`.
+- Both node types and the root `Query` type are constructed using `strawberry.tools.create_type`.
+- Resolvers accept `info: strawberry.types.Info` and resolve the backing `nx.Graph` via `self._resolve_graph(info)`, which checks `info.context['graph']` when provided and falls back to `self._graph`.
+
+### 3. Static Mode (`SchemaMode.STATIC`)
+
+- When `mode=SchemaMode.STATIC`, `GraphQLBuilder` registers a single `GenericGraphNode` implementing `GraphNode` for all nodes and exposes the standard root fields (`graph`, `nodes`, `edges`, `measure`).
 
 ## Backwards Compatibility
 
-By making `DYNAMIC` the default, we preserve full backwards compatibility. The refactoring of the dynamic mode should be
-functionally equivalent to the current implementation.
-## Rationale
+- `SchemaMode.DYNAMIC` is the default mode.
+- When `context_value` is not supplied to `schema.execute_sync()` / `schema.execute()`, resolvers automatically fall back to `self._graph`, maintaining 100% compatibility with existing tests and ASGI routes.
 
-Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_Mission.md)):
-- **Clarity (Feynman):** Replacing runtime `type()` closure metaprogramming with `strawberry.tools.create_type` and ASGI context injection (`info.context["graph"]`) makes schema definitions transparent and debuggable.
-- **Safety (The Golem):** Eliminates cross-schema mutable state pollution and closure-captured builder leaks.
-- **Falsifiability (Popper):** Decoupled resolvers can be tested with standard unit fixtures without running the builder loop.
+## How to Teach This / Documentation Plan
+
+- Export `SchemaMode` in `graphinate`.
+- Document `SchemaMode.DYNAMIC`, `SchemaMode.STATIC`, and `context_value={"graph": ...}` in [`docs/advanced/graphql.md`](file:///C:/dev/erivlis/graphinate/docs/advanced/graphql.md) and [`docs/usage/lib.md`](file:///C:/dev/erivlis/graphinate/docs/usage/lib.md).
 
 ## Reference Implementation
 
-- Schema builder: `src/graphinate/builders/graphql.py`
+- Enum definition: [`src/graphinate/enums.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/enums.py)
+- Schema builder: [`src/graphinate/builders/graphql.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/builders/graphql.py)
+- User documentation: [`docs/advanced/graphql.md`](file:///C:/dev/erivlis/graphinate/docs/advanced/graphql.md)
+- Unit tests: [`tests/graphinate/builders/test_graphql.py`](file:///C:/dev/erivlis/graphinate/tests/graphinate/builders/test_graphql.py)
+
+## Rejected Ideas
+
+- **Removing Dynamic Mode Entirely:** Rejected because pluralized per-node-type root queries (e.g., `countries`, `cities`, `repositories`) are a signature ergonomic feature of Graphinate's GraphQL API.
+- **Requiring `context_value={'graph': ...}` on Every Call:** Rejected because standalone scripts calling `schema.execute_sync(query)` expect the schema built by `GraphQLBuilder` to work out-of-the-box without mandatory boilerplate.
+
+## Open Questions
+
+- [x] Should resolvers fall back to `self._graph` when `info.context` does not contain `'graph'`? *Decision: Yes, falling back to `self._graph` preserves zero-config ergonomics while enabling context injection.*
 
 ## Change Log
 
 * **2025-12-25:** Initial draft.
 * **2026-10-22:** Rebased into GEP standard with frontmatter and Council alignment.
+* **2026-10-23:** Implemented `SchemaMode`, refactored `GraphQLBuilder` to use `strawberry.tools.create_type` and context-aware resolvers, and transitioned status to `Active`.
+
