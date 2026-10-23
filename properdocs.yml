@@ -107,6 +107,8 @@ nav:
   # defer to gen-files + literate-nav
     - API Reference: reference/
     - advanced/modeling.md
+    - advanced/engine.md
+    - advanced/graphql.md
     - advanced/optimization.md
     - Secure IDs: advanced/secure_ids.md
   - Development: development.md
