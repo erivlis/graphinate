@@ -254,3 +254,69 @@ def test_graphql_builder_enum_isolation_and_reserved_identifiers():
     assert hasattr(custom_enum, "__strawberry_definition__")
 
 
+def test_graphql_builder_static_mode_and_context_injection():
+    from graphinate import SchemaMode, model
+    from graphinate.builders import GraphQLBuilder, NetworkxBuilder
+
+    m = model("StaticModel")
+
+    @m.node(type_="user")
+    def users():
+        yield "alice"
+
+    @m.node(type_="post", parent_type="user")
+    def posts(user_id):
+        yield f"{user_id}_post1"
+
+    builder = GraphQLBuilder(m, mode=SchemaMode.STATIC)
+    schema = builder.build()
+
+    query = """
+    {
+      graph { name nodeCount }
+      nodes {
+        __typename
+        type
+        label
+        neighbors(children: true) {
+          __typename
+          type
+          label
+        }
+        edges {
+          source { label }
+          target { label }
+        }
+      }
+    }
+    """
+    result = schema.execute_sync(query)
+    assert result.errors is None
+    assert result.data["graph"] == {"name": "StaticModel", "nodeCount": 2}
+    nodes_by_type = {n["type"]: n for n in result.data["nodes"]}
+    assert nodes_by_type["user"]["__typename"] == "GenericGraphNode"
+    assert nodes_by_type["user"]["neighbors"] == [
+        {"__typename": "GenericGraphNode", "type": "post", "label": "alice_post1"}
+    ]
+    assert len(nodes_by_type["user"]["edges"]) == 1
+
+    # Verify context injection overrides builder's graph with a custom graph
+    m_override = model("InjectedContextGraph")
+
+    @m_override.node(type_="user")
+    def override_users():
+        yield "bob"
+
+    override_nx = NetworkxBuilder(m_override).build()
+    ctx_result = schema.execute_sync(
+        "{ graph { name } nodes { label } }",
+        context_value={"graph": override_nx},
+    )
+    assert ctx_result.errors is None
+    assert ctx_result.data == {
+        "graph": {"name": "InjectedContextGraph"},
+        "nodes": [{"label": "bob"}],
+    }
+
+
+
