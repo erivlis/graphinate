@@ -7,7 +7,7 @@ import networkx as nx
 try:
     import numpy as np
     HAS_NUMPY = True
-except ImportError:
+except ImportError:  # pragma: no cover
     HAS_NUMPY = False
 
 
