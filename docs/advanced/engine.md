@@ -83,3 +83,9 @@ async def main():
     print(graph.nodes)
 ```
 
+!!! tip "Performance & Benchmarks"
+    In pure in-memory scenarios, synchronous builds achieve the lowest overhead by avoiding coroutine frame
+    allocation. In I/O-bound pipelines (fetching from microservices, APIs, or databases), asynchronous builds with
+    `abuild()` enable concurrent execution via `asyncio.gather()`, achieving multi-fold speedups.
+    See [Performance Optimization](optimization.md#synchronous-vs-asynchronous-execution-performance) for benchmarks.
+

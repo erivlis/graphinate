@@ -69,3 +69,52 @@ back transparently to pure Python when NumPy is absent.
    No code changes are required—`graphinate.color.HAS_NUMPY` detects `numpy` at import time and dispatches to the
    vectorized code path automatically.
 
+## Synchronous vs. Asynchronous Execution Performance
+
+Graphinate supports both synchronous (`builder.build()` / `engine.run()`) and asynchronous
+(`await graphinate.abuild()` / `await engine.arun()`) execution pipelines. Choosing between them depends on whether
+the bottleneck is in-memory CPU processing or external I/O latency.
+
+### Benchmark Comparison
+
+Benchmark suites located in `benchmarks/` measure execution across both CPU-bound and I/O-bound workloads:
+
+| Workload                                                       | Synchronous (`build`) | Asynchronous (`abuild`)   | Difference / Speedup             |
+|:---------------------------------------------------------------|:----------------------|:--------------------------|:---------------------------------|
+| **In-Memory CPU** (20,000 nodes + 19,999 edges)                | 520 ms                | 603 ms                    | +16% coroutine protocol overhead |
+| **Concurrent I/O** (5 graphs &times; 4 batches @ 50ms latency) | 1.03 s (sequential)   | 0.26 s (`asyncio.gather`) | **~4.0x faster**                 |
+
+### Performance Characteristics
+
+1. **In-Memory / CPU-Bound Pipelines**:
+   - Synchronous generators (`def ... yield`) execute in Python's optimized `FOR_ITER` bytecode loop with zero coroutine
+     frame allocation or event loop context switching.
+   - Asynchronous generators (`async def ... yield`) incur a small overhead due to coroutine scheduling and
+     the async generator protocol (`anext()`). For pure in-memory transformations without I/O, synchronous builds offer
+     the highest raw throughput.
+
+2. **I/O-Bound Pipelines & Concurrency**:
+   - When node or edge suppliers fetch data from remote APIs, microservices, databases, or cloud storage, synchronous
+     pipelines block the executing thread for the duration of each network round-trip.
+   - Asynchronous pipelines (`await abuild(...)`) overlap I/O latency across batches and allow multiple independent
+     subgraphs to be hydrated simultaneously using `asyncio.gather()`, achieving near-linear speedups.
+   - In web frameworks (such as FastAPI or Strawberry GraphQL), `abuild` ensures the event loop remains unblocked,
+     preventing latency spikes across concurrent requests.
+
+### When to Choose Sync vs. Async
+
+| Scenario                                         | Recommendation              | Rationale                                                              |
+|:-------------------------------------------------|:----------------------------|:-----------------------------------------------------------------------|
+| **Local scripts, CLI tools, offline batch data** | `builder.build()`           | Zero coroutine overhead, maximum single-threaded throughput.           |
+| **Network APIs, databases, remote files**        | `await graphinate.abuild()` | Overlaps network latency and unlocks concurrent fetches.               |
+| **Web servers (FastAPI / Starlette / GraphQL)**  | `await graphinate.abuild()` | Prevents event loop starvation and handles concurrent queries cleanly. |
+
+To run the benchmark suite locally:
+
+```bash
+uv run pytest benchmarks --codspeed
+# Or run the standalone reporting script:
+uv run python benchmarks/async_benchmark.py
+```
+
+
