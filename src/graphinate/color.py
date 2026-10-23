@@ -1,6 +1,5 @@
 import functools
 from collections.abc import Mapping, Sequence
-from typing import Union
 
 import matplotlib as mpl
 import networkx as nx
@@ -13,11 +12,11 @@ except ImportError:
 
 
 @functools.lru_cache
-def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = "tab20") -> Mapping:
+def node_color_mapping(graph: nx.Graph, cmap: str | mpl.colors.Colormap = 'tab20') -> Mapping:
     """Map node types to RGBA colors based on a colormap.
     Args:
         graph: nx.Graph - The input graph for which node colors need to be mapped.
-        cmap: Union[str, mpl.colors.Colormap], optional - The colormap used to map values to RGBA colors.
+        cmap: str | mpl.colors.Colormap, optional - The colormap used to map values to RGBA colors.
               Default is "tab20".
     Returns:
         Mapping - A dictionary mapping nodes to their corresponding RGBA colors based on the colormap.
@@ -66,7 +65,7 @@ def node_color_mapping(graph: nx.Graph, cmap: Union[str, mpl.colors.Colormap] = 
     return color_mapping
 
 
-def color_hex(color: Union[str, Sequence[Union[float, int]]]) -> Union[str, Sequence[Union[float, int]]]:
+def color_hex(color: str | Sequence[float | int]) -> str | Sequence[float | int]:
     """Get HEX color code
 
     Args:
@@ -86,7 +85,7 @@ def color_hex(color: Union[str, Sequence[Union[float, int]]]) -> Union[str, Sequ
         elif all(isinstance(c, int) and 0 <= c <= 255 for c in rgb):
             rgb = tuple(rgb)
         else:
-            msg = "Input values should either be a float between 0 and 1 or an int between 0 and 255"
+            msg = 'Input values should either be a float between 0 and 1 or an int between 0 and 255'
             raise ValueError(msg)
 
         r, g, b = rgb
@@ -94,6 +93,15 @@ def color_hex(color: Union[str, Sequence[Union[float, int]]]) -> Union[str, Sequ
 
     else:
         return color
+
+
+def _can_vectorize_float_colors(colored_nodes: list[tuple[object, object]]) -> bool:
+    return bool(colored_nodes) and all(
+        isinstance(val, (tuple, list))
+        and len(val) >= 3
+        and all(isinstance(c, float) and 0 <= c <= 1 for c in val[:3])
+        for _, val in colored_nodes
+    )
 
 
 def convert_colors_to_hex(graph: nx.Graph, color: str = 'color') -> None:
@@ -109,6 +117,14 @@ def convert_colors_to_hex(graph: nx.Graph, color: str = 'color') -> None:
     .. note::
        This function assumes that the color attribute is present in the node data.
     """
+    colored_nodes = [(node, data[color]) for node, data in graph.nodes(data=True) if color in data]
+    if HAS_NUMPY and _can_vectorize_float_colors(colored_nodes):
+        rgb_array = (np.array([val[:3] for _, val in colored_nodes], dtype=float) * 255).astype(int)
+        color_values = {
+            node: f'#{r:02x}{g:02x}{b:02x}'
+            for (node, _), (r, g, b) in zip(colored_nodes, rgb_array.tolist())
+        }
+    else:
+        color_values = {node: color_hex(val) for node, val in colored_nodes}
 
-    color_values = {node: color_hex(data[color]) for node, data in graph.nodes(data=True) if color in data}
     nx.set_node_attributes(graph, values=color_values, name=color)
