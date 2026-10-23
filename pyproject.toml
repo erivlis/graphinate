@@ -47,6 +47,9 @@ dependencies = [
 numpy = [
     "numpy"
 ]
+perf = [
+    "numpy"
+]
 plot = [
     "scipy"
 ]
