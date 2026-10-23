@@ -89,7 +89,7 @@ def run_benchmark():
     node_color_mapping_numpy(g)
     node_color_mapping_pure(g)
 
-    # Clear cache for fair comparison if we were calling it multiple times, 
+    # Clear cache for fair comparison if we were calling it multiple times,
     # but here we just want to measure execution time of the logic.
     # Since lru_cache is on, subsequent calls would be instant.
     # We need to bypass the wrapper or clear cache.

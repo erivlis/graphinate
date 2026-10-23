@@ -70,3 +70,57 @@ def mesh_graph_model() -> graphinate.GraphModel:
 def mesh_graph() -> nx.Graph:
     """A materialized NetworkX graph, used to benchmark post-processing steps."""
     return NetworkxBuilder(mesh_model()).build()
+
+
+def async_mesh_model(node_count: int = MESH_NODE_COUNT, degree: int = MESH_DEGREE) -> graphinate.GraphModel:
+    """An edge only async model producing a circulant graph."""
+    graph_model = graphinate.model(name='Async Mesh')
+
+    @graph_model.edge()
+    async def edge():
+        for i in range(node_count):
+            for offset in range(1, degree + 1):
+                yield {'source': i, 'target': (i + offset) % node_count}
+
+    return graph_model
+
+
+def async_hierarchical_model(country_count: int = COUNTRY_COUNT, city_count: int = CITY_COUNT) -> graphinate.GraphModel:
+    """A two level parent/child async model, exercising nested async node generation."""
+    countries = tuple(f'country-{i}' for i in range(country_count))
+    cities = {f'city-{i}': countries[i % country_count] for i in range(city_count)}
+
+    graph_model = graphinate.model(name='Async Map')
+
+    @graph_model.node(unique=False)
+    async def country(country_id=None, **kwargs):
+        if country_id is not None and country_id in countries:
+            yield country_id
+        else:
+            for c in countries:
+                yield c
+
+    @graph_model.node(parent_type='country', unique=False)
+    async def city(country_id=None, city_id=None, **kwargs):
+        if city_id is not None:
+            if cities.get(city_id) == country_id or country_id is None:
+                yield city_id
+        elif country_id is None:
+            for c in cities:
+                yield c
+        else:
+            for k, v in cities.items():
+                if v == country_id:
+                    yield k
+
+    return graph_model
+
+
+@pytest.fixture
+def async_mesh_graph_model() -> graphinate.GraphModel:
+    return async_mesh_model()
+
+
+@pytest.fixture
+def async_hierarchical_graph_model() -> graphinate.GraphModel:
+    return async_hierarchical_model()
