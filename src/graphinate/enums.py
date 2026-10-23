@@ -59,3 +59,11 @@ class CompositionStrategy(Enum):
     MERGE = auto()
     FAIL = auto()
 
+
+class SchemaMode(Enum):
+    """GraphQL schema generation modes."""
+
+    DYNAMIC = auto()
+    STATIC = auto()
+
+

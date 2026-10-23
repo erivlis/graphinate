@@ -1,7 +1,7 @@
 from . import builders, engine, renderers
 from .builders import abuild, build
 from .engine import EdgeEvent, GraphEngine, GraphObserver, NodeEvent
-from .enums import CompositionStrategy, GraphType, Multiplicity
+from .enums import CompositionStrategy, GraphType, Multiplicity, SchemaMode
 from .modeling import GraphModel, model
 from .renderers import graphql, matplotlib, mermaid
 from .typing import ParentId
@@ -16,6 +16,7 @@ __all__ = (
     'Multiplicity',
     'NodeEvent',
     'ParentId',
+    'SchemaMode',
     'abuild',
     'build',
     'builders',
@@ -26,6 +27,7 @@ __all__ = (
     'model',
     'renderers',
 )
+
 
 
 

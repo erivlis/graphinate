@@ -27,8 +27,8 @@ class UniverseNode:
     """The UniverseNode Type. All Node Types are the implicit children of the Universe Node Type."""
 
 
-NodeTuple: TypeAlias = tuple[str, ...]
-EdgeTuple: TypeAlias = tuple[str, str, ...]
+NodeTuple: TypeAlias = tuple[str, *tuple[Any]]
+EdgeTuple: TypeAlias = tuple[str, str, *tuple[Any]]
 
 # A node in a graph.
 Node: TypeAlias = type[NamedTuple] | NodeTuple  # noqa: UP007
@@ -40,7 +40,7 @@ Edge: TypeAlias = type[NamedTuple] | EdgeTuple  # noqa: UP007
 Element: TypeAlias = Node | Edge  # noqa: UP007
 
 # A source of data for an element.
-Extractor = Union[str, Callable[[Any], str]]  # noqa: UP007
+Extractor = str | Callable[[Any], str]  # noqa: UP007
 
 T = TypeVar('T')
 
@@ -98,6 +98,4 @@ class ParentId:
         return f"ParentId('{self.node_type}')"
 
 
-
 GraphRepresentation = Union[dict, nx.Graph, strawberry.Schema, nxm.typing.MermaidDiagram, str]  # noqa: UP007
-

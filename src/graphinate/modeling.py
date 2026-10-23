@@ -664,7 +664,7 @@ class GraphModel:
         return register_edge
 
     def rectify(self, _type: Extractor | None = None,
-                parent_type: str | None = UniverseNode,
+                parent_type: str | type[UniverseNode] | None = UniverseNode,
                 key: Extractor | None = None,
                 value: Extractor | None = None,
                 label: Extractor | None = None):
@@ -683,14 +683,12 @@ class GraphModel:
            None
         """
         if self._edge_generators and not self._node_models:
-            @self.node(
-                type_=_type or 'node',
-                parent_type=parent_type or 'node',
-                unique=True,
-                key=key,
-                value=value,
-                label=label or str
-            )
+            @self.node(type_=_type or 'node',
+                       parent_type=parent_type or 'node',
+                       unique=True,
+                       key=key,
+                       value=value,
+                       label=label or str)
             def node():  # pragma: no cover
                 return
                 yield

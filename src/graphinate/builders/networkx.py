@@ -1,6 +1,6 @@
 from collections import Counter
 from collections.abc import Hashable, Mapping
-from typing import Any, Union
+from typing import Any
 
 import networkx as nx
 from loguru import logger
@@ -117,7 +117,7 @@ class NetworkxBuilder(Builder, GraphObserver):
 
     def _populate_node_type(
         self,
-        node_type: Union[Hashable, UniverseNode] = UniverseNode,
+        node_type: Hashable | UniverseNode = UniverseNode,
         _lineage: tuple | None = None,
         **kwargs: Any,
     ):
