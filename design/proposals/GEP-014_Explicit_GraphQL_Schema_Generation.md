@@ -73,14 +73,14 @@ Exported at the top-level `graphinate` package (`from graphinate import SchemaMo
 ## How to Teach This / Documentation Plan
 
 - Export `SchemaMode` in `graphinate`.
-- Document `SchemaMode.DYNAMIC`, `SchemaMode.STATIC`, and `context_value={"graph": ...}` in [`docs/advanced/graphql.md`](file:///C:/dev/erivlis/graphinate/docs/advanced/graphql.md) and [`docs/usage/lib.md`](file:///C:/dev/erivlis/graphinate/docs/usage/lib.md).
+- Document `SchemaMode.DYNAMIC`, `SchemaMode.STATIC`, and `context_value={"graph": ...}` in [`docs/advanced/graphql.md`](docs/advanced/graphql.md) and [`docs/usage/lib.md`](docs/usage/lib.md).
 
 ## Reference Implementation
 
-- Enum definition: [`src/graphinate/enums.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/enums.py)
-- Schema builder: [`src/graphinate/builders/graphql.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/builders/graphql.py)
-- User documentation: [`docs/advanced/graphql.md`](file:///C:/dev/erivlis/graphinate/docs/advanced/graphql.md)
-- Unit tests: [`tests/graphinate/builders/test_graphql.py`](file:///C:/dev/erivlis/graphinate/tests/graphinate/builders/test_graphql.py)
+- Enum definition: [`src/graphinate/enums.py`](src/graphinate/enums.py)
+- Schema builder: [`src/graphinate/builders/graphql.py`](src/graphinate/builders/graphql.py)
+- User documentation: [`docs/advanced/graphql.md`](docs/advanced/graphql.md)
+- Unit tests: [`tests/graphinate/builders/test_graphql.py`](tests/graphinate/builders/test_graphql.py)
 
 ## Rejected Ideas
 

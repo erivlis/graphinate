@@ -7,16 +7,16 @@ status: active
 
 # GEP-000: Graphinate Enhancement Proposals
 
-| Field       | Value                            |
-|:------------|:---------------------------------|
-| **GEP**     | 0                                |
-| **Title**   | Graphinate Enhancement Proposals |
-| **Author**  | Eran Rivlis                      |
-| **Delegate**| The Council                      |
-| **Status**  | Active                           |
-| **Type**    | Process                          |
-| **Created** | 2025-12-25                       |
-| **Updated** | 2026-10-21                       |
+| Field        | Value                            |
+|:-------------|:---------------------------------|
+| **GEP**      | 0                                |
+| **Title**    | Graphinate Enhancement Proposals |
+| **Author**   | Eran Rivlis                      |
+| **Delegate** | The Council                      |
+| **Status**   | Active                           |
+| **Type**     | Process                          |
+| **Created**  | 2025-12-25                       |
+| **Updated**  | 2026-10-21                       |
 
 ## Abstract
 
@@ -142,9 +142,9 @@ All existing GEPs retain their canonical numbering. Existing GEPs will be progre
 
 ## Reference Implementation
 
-- Template: [`.agents/skills/enhancement-proposals/templates/gep-template.md`](file:///C:/dev/erivlis/graphinate/.agents/skills/enhancement-proposals/templates/gep-template.md)
-- Validator: [`.agents/skills/enhancement-proposals/scripts/validate_ep.py`](file:///C:/dev/erivlis/graphinate/.agents/skills/enhancement-proposals/scripts/validate_ep.py)
-- Specification Guide: [`.agents/skills/enhancement-proposals/references/ep-lifecycle-and-validation.md`](file:///C:/dev/erivlis/graphinate/.agents/skills/enhancement-proposals/references/ep-lifecycle-and-validation.md)
+- Template: [`.agents/skills/enhancement-proposals/templates/gep-template.md`](.agents/skills/enhancement-proposals/templates/gep-template.md)
+- Validator: [`.agents/skills/enhancement-proposals/scripts/validate_ep.py`](.agents/skills/enhancement-proposals/scripts/validate_ep.py)
+- Specification Guide: [`.agents/skills/enhancement-proposals/references/ep-lifecycle-and-validation.md`](.agents/skills/enhancement-proposals/references/ep-lifecycle-and-validation.md)
 
 ## Rejected Ideas
 

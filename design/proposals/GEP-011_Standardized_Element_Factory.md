@@ -72,8 +72,8 @@ The existing `element(element_type, field_names)` function is retained and deleg
 
 ## Reference Implementation
 
-- Element factories: [`src/graphinate/modeling.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/modeling.py)
-- Unit tests: [`tests/graphinate/test_modeling.py`](file:///C:/dev/erivlis/graphinate/tests/graphinate/test_modeling.py)
+- Element factories: [`src/graphinate/modeling.py`](src/graphinate/modeling.py)
+- Unit tests: [`tests/graphinate/test_modeling.py`](tests/graphinate/test_modeling.py)
 
 ## Rejected Ideas
 

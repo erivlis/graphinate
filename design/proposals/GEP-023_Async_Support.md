@@ -67,15 +67,15 @@ Evaluating against the **Council Framework** ([GEP-001](GEP-001_The_Graphinate_M
 
 ## How to Teach This / Documentation Plan
 
-- Documented asynchronous generators, `engine.arun()`, and `abuild()` in [`docs/advanced/engine.md`](file:///C:/dev/erivlis/graphinate/docs/advanced/engine.md#L65-L85).
+- Documented asynchronous generators, `engine.arun()`, and `abuild()` in [`docs/advanced/engine.md`](docs/advanced/engine.md#L65-L85).
 - Exported `abuild` in `graphinate` and `graphinate.builders`, and `aelements` in `graphinate.modeling`.
 
 ## Reference Implementation
 
-- Async element stream & decorator detection: [`src/graphinate/modeling.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/modeling.py)
-- Async engine execution: [`src/graphinate/engine/core.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/engine/core.py)
-- Builder async methods: [`src/graphinate/builders/`](file:///C:/dev/erivlis/graphinate/src/graphinate/builders/__init__.py)
-- Unit tests: [`tests/graphinate/test_engine.py`](file:///C:/dev/erivlis/graphinate/tests/graphinate/test_engine.py)
+- Async element stream & decorator detection: [`src/graphinate/modeling.py`](src/graphinate/modeling.py)
+- Async engine execution: [`src/graphinate/engine/core.py`](src/graphinate/engine/core.py)
+- Builder async methods: [`src/graphinate/builders/`](src/graphinate/builders/__init__.py)
+- Unit tests: [`tests/graphinate/test_engine.py`](tests/graphinate/test_engine.py)
 
 ## Rejected Ideas
 

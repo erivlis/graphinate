@@ -22,7 +22,7 @@ status: active
 ## Abstract
 
 This proposal extracts graph execution logic (iterating generator functions, dependency injection via `ParentId`,
-lineage calculation, and multiplicity metadata) out of [`NetworkxBuilder`](file:///C:/dev/erivlis/graphinate/src/graphinate/builders/networkx.py)
+lineage calculation, and multiplicity metadata) out of [`NetworkxBuilder`](src/graphinate/builders/networkx.py)
 into a dedicated, observable execution component: `GraphEngine`.
 
 By separating execution (producer) from storage (consumer), Graphinate transforms from a NetworkX-only builder into a
@@ -31,7 +31,7 @@ GraphQL subscriptions, Kafka, or custom databases) and lays the required foundat
 
 ## Motivation
 
-In the previous architecture, [`NetworkxBuilder`](file:///C:/dev/erivlis/graphinate/src/graphinate/builders/networkx.py) was tightly coupled to NetworkX in-memory graphs:
+In the previous architecture, [`NetworkxBuilder`](src/graphinate/builders/networkx.py) was tightly coupled to NetworkX in-memory graphs:
 1. **Coupled Execution and Storage:** Graph generation could not occur without instantiating and mutating an in-memory `networkx.Graph`. Direct-to-disk streaming, WebSocket broadcasting, or custom database loading required building the entire graph in RAM first.
 2. **Blocked Asynchrony:** Adding `async def` generator support ([GEP-023](GEP-023_Async_Support.md)) to `NetworkxBuilder` would require duplicating the entire recursion and lineage loop.
 3. **Lack of Lifecycle Observability:** Users had no clean hooks for tracking ETL progress, logging item throughput, or inspecting generation events without monkey-patching `_populate_nodes`.
@@ -52,7 +52,7 @@ Evaluating the engine architecture against the **7 Council Pillars** ([GEP-001](
 
 ### 1. Data Contracts (Events)
 
-Defined in [`src/graphinate/engine/events.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/engine/events.py):
+Defined in [`src/graphinate/engine/events.py`](src/graphinate/engine/events.py):
 
 ```python
 @dataclass(frozen=True, slots=True)
@@ -81,7 +81,7 @@ class EdgeEvent:
 
 ### 2. The Graph Observer Protocol
 
-Defined in [`src/graphinate/engine/observer.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/engine/observer.py):
+Defined in [`src/graphinate/engine/observer.py`](src/graphinate/engine/observer.py):
 
 ```python
 @runtime_checkable
@@ -94,7 +94,7 @@ class GraphObserver(Protocol):
 
 ### 3. The Graph Engine
 
-Defined in [`src/graphinate/engine/core.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/engine/core.py):
+Defined in [`src/graphinate/engine/core.py`](src/graphinate/engine/core.py):
 
 ```python
 class GraphEngine:
@@ -120,14 +120,14 @@ class GraphEngine:
 
 ## How to Teach This / Documentation Plan
 
-- Added an architecture guide in [`docs/advanced/engine.md`](file:///C:/dev/erivlis/graphinate/docs/advanced/engine.md) explaining custom observers (`GraphObserver`, `NodeEvent`, `EdgeEvent`).
+- Added an architecture guide in [`docs/advanced/engine.md`](docs/advanced/engine.md) explaining custom observers (`GraphObserver`, `NodeEvent`, `EdgeEvent`).
 - Exported `GraphEngine`, `GraphObserver`, `NodeEvent`, and `EdgeEvent` in `graphinate`.
 
 ## Reference Implementation
 
-- Engine package: [`src/graphinate/engine/`](file:///C:/dev/erivlis/graphinate/src/graphinate/engine/__init__.py)
-- Builder adapter: [`src/graphinate/builders/networkx.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/builders/networkx.py)
-- Test suite: [`tests/graphinate/test_engine.py`](file:///C:/dev/erivlis/graphinate/tests/graphinate/test_engine.py)
+- Engine package: [`src/graphinate/engine/`](src/graphinate/engine/__init__.py)
+- Builder adapter: [`src/graphinate/builders/networkx.py`](src/graphinate/builders/networkx.py)
+- Test suite: [`tests/graphinate/test_engine.py`](tests/graphinate/test_engine.py)
 
 ## Rejected Ideas
 

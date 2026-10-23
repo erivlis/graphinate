@@ -87,9 +87,9 @@ def merge(
 
 ## Reference Implementation
 
-- Enum definition: [`src/graphinate/enums.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/enums.py)
-- Composition implementation: [`src/graphinate/modeling.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/modeling.py)
-- Unit tests: [`tests/graphinate/test_modeling.py`](file:///C:/dev/erivlis/graphinate/tests/graphinate/test_modeling.py)
+- Enum definition: [`src/graphinate/enums.py`](src/graphinate/enums.py)
+- Composition implementation: [`src/graphinate/modeling.py`](src/graphinate/modeling.py)
+- Unit tests: [`tests/graphinate/test_modeling.py`](tests/graphinate/test_modeling.py)
 
 ## Rejected Ideas
 

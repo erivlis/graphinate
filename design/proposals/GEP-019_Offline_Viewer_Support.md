@@ -85,7 +85,7 @@ Vendored files are therefore available at:
 
 ### 3. Viewer HTML Refactoring
 
-In [`src/graphinate/server/web/viewer/index.html`](file:///C:/dev/erivlis/graphinate/src/graphinate/server/web/viewer/index.html), replace external CDN `<script>` and `<link>` tags with local absolute root paths:
+In [`src/graphinate/server/web/viewer/index.html`](src/graphinate/server/web/viewer/index.html), replace external CDN `<script>` and `<link>` tags with local absolute root paths:
 
 ```html
 <!-- Local Vendored Dependencies -->
@@ -115,13 +115,13 @@ Ensure `pyproject.toml` and packaging configurations include all non-Python asse
 
 ## How to Teach This / Documentation Plan
 
-- Update [`docs/usage/cli.md`](file:///C:/dev/erivlis/graphinate/docs/usage/cli.md) and [`docs/development.md`](file:///C:/dev/erivlis/graphinate/docs/development.md) highlighting that the built-in 3D viewer is 100% offline-ready and works in air-gapped environments.
+- Update [`docs/usage/cli.md`](docs/usage/cli.md) and [`docs/development.md`](docs/development.md) highlighting that the built-in 3D viewer is 100% offline-ready and works in air-gapped environments.
 
 ## Reference Implementation
 
-- Asset directory: [`src/graphinate/server/web/static/vendor/`](file:///C:/dev/erivlis/graphinate/src/graphinate/server/web/static/vendor/)
-- Viewer template: [`src/graphinate/server/web/viewer/index.html`](file:///C:/dev/erivlis/graphinate/src/graphinate/server/web/viewer/index.html)
-- Server tests: [`tests/graphinate/renderers/test_graphql_server.py`](file:///C:/dev/erivlis/graphinate/tests/graphinate/renderers/test_graphql_server.py)
+- Asset directory: [`src/graphinate/server/web/static/vendor/`](src/graphinate/server/web/static/vendor/)
+- Viewer template: [`src/graphinate/server/web/viewer/index.html`](src/graphinate/server/web/viewer/index.html)
+- Server tests: [`tests/graphinate/renderers/test_graphql_server.py`](tests/graphinate/renderers/test_graphql_server.py)
 
 ## Rejected Ideas
 

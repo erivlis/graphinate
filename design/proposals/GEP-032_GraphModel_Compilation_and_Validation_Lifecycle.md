@@ -139,8 +139,8 @@ This proposal serves as the structural glue between several critical enhancement
 
 ## Reference Implementation
 
-* **Source File:** [modeling.py](file:///C:/dev/erivlis/graphinate/src/graphinate/modeling.py)
-* **Builder Integration:** [networkx.py](file:///C:/dev/erivlis/graphinate/src/graphinate/builders/networkx.py)
+* **Source File:** [modeling.py](src/graphinate/modeling.py)
+* **Builder Integration:** [networkx.py](src/graphinate/builders/networkx.py)
 
 ---
 

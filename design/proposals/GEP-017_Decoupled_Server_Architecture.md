@@ -72,8 +72,8 @@ will be an additive change.
 
 ## Reference Implementation
 
-- [`src/graphinate/renderers/graphql.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/renderers/graphql.py)
-- [`tests/graphinate/renderers/test_graphql_server.py`](file:///C:/dev/erivlis/graphinate/tests/graphinate/renderers/test_graphql_server.py)
+- [`src/graphinate/renderers/graphql.py`](src/graphinate/renderers/graphql.py)
+- [`tests/graphinate/renderers/test_graphql_server.py`](tests/graphinate/renderers/test_graphql_server.py)
 
 ## Change Log
 

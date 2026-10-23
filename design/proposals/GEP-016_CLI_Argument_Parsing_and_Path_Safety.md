@@ -68,8 +68,8 @@ Remove the check `file_path.parent != Path('.')`. Instead:
 
 ## Reference Implementation
 
-- Implementation: [`src/graphinate/cli.py`](file:///C:/dev/erivlis/graphinate/src/graphinate/cli.py)
-- Tests: [`tests/graphinate/test_cli.py`](file:///C:/dev/erivlis/graphinate/tests/graphinate/test_cli.py)
+- Implementation: [`src/graphinate/cli.py`](src/graphinate/cli.py)
+- Tests: [`tests/graphinate/test_cli.py`](tests/graphinate/test_cli.py)
 
 ## Change Log
 

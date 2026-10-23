@@ -117,8 +117,8 @@ To save space, we may choose to truncate the HMAC.
 
 ## Reference Implementation
 
-Implemented in [converters.py](file:///C:/dev/erivlis/graphinate/src/graphinate/converters.py)
-and [_secure.py](file:///C:/dev/erivlis/graphinate/src/graphinate/_secure.py). Enabled dynamically via
+Implemented in [converters.py](src/graphinate/converters.py)
+and [_secure.py](src/graphinate/_secure.py). Enabled dynamically via
 `GRAPHINATE_SECRET_KEY` environment variable.
 
 ## Change Log

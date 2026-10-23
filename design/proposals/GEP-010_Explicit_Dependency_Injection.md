@@ -144,8 +144,8 @@ implicit dependency. The new explicit mechanisms will take precedence if present
 
 ## Reference Implementation
 
-Exposed via `ParentId` annotation primitive in [typing.py](file:///C:/dev/erivlis/graphinate/src/graphinate/typing.py)
-and resolved within [modeling.py](file:///C:/dev/erivlis/graphinate/src/graphinate/modeling.py).
+Exposed via `ParentId` annotation primitive in [typing.py](src/graphinate/typing.py)
+and resolved within [modeling.py](src/graphinate/modeling.py).
 
 ## Change Log
 
