@@ -176,3 +176,23 @@ def test_node_color_mapping_without_numpy(monkeypatch):
     color_map_single = node_color_mapping(g_single)
     assert len(color_map_single) == 1
 
+
+def test_convert_colors_to_hex_vectorized_and_fallback(monkeypatch):
+    import graphinate.color
+    from graphinate.color import convert_colors_to_hex
+
+    g_vec = nx.Graph()
+    g_vec.add_node('n1', color=[0.5, 0.5, 0.5, 1.0])
+    g_vec.add_node('n2', color=[1.0, 0.0, 0.0, 1.0])
+    convert_colors_to_hex(g_vec)
+    assert g_vec.nodes['n1']['color'] == '#7f7f7f'
+    assert g_vec.nodes['n2']['color'] == '#ff0000'
+
+    g_fallback = nx.Graph()
+    g_fallback.add_node('n1', color=[0.5, 0.5, 0.5, 1.0])
+    g_fallback.add_node('n2', color=[1.0, 0.0, 0.0, 1.0])
+    monkeypatch.setattr(graphinate.color, 'HAS_NUMPY', False)
+    convert_colors_to_hex(g_fallback)
+    assert g_fallback.nodes['n1']['color'] == g_vec.nodes['n1']['color']
+    assert g_fallback.nodes['n2']['color'] == g_vec.nodes['n2']['color']
+
