@@ -28,13 +28,9 @@ living document to track the prioritization and status of major initiatives.
 *Focus: Fixing brittle code, security risks, and "bad magic". All Phase 1 stabilization proposals (**GEP-010**,
 **GEP-016**, **GEP-017**, **GEP-019**, **GEP-025**, **GEP-032**) have been implemented and archived.*
 
-## Phase 2: Core Spine & Architectural Health
+## Phase 2: Core Spine & Architectural Health (Completed)
 
-*Focus: Strengthening the core execution engine, schema generation, and modularity.*
-
-| GEP         | Title                                      | Impact | Difficulty | Rationale                                                                                           |
-|:------------|:-------------------------------------------|:-------|:-----------|:----------------------------------------------------------------------------------------------------|
-| **GEP-031** | **High-Performance Vectorized Operations** | Medium | Medium     | **Performance.** Progressive enhancement via optional NumPy/Numba (partially active in `color.py`). |
+*Focus: Strengthening the core execution engine, schema generation, and modularity. All Phase 2 proposals (**GEP-011**, **GEP-012**, **GEP-014**, **GEP-023**, **GEP-024**, **GEP-031**) have been implemented and activated.*
 
 ## Phase 3: Focused Expansion
 
@@ -109,10 +105,9 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
 
 | Priority | GEP         | Title                                     | Phase   |
 |:---------|:------------|:------------------------------------------|:--------|
-| 1        | **GEP-031** | High-Performance Vectorized Operations    | Phase 2 |
-| 2        | **GEP-018** | Relay Support                             | Phase 3 |
-| 3        | **GEP-020** | Modular Frontend Architecture             | Phase 3 |
-| 4        | **GEP-029** | Extraction Strategies (Helpers / Recipes) | Phase 3 |
+| 1        | **GEP-018** | Relay Support                             | Phase 3 |
+| 2        | **GEP-020** | Modular Frontend Architecture             | Phase 3 |
+| 3        | **GEP-029** | Extraction Strategies (Helpers / Recipes) | Phase 3 |
 
 ## Archive (Completed / Withdrawn / Superseded)
 
@@ -133,6 +128,7 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
 | **GEP-023** | Async Support                          | **Active**        | Implemented `async def` generator support, `arun()`, and `abuild()`.    |
 | **GEP-024** | The Graph Engine                       | **Active**        | Decoupled traversal into `GraphEngine`, `GraphObserver`, and events.    |
 | **GEP-025** | Signed ID Serialization                | **Active**        | Implemented as an optional, opt-in HMAC-SHA256 signature layer.         |
+| **GEP-031** | High-Performance Vectorized Operations | **Active**        | Progressive enhancement via optional `numpy` (`graphinate[perf]`).      |
 | **GEP-032** | GraphModel Compilation & Validation    | **Active**        | Implemented `GraphModel.compile()` and deferred validation.             |
 | **GEP-015** | Refactored Graph Population Strategies | **Superseded**    | Replaced by **GEP-024** (The Graph Engine).                             |
 | **GEP-022** | 2D Visualization Mode                  | **Superseded**    | Replaced by **GEP-026** (Pluggable Visualization).                      |
@@ -145,7 +141,7 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
   trajectory.
 * **2026-10-22:** Rebased all 27 GEPs on EP standard and GEP-000. Completed and activated GEP-019 (Offline Viewer
   Support), GEP-011 (Standardized Element Factory), and GEP-012 (Robust Model Composition).
-* **2026-10-23:** Completed and activated GEP-024 (The Graph Engine), GEP-023 (Async Support), and GEP-014 (Explicit GraphQL Schema Generation).
+* **2026-10-23:** Completed Phase 2: activated GEP-024 (The Graph Engine), GEP-023 (Async Support), GEP-014 (Explicit GraphQL Schema Generation), and GEP-031 (High-Performance Vectorized Operations).
 
 
 
