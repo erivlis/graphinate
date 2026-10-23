@@ -111,16 +111,19 @@ Whether you need to visualize relationships, analyze structure, or serve data vi
 ### Library at a Glance
 
 #### 📐 The Architect (`graphinate.modeling`)
-Define the blueprint of your graph by decorating simple functions that yield your data as nodes and edges.
+Define the blueprint of your graph by decorating simple functions (sync or async) that yield your data as nodes and edges, and compose models via `+` or `GraphModel.merge()`.
+
+#### ⚙️ The Engine (`graphinate.engine`)
+Traverses models and coordinates lifecycle events (`on_start`, `on_node`, `on_edge`, `on_finish`) across observers via synchronous (`run()`) or asynchronous (`arun()`) execution.
 
 #### 🏗️ The Construction Crew (`graphinate.builders`)
-Takes your graph blueprint and constructs various outputs, whether it's a queryable `NetworkX` object, a `Mermaid` diagram, or a `GraphQL` schema.
+Takes your graph blueprint and constructs various outputs—a queryable `NetworkX` graph, a `D3` dictionary, a `Mermaid` diagram, or an executable `GraphQL` schema (supporting both dynamic and static schema modes).
 
 #### 🎨 The Artists (`graphinate.renderers`)
 A suite of tools to visualize your graphs, from `matplotlib` plots to interactive `Mermaid` diagrams.
 
 #### 📡 The Broadcaster (`graphinate.server`)
-Instantly serve your graph data as an interactive `GraphQL` API, ready for consumption by web applications.
+Instantly serve your graph data as an interactive `GraphQL` API with an embedded, 100% offline 3D WebGL graph viewer requiring zero external CDNs.
 
 #### ⌨️ The Command Center (`graphinate.cli`)
 A handy command-line tool to manage and interact with your graph definitions without writing boilerplate code.
@@ -147,16 +150,22 @@ or
 uv add graphinate
 ```
 
-To install with server support
+To install with high-performance vectorized operations (NumPy progressive enhancement):
 
 ```shell
-pip install graphinate[server]
+pip install "graphinate[perf]"
 ```
 
-or
+To install with server and offline 3D WebGL viewer support:
 
 ```shell
-uv add graphinate[server] 
+pip install "graphinate[server]"
+```
+
+or combine them:
+
+```shell
+pip install "graphinate[perf,server]"
 ```
 
 **Graphinate** officially supports Python >= 3.11.
@@ -168,8 +177,7 @@ import graphinate
 
 N: int = 8
 
-# First Define a GraphModel instance.
-# It will be used to hold the graph definitions
+# First define a GraphModel instance to hold graph definitions
 graph_model: graphinate.GraphModel = graphinate.model(name="Octagonal Graph")
 
 
@@ -184,31 +192,45 @@ def edge():
 # Use the NetworkX Builder
 builder = graphinate.builders.NetworkxBuilder(graph_model)
 
-# build the NetworkX GraphRepresentation
-# the output in this case is a nx.Graph instance
+# Build the NetworkX GraphRepresentation (an nx.Graph instance)
 graph = builder.build()
 
-# this supplied plot method uses matplotlib to display the graph
+# Display the graph with matplotlib
 graphinate.matplotlib.plot(graph, with_edge_labels=True)
 
-# or use the Mermaid Builder
-builder = graphinate.builders.MermaidBuilder(graph_model)
-
-# to create a Mermaid diagram
-diagram: str = builder.build()
-
-# and get Markdown or single page HTML to display it
+# Or create a Mermaid diagram
+mermaid_builder = graphinate.builders.MermaidBuilder(graph_model)
+diagram: str = mermaid_builder.build()
 mermaid_markdown: str = graphinate.mermaid.markdown(diagram)
-mermaid_html: str = graphinate.mermaid.html(diagram, title=graph_model.name)
 
-# or use the GraphQL Builder
-builder = graphinate.builders.GraphQLBuilder(graph_model)
-
-# to create a Strawberry GraphQL schema
-schema = builder.build()
-
-# and serve it using Uvicorn web server
+# Or create a Strawberry GraphQL schema and serve it
+gql_builder = graphinate.builders.GraphQLBuilder(graph_model)
+schema = gql_builder.build()
 graphinate.graphql.server(schema)
+```
+
+### Asynchronous Pipelines (`abuild`)
+
+Graphinate natively supports asynchronous generator functions (`async def ... yield`) and coroutines (`async def ... return [...]`):
+
+```python
+import asyncio
+import graphinate
+from graphinate.builders import NetworkxBuilder
+
+m = graphinate.model(name="Async Mesh")
+
+@m.node(type_="service")
+async def services():
+    yield "auth-service"
+    yield "payment-service"
+
+async def main():
+    # Asynchronously build across any builder
+    nx_graph = await graphinate.abuild(NetworkxBuilder, m)
+    print(nx_graph)
+
+asyncio.run(main())
 ```
 
 ## CLI

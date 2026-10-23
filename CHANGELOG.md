@@ -1,3 +1,11 @@
+## v0.17.1 (2026-10-23)
+
+### Fix
+
+- Remove unnecessary await checks for generators in core.py
+- Add exception handling for ImportError in coverage configuration
+- Handle ImportError for numpy with pragma directive for coverage
+
 ## v0.17.0 (2026-10-23)
 
 ### Feat

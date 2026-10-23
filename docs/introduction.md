@@ -43,14 +43,16 @@ This process can be automated and simplified. This is where **Graphinate** comes
 
 ### What is Graphinate?
 
-**Graphinate** is a python library that helps generate and populate Graph Data Structures from Data Sources.
+**Graphinate** is a Python library that automates the generation and population of Graph Data Structures from arbitrary
+Data Sources.
 
-It can help create an efficient retrieval pipeline from a given data source, while also enabling the developer to map
-data payloads and hierarchies to a Graph.
+It provides a declarative, event-driven retrieval and hydration pipeline—supporting synchronous and asynchronous data
+suppliers (`async def`), modular model composition (`model1 + model2`), and streaming graph traversal via the
+`GraphEngine`.
 
-There are several modes of building and rendering to facilitate examination of the Graph and its content.
-
-**Graphinate** uses and is built upon the excellent [**_NetworkX_**](https://networkx.org/).
+Once modeled, graphs can be built into multiple representations (including [**_NetworkX_**](https://networkx.org/),
+D3, Mermaid, or GraphQL schemas) and visualized or served through interactive APIs and embedded, offline 3D WebGL
+viewers.
 
 ## How?
 
@@ -115,30 +117,40 @@ This is achieved the following way:
 
 #### Source
 
-First, it is required to represent the data sources, as an `Iterable` of items.
-It will supply the data items that will be used to create the graph edges and/or nodes.
-It is recommended to use a `Generator`  as the items Iterable. This way, the data source can be
-lazily-loaded.
-Such an `Iterable` or `Generator` can be, anything from a simple list of dictionaries, to a complex database query.
+First, data sources are represented as an `Iterable` or `AsyncIterable` of items.
+Sources supply the data items used to generate graph nodes and edges.
+It is recommended to use a generator (`yield` or `async yield`) as the supplier so data can be lazily streamed on demand.
+A source can be anything from a simple Python list or dictionary generator to a database query, file stream, or remote API call.
 
 #### Model
 
 Graphinate introduces the concept of a `GraphModel`.
-A GraphModel embodies a set of rules which define how to use a data source item in creating a Graph element (i.e.,
-either a node or an edge). The `GraphModel` registers the sources using `GraphModel.node` and `GraphModel.edge`
-decorators. These decorators define how to extract both mandatory and optional aspects of information, which then are
-used to generate each Graph element.
+A `GraphModel` embodies declarative rules defining how data source items map into Graph elements (nodes or edges).
+Sources are registered using `@model.node()` and `@model.edge()` decorators, which extract keys, labels, and attributes.
+Models are modular and composable—multiple models can be combined seamlessly using `+` or `GraphModel.merge()`.
+
+#### Engine
+
+The `GraphEngine` drives graph traversal. It coordinates the execution lifecycle—invoking suppliers, streaming elements,
+and emitting lifecycle events (`on_start`, `on_node`, `on_edge`, `on_finish`) to registered observers.
+The engine supports both synchronous execution (`run()`) and asynchronous execution (`arun()`), enabling non-blocking pipelines.
 
 #### Builders
 
-A `GraphModel` can be used to generate an actual instance of a `GraphRepresentation`.
-Such a `GraphRepresentation` will contain the actual Graph data structure, populated with the data items obtained from
-the source.
-Graphinate provides several `GraphBuilder` classes that can be used to build the `GraphRepresentation` from
-a `GraphModel`. The actual nature of the `GraphRepresentation` will depend on the `GraphBuilder` used.
+A `GraphModel` is transformed into concrete output representations using `GraphBuilder` classes.
+Builders act as engine observers that accumulate or structure graph data during traversal.
+Graphinate provides built-in builders for:
 
-#### Renderers
+- **NetworkX**: In-memory `nx.Graph` instances for topological and structural analysis.
+- **D3**: Node-link dictionaries formatted for D3.js force-directed visualizations.
+- **Mermaid**: Markdown diagram specifications for documentation.
+- **GraphQL**: Executable Strawberry GraphQL schemas for querying nodes and relationships (supporting dynamic schema synthesis or static typed models).
 
-Finally, we can render a builder's output `GraphRepresentation`. The Renderers chosen depends on the actual type of the
-`GraphRepresentaion` and the desired rendering output format. Graphinate provides several Renderer classes that can be
-used for different use cases such as visualizing, querying, reporting, etc.
+Builders can be executed synchronously (`builder.build()`) or asynchronously (`await graphinate.abuild(BuilderClass, model)`).
+
+#### Renderers & Broadcaster
+
+Finally, built representations can be rendered or served:
+
+- **Renderers**: Visualize graphs directly via Matplotlib plots or export HTML and Markdown Mermaid diagrams.
+- **Broadcaster**: Serve GraphQL APIs using Uvicorn/FastAPI with an embedded, 100% offline 3D WebGL graph viewer requiring zero external CDNs.

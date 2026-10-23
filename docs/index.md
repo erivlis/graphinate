@@ -22,16 +22,19 @@ Whether you need to visualize relationships, analyze structure, or serve data vi
 ## Library at a Glance
 
 ### 📐 The Architect `graphinate.modeling`
-Define the blueprint of your graph by decorating simple functions that yield your data as nodes and edges.
+Define the blueprint of your graph by decorating simple functions (sync or async) that yield your data as nodes and edges, and compose models via `+` or `GraphModel.merge()`.
+
+### ⚙️ The Engine `graphinate.engine`
+Traverses models and coordinates lifecycle events (`on_start`, `on_node`, `on_edge`, `on_finish`) across observers via synchronous (`run()`) or asynchronous (`arun()`) execution.
 
 ### 🏗️ The Construction Crew `graphinate.builders`
-Takes your graph blueprint and constructs various outputs, whether it's a queryable `NetworkX` object, a `Mermaid` diagram, or a `GraphQL` schema.
+Takes your graph blueprint and constructs various outputs—a queryable `NetworkX` graph, a `D3` dictionary, a `Mermaid` diagram, or an executable `GraphQL` schema (supporting both dynamic and static schema modes).
 
 ### 🎨 The Artists `graphinate.renderers`
 A suite of tools to visualize your graphs, from `matplotlib` plots to interactive `Mermaid` diagrams.
 
 ### 📡 The Broadcaster `graphinate.server`
-Instantly serve your graph data as an interactive `GraphQL` API, ready for consumption by web applications.
+Instantly serve your graph data as an interactive `GraphQL` API with an embedded, 100% offline 3D WebGL graph viewer requiring zero external CDNs.
 
 ### ⌨️ The Command Center `graphinate.cli`
 A handy command-line tool to manage and interact with your graph definitions without writing boilerplate code.
