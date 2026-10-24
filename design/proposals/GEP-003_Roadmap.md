@@ -41,6 +41,7 @@ living document to track the prioritization and status of major initiatives.
 | **GEP-018** | **Relay Support**                 | **High** | Medium     | **Enterprise Feature.** Makes the API compatible with modern frontend clients (React Relay, Apollo).   |
 | **GEP-020** | **Modular Frontend Architecture** | Medium   | Medium     | **Maintainability.** Splitting the monolithic `viewer/index.html` into maintainable ES modules.        |
 | **GEP-029** | **Extraction Strategies**         | Medium   | Medium     | **Ergonomics.** Lightweight iterator/generator helpers (`scan`, `walk`, `listen`) or cookbook recipes. |
+| **GEP-033** | **Migrate Documentation to Zensical** | Medium | Low      | **Infrastructure.** Replaces legacy MkDocs/properdocs with unified TOML-configured Zensical.          |
 
 ## Phase 4: Exploratory & Spin-Off Track (Ideation / Brainstorming)
 
@@ -108,6 +109,7 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
 | 1        | **GEP-018** | Relay Support                             | Phase 3 |
 | 2        | **GEP-020** | Modular Frontend Architecture             | Phase 3 |
 | 3        | **GEP-029** | Extraction Strategies (Helpers / Recipes) | Phase 3 |
+| 4        | **GEP-033** | Migrate Documentation to Zensical         | Phase 3 |
 
 ## Archive (Completed / Withdrawn / Superseded)
 
@@ -141,7 +143,9 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
   trajectory.
 * **2026-10-22:** Rebased all 27 GEPs on EP standard and GEP-000. Completed and activated GEP-019 (Offline Viewer
   Support), GEP-011 (Standardized Element Factory), and GEP-012 (Robust Model Composition).
-* **2026-10-23:** Completed Phase 2: activated GEP-024 (The Graph Engine), GEP-023 (Async Support), GEP-014 (Explicit GraphQL Schema Generation), and GEP-031 (High-Performance Vectorized Operations).
+* **2026-10-23:** Completed Phase 2: activated GEP-024 (The Graph Engine), GEP-023 (Async Support), GEP-014 (Explicit
+  GraphQL Schema Generation), and GEP-031 (High-Performance Vectorized Operations).
+* **2026-10-24:** Added GEP-033 (Migrate Documentation to Zensical) to Phase 3 roadmap.
 
 
 
