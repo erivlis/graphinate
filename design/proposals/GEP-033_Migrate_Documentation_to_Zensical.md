@@ -2,7 +2,7 @@
 title: "GEP-033: Migrate Documentation to Zensical"
 description: "Migrate the static documentation generation and deployment pipeline from MkDocs/properdocs to Zensical."
 icon: lucide/book-open
-status: draft
+status: active
 ---
 
 # GEP-033: Migrate Documentation to Zensical
@@ -13,10 +13,10 @@ status: draft
 | **Title**    | Migrate Documentation to Zensical |
 | **Author**   | Eran Rivlis                       |
 | **Delegate** | The Council                       |
-| **Status**   | Draft                             |
+| **Status**   | Active                            |
 | **Type**     | Process                           |
 | **Created**  | 2026-10-24                        |
-| **Updated**  | 2026-10-24                        |
+| **Updated**  | 2026-10-25                        |
 
 ## Abstract
 
@@ -215,11 +215,13 @@ jobs:
 
 ## Open Questions
 
-- [ ] Does Zensical support automated Python API reference generation equivalent to `mkdocstrings` out-of-the-box, or
-  is a companion Zensical plugin required?
+- [x] Does Zensical support automated Python API reference generation equivalent to `mkdocstrings` out-of-the-box, or
+  is a companion Zensical plugin required? *Decision: Zensical provides native built-in shims for `mkdocstrings`, using
+  `mkdocstrings-python` directly without requiring the legacy MkDocs core package.*
 - [ ] Should multi-version documentation support (previously handled by `mike`) be handled by Zensical natively or
   managed via GitHub Actions branching?
 
 ## Change Log
 
 * **2026-10-24:** Initial Draft by Eran Rivlis.
+* **2026-10-25:** Implemented `zensical.toml`, updated `pyproject.toml` docs group, fixed documentation links, and transitioned status to Active.

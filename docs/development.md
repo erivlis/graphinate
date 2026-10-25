@@ -85,15 +85,14 @@ We use [pytest](https://pytest.org) for testing.
 
 ## Docs
 
-The documentation is built using [ProperDocs](https://properdocs.org/) with
-the [MaterialX](https://github.com/jaywhj/mkdocs-materialx) theme.
+The documentation is built using [Zensical](https://zensical.org/).
 
 ### Test
 
-To serve the documentation locally for testing:
+To serve the documentation locally for live preview:
 
 ```shell
-properdocs serve
+uv run zensical serve
 ```
 
 ### Build
@@ -101,5 +100,5 @@ properdocs serve
 To build the static documentation site:
 
 ```shell
-properdocs build
+uv run zensical build
 ```

@@ -10,12 +10,10 @@ icon: lucide/package
   Create a [`GraphModel`](../reference/graphinate/modeling.md#graphinate.modeling.GraphModel)
 
 * [`build`](../reference/graphinate/index.md#graphinate.build) -
-  Generate a [`GraphRepresentation`](../reference/index.md) from a [
-  `GraphModel`](../reference/graphinate/modeling.md#graphinate.modeling.GraphModel)
+  Generate a [`GraphRepresentation`](../reference/graphinate/builders.md) from a [`GraphModel`](../reference/graphinate/modeling.md#graphinate.modeling.GraphModel)
 
 * [`abuild`](../reference/graphinate/index.md#graphinate.abuild) -
-  Asynchronously generate a [`GraphRepresentation`](../reference/index.md) from a [
-  `GraphModel`](../reference/graphinate/modeling.md#graphinate.modeling.GraphModel) containing `async def` suppliers
+  Asynchronously generate a [`GraphRepresentation`](../reference/graphinate/builders.md) from a [`GraphModel`](../reference/graphinate/modeling.md#graphinate.modeling.GraphModel) containing `async def` suppliers
 
 ## SDK
 
