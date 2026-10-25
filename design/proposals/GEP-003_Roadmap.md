@@ -132,6 +132,7 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
 | **GEP-025** | Signed ID Serialization                | **Active**        | Implemented as an optional, opt-in HMAC-SHA256 signature layer.         |
 | **GEP-031** | High-Performance Vectorized Operations | **Active**        | Progressive enhancement via optional `numpy` (`graphinate[perf]`).      |
 | **GEP-032** | GraphModel Compilation & Validation    | **Active**        | Implemented `GraphModel.compile()` and deferred validation.             |
+| **GEP-033** | Migrate Documentation to Zensical      | **Active**        | Migrated documentation generation from properdocs to Zensical.          |
 | **GEP-015** | Refactored Graph Population Strategies | **Superseded**    | Replaced by **GEP-024** (The Graph Engine).                             |
 | **GEP-022** | 2D Visualization Mode                  | **Superseded**    | Replaced by **GEP-026** (Pluggable Visualization).                      |
 | **GEP-027** | Advanced Three.js Visualizations       | **Informational** | Exploratory design concepts (Spin-Off / Showcase Track).                |
@@ -146,6 +147,7 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
 * **2026-10-23:** Completed Phase 2: activated GEP-024 (The Graph Engine), GEP-023 (Async Support), GEP-014 (Explicit
   GraphQL Schema Generation), and GEP-031 (High-Performance Vectorized Operations).
 * **2026-10-24:** Added GEP-033 (Migrate Documentation to Zensical) to Phase 3 roadmap.
+* **2026-10-25:** Completed and activated GEP-033 (Migrate Documentation to Zensical).
 
 
 

@@ -1,0 +1,160 @@
+[project]
+site_name = "Graphinate"
+site_description = "Graphinate. Data to Graphs. A Python library for creating and manipulating graphs from various data sources."
+site_url = "https://erivlis.github.io/graphinate"
+site_author = "Eran Rivlis"
+copyright = "Copyright &copy; 2023-2026 Eran Rivlis"
+
+repo_url = "https://github.com/erivlis/graphinate"
+repo_name = "erivlis/graphinate"
+edit_uri = "edit/main/docs/"
+
+extra_css = ["assets/stylesheets/extra.css"]
+
+nav = [
+  { "Start" = [
+    { "Home" = "index.md" },
+    { "Introduction" = "introduction.md" },
+    { "Quick Start" = "start.md" },
+    { "Tutorial" = "tutorial.md" },
+  ]},
+  { "Guide" = [
+    { "Usage" = [
+      { "CLI" = "usage/cli.md" },
+      { "Library" = "usage/lib.md" },
+    ]},
+    { "Examples" = [
+      { "Code" = "examples/code.md" },
+      { "Advanced" = "examples/advanced.md" },
+      { "GitHub" = "examples/github.md" },
+      { "Math" = "examples/math.md" },
+      { "Social" = "examples/social.md" },
+      { "System" = "examples/system.md" },
+      { "Web" = "examples/web.md" },
+    ]},
+  ]},
+  { "Advanced" = [
+    { "API Reference" = "reference/" },
+    { "Modeling" = "advanced/modeling.md" },
+    { "The Graph Engine" = "advanced/engine.md" },
+    { "GraphQL" = "advanced/graphql.md" },
+    { "Optimization" = "advanced/optimization.md" },
+    { "Secure IDs" = "advanced/secure_ids.md" },
+  ]},
+  { "Development" = "development.md" },
+  { "Acknowledgements" = "acknowledgements.md" },
+]
+
+[project.theme]
+language = "en"
+logo = "assets/images/logo-128.png"
+favicon = "assets/images/logo-128.png"
+features = [
+  "content.action.edit",
+  "content.action.view",
+  "content.code.annotate",
+  "content.code.copy",
+  "content.code.select",
+  "content.tooltips",
+  "navigation.expand",
+  "navigation.tabs",
+  "navigation.tabs.sticky",
+  "navigation.path",
+  "navigation.sections",
+  "navigation.footer",
+  "navigation.indexes",
+  "navigation.instant",
+  "navigation.instant.progress",
+  "navigation.prune",
+  "navigation.top",
+  "navigation.tracking",
+  "search.highlight",
+  "search.share",
+  "search.suggest",
+  "toc.follow",
+]
+
+[[project.theme.palette]]
+scheme = "slate"
+primary = "custom"
+accent = "deep purple"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+scheme = "default"
+primary = "custom"
+accent = "deep purple"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/erivlis/graphinate"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/python"
+link = "https://pypi.org/project/graphinate"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/mastodon"
+link = "https://mastodon.social/@erivlis"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/bluesky"
+link = "https://bsky.app/profile/erivlis.bsky.social"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/x-twitter"
+link = "https://x.com/erivlis"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/linkedin"
+link = "https://www.linkedin.com/in/eranrivlis"
+
+[project.markdown_extensions]
+admonition = {}
+attr_list = {}
+md_in_html = {}
+toc.permalink = true
+toc.toc_depth = 3
+pymdownx.details = {}
+pymdownx.highlight.anchor_linenums = true
+pymdownx.highlight.line_spans = "__span"
+pymdownx.highlight.pygments_lang_class = true
+pymdownx.highlight.linenums = true
+pymdownx.emoji.emoji_generator = "zensical.extensions.emoji.to_svg"
+pymdownx.emoji.emoji_index = "zensical.extensions.emoji.twemoji"
+pymdownx.inlinehilite = {}
+pymdownx.snippets = {}
+pymdownx.superfences.custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
+pymdownx.tabbed.alternate_style = true
+pymdownx.tasklist.custom_checkbox = true
+
+[project.plugins.search]
+lang = "en"
+
+[project.plugins.glightbox]
+
+[project.plugins.literate-nav]
+nav_file = "SUMMARY.md"
+
+[project.plugins.mkdocstrings]
+default_handler = "python"
+
+[project.plugins.mkdocstrings.handlers.python]
+paths = ["src"]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+allow_inspection = true
+show_source = false
+heading_level = 3
+show_category_heading = true
+show_symbol_type_heading = true
+show_symbol_type_toc = true
+docstring_style = "google"
+docstring_section_style = "table"
+members_order = "alphabetical"
+show_signature_annotations = true

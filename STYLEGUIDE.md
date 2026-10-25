@@ -43,7 +43,7 @@ Tests are written using the `pytest` framework.
 
 ## Documentation Style
 
-Project documentation is generated using `properdocs` with the `mkdocs-materialx` theme.
+Project documentation is generated using [Zensical](https://zensical.org/) via `zensical.toml`.
 
 * **Format**: All documentation is written in Markdown and formatted with `mdformat`.
 * **Admonitions**: Use admonitions to highlight specific information. For example:
