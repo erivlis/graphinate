@@ -235,7 +235,7 @@ class NetworkxBuilder(Builder, GraphObserver):
         await engine.arun(**kwargs)
         self._finalize_graph(**node_attributes)
 
-    def build(self, **kwargs: Any) -> nx.Graph:
+    def build(self, **kwargs: Any) -> nx.Graph | None:
         """Build a NetworkX graph representation.
 
         Args:
@@ -254,7 +254,7 @@ class NetworkxBuilder(Builder, GraphObserver):
         self._build_graph(default_node_attributes, **kwargs)
         return self._graph
 
-    async def abuild(self, **kwargs: Any) -> nx.Graph:
+    async def abuild(self, **kwargs: Any) -> nx.Graph | None:
         """Asynchronously build a NetworkX graph representation.
 
         Args:
