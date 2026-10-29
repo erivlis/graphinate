@@ -1,3 +1,14 @@
+## v0.18.0 (2026-10-30)
+
+### Feat
+
+- Update GraphQL node type naming to use PascalCase and improve description formatting
+- Introduce DynamicFieldNaming enum for GraphQL field naming strategies
+
+### Fix
+
+- Update build and abuild methods to allow for None return type
+
 ## v0.17.1 (2026-10-23)
 
 ### Fix
