@@ -2,7 +2,7 @@
 title: "GEP-034: GraphQL Dynamic Field Naming Strategies"
 description: "Configurable dynamic query field naming strategies in GraphQLBuilder to support Strawberry auto_camel_case while preserving backward compatibility."
 icon: lucide/share-2
-status: draft
+status: active
 ---
 
 # GEP-034: GraphQL Dynamic Field Naming Strategies
@@ -13,7 +13,7 @@ status: draft
 | **Title**    | GraphQL Dynamic Field Naming Strategies        |
 | **Author**   | Eran Rivlis                                    |
 | **Delegate** | The Council                                    |
-| **Status**   | Draft                                          |
+| **Status**   | Active                                         |
 | **Type**     | Standards Track                                |
 | **Created**  | 2026-10-29                                     |
 | **Updated**  | 2026-10-29                                     |
@@ -124,19 +124,20 @@ class DynamicFieldNaming(str, Enum):
 def __init__(
     self,
     model: GraphModel,
+    graph_type: GraphType = GraphType.Graph,
     mode: SchemaMode = SchemaMode.DYNAMIC,
-    dynamic_field_naming: DynamicFieldNaming | Literal["explicit", "auto", "strawberry_auto"] = DynamicFieldNaming.EXPLICIT,
+    dynamic_field_naming: DynamicFieldNaming = DynamicFieldNaming.EXPLICIT,
     node_value_graphql_type_supplier: Callable[[str], type | None] | None = None,
 ):
     ...
-    self.dynamic_field_naming = DynamicFieldNaming(dynamic_field_naming) if isinstance(dynamic_field_naming, str) else dynamic_field_naming
+    self.dynamic_field_naming = DynamicFieldNaming(dynamic_field_naming)
 ```
 
-To maximize ergonomics, string literals `"explicit"` and `"auto"` (as well as the alias `"strawberry_auto"`) are supported.
+Consistent with other builder configuration parameters (such as `mode: SchemaMode`), the parameter strongly types `DynamicFieldNaming`. Because `DynamicFieldNaming` inherits from `StrEnum`, passing string values `"explicit"` or `"auto"` at runtime is seamlessly coerced.
 
 ### 3. Dynamic Field Construction
 
-In `GraphQLBuilder._graphql_query`, dynamic fields will be instantiated conditionally based on the configured naming strategy:
+In `GraphQLBuilder._graphql_query`, dynamic fields are constructed cleanly by parameterizing `strawberry.field`:
 
 ```python
 if self.mode == SchemaMode.DYNAMIC:
@@ -145,21 +146,11 @@ if self.mode == SchemaMode.DYNAMIC:
         field_name = field_name_manager.make_valid(inflection.plural(node_type))
         resolver = graph_nodes_resolver(graphql_type, node_type, resolver_name=field_name)
 
-        if self.dynamic_field_naming in (DynamicFieldNaming.AUTO, "auto", "strawberry_auto"):
-            query_fields.append(
-                strawberry.field(
-                    resolver=resolver,
-                    description=f"Query {inflection.plural(node_type)} nodes",
-                )
-            )
-        else:
-            query_fields.append(
-                strawberry.field(
-                    name=field_name,
-                    resolver=resolver,
-                    description=f"Query {inflection.plural(node_type)} nodes",
-                )
-            )
+        field_params: dict[str, Any] = {'resolver': resolver}
+        if self.dynamic_field_naming == DynamicFieldNaming.EXPLICIT:
+            field_params['name'] = field_name
+
+        query_fields.append(strawberry.field(**field_params))
 ```
 
 ### 4. `StrawberryConfig` Pass-Through in `schema()`
@@ -205,12 +196,11 @@ When `config` is omitted, Strawberry defaults to `auto_camel_case=True`. When a 
 ### Prototype Implementation
 
 ```python
-from enum import Enum
-from typing import Literal
+from enum import StrEnum
 import strawberry
 from strawberry.schema.config import StrawberryConfig
 
-class DynamicFieldNaming(str, Enum):
+class DynamicFieldNaming(StrEnum):
     EXPLICIT = "explicit"
     AUTO = "auto"
 
@@ -218,10 +208,10 @@ class DynamicFieldNaming(str, Enum):
 # self.dynamic_field_naming = DynamicFieldNaming(dynamic_field_naming)
 
 # In _graphql_query():
-if self.dynamic_field_naming == DynamicFieldNaming.AUTO:
-    query_fields.append(strawberry.field(resolver=resolver))
-else:
-    query_fields.append(strawberry.field(name=field_name, resolver=resolver))
+field_params: dict[str, Any] = {'resolver': resolver}
+if self.dynamic_field_naming == DynamicFieldNaming.EXPLICIT:
+    field_params['name'] = field_name
+query_fields.append(strawberry.field(**field_params))
 ```
 
 ### Test Scenarios
@@ -258,3 +248,5 @@ else:
 
 * **2026-10-29:**
   * Initial draft created proposing `DynamicFieldNaming` (`explicit` vs `auto`) and StrawberryConfig integration in `GraphQLBuilder`.
+  * Implemented and activated: Added `DynamicFieldNaming` enum, `dynamic_field_naming` parameter in `GraphQLBuilder`, `StrawberryConfig` pass-through in `schema()`, `abuild()`, and `build()`, comprehensive tests, and user documentation.
+

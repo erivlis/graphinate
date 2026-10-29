@@ -34,7 +34,7 @@ living document to track the prioritization and status of major initiatives.
 
 ## Phase 3: Focused Expansion
 
-*Focus: Practical extensions that build directly on the core engine and schema. **GEP-033** (Migrate Documentation to Zensical) has been implemented and activated.*
+*Focus: Practical extensions that build directly on the core engine and schema. **GEP-033** (Migrate Documentation to Zensical) and **GEP-034** (GraphQL Dynamic Field Naming Strategies) have been implemented and activated.*
 
 | GEP         | Title                                       | Impact   | Difficulty | Status        | Rationale                                                                                                    |
 |:------------|:--------------------------------------------|:---------|:-----------|:--------------|:-------------------------------------------------------------------------------------------------------------|
@@ -42,7 +42,7 @@ living document to track the prioritization and status of major initiatives.
 | **GEP-020** | **Modular Frontend Architecture**           | Medium   | Medium     | Draft         | **Maintainability.** Splitting the monolithic `viewer/index.html` into maintainable ES modules.              |
 | **GEP-029** | **Extraction Strategies**                   | Medium   | Medium     | Draft         | **Ergonomics.** Lightweight iterator/generator helpers (`scan`, `walk`, `listen`) or cookbook recipes.       |
 | **GEP-033** | **Migrate Documentation to Zensical**       | Medium   | Low        | **Completed** | **Infrastructure.** Replaces legacy MkDocs/properdocs with unified TOML-configured Zensical.                 |
-| **GEP-034** | **GraphQL Dynamic Field Naming Strategies** | Medium   | Low        | Draft         | **Standards & Ergonomics.** Configurable dynamic query field naming supporting Strawberry `auto_camel_case`. |
+| **GEP-034** | **GraphQL Dynamic Field Naming Strategies** | Medium   | Low        | **Completed** | **Standards & Ergonomics.** Configurable dynamic query field naming supporting Strawberry `auto_camel_case`. |
 
 ## Phase 4: Exploratory & Spin-Off Track (Ideation / Brainstorming)
 
@@ -105,38 +105,38 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
 
 ## Summary Priority Matrix (Core Library)
 
-| Priority | GEP         | Title                                       | Phase   |
-|:---------|:------------|:--------------------------------------------|:--------|
-| 1        | **GEP-018** | Relay Support                               | Phase 3 |
-| 2        | **GEP-020** | Modular Frontend Architecture               | Phase 3 |
-| 3        | **GEP-029** | Extraction Strategies (Helpers / Recipes)   | Phase 3 |
-| 4        | **GEP-034** | GraphQL Dynamic Field Naming Strategies     | Phase 3 |
+| Priority | GEP         | Title                                     | Phase   |
+|:---------|:------------|:------------------------------------------|:--------|
+| 1        | **GEP-018** | Relay Support                             | Phase 3 |
+| 2        | **GEP-020** | Modular Frontend Architecture             | Phase 3 |
+| 3        | **GEP-029** | Extraction Strategies (Helpers / Recipes) | Phase 3 |
 
 ## Archive (Completed / Withdrawn / Superseded)
 
-| GEP         | Title                                  | Status            | Reason                                                                  |
-|:------------|:---------------------------------------|:------------------|:------------------------------------------------------------------------|
-| **GEP-000** | Graphinate Enhancement Proposals       | **Active**        | Process definition.                                                     |
-| **GEP-001** | The Graphinate Mission                 | **Active**        | Mission statement.                                                      |
-| **GEP-002** | Modularization Strategy                | **Active**        | Architectural principle.                                                |
-| **GEP-007** | Theoretical Foundations                | **Active**        | Informational / Theory.                                                 |
-| **GEP-010** | Explicit Dependency Injection          | **Active**        | Implemented explicit dependency injection using `ParentId`.             |
-| **GEP-011** | Standardized Element Factory           | **Active**        | Split polymorphic `element` into `tuple_element` and `named_element`.   |
-| **GEP-012** | Robust Model Composition               | **Active**        | Implemented `GraphModel.merge()` and `CompositionStrategy`.             |
-| **GEP-013** | Stable ID Serialization                | **Withdrawn**     | `repr()` deemed sufficient and more robust for Python types.            |
-| **GEP-014** | Explicit GraphQL Schema Generation     | **Active**        | Refactored `GraphQLBuilder` to `create_type`, context, & `SchemaMode`.  |
-| **GEP-016** | CLI Argument Parsing & Path Safety     | **Active**        | Implemented Typer CLI with safe dynamic argument parsing & paths.       |
-| **GEP-017** | Decoupled Server Architecture          | **Active**        | Exposed `create_app()` ASGI factory in `graphinate.renderers.graphql`.  |
-| **GEP-019** | Offline Viewer Support                 | **Active**        | In-package vendoring under `static/vendor/` for 100% offline 3D viewer. |
-| **GEP-023** | Async Support                          | **Active**        | Implemented `async def` generator support, `arun()`, and `abuild()`.    |
-| **GEP-024** | The Graph Engine                       | **Active**        | Decoupled traversal into `GraphEngine`, `GraphObserver`, and events.    |
-| **GEP-025** | Signed ID Serialization                | **Active**        | Implemented as an optional, opt-in HMAC-SHA256 signature layer.         |
-| **GEP-031** | High-Performance Vectorized Operations | **Active**        | Progressive enhancement via optional `numpy` (`graphinate[perf]`).      |
-| **GEP-032** | GraphModel Compilation & Validation    | **Active**        | Implemented `GraphModel.compile()` and deferred validation.             |
-| **GEP-033** | Migrate Documentation to Zensical      | **Active**        | Migrated documentation generation from properdocs to Zensical.          |
-| **GEP-015** | Refactored Graph Population Strategies | **Superseded**    | Replaced by **GEP-024** (The Graph Engine).                             |
-| **GEP-022** | 2D Visualization Mode                  | **Superseded**    | Replaced by **GEP-026** (Pluggable Visualization).                      |
-| **GEP-027** | Advanced Three.js Visualizations       | **Informational** | Exploratory design concepts (Spin-Off / Showcase Track).                |
+| GEP         | Title                                       | Status            | Reason                                                                        |
+|:------------|:--------------------------------------------|:------------------|:------------------------------------------------------------------------------|
+| **GEP-000** | Graphinate Enhancement Proposals            | **Active**        | Process definition.                                                           |
+| **GEP-001** | The Graphinate Mission                      | **Active**        | Mission statement.                                                            |
+| **GEP-002** | Modularization Strategy                     | **Active**        | Architectural principle.                                                      |
+| **GEP-007** | Theoretical Foundations                     | **Active**        | Informational / Theory.                                                       |
+| **GEP-010** | Explicit Dependency Injection               | **Active**        | Implemented explicit dependency injection using `ParentId`.                   |
+| **GEP-011** | Standardized Element Factory                | **Active**        | Split polymorphic `element` into `tuple_element` and `named_element`.         |
+| **GEP-012** | Robust Model Composition                    | **Active**        | Implemented `GraphModel.merge()` and `CompositionStrategy`.                   |
+| **GEP-013** | Stable ID Serialization                     | **Withdrawn**     | `repr()` deemed sufficient and more robust for Python types.                  |
+| **GEP-014** | Explicit GraphQL Schema Generation          | **Active**        | Refactored `GraphQLBuilder` to `create_type`, context, & `SchemaMode`.        |
+| **GEP-016** | CLI Argument Parsing & Path Safety          | **Active**        | Implemented Typer CLI with safe dynamic argument parsing & paths.             |
+| **GEP-017** | Decoupled Server Architecture               | **Active**        | Exposed `create_app()` ASGI factory in `graphinate.renderers.graphql`.        |
+| **GEP-019** | Offline Viewer Support                      | **Active**        | In-package vendoring under `static/vendor/` for 100% offline 3D viewer.       |
+| **GEP-023** | Async Support                               | **Active**        | Implemented `async def` generator support, `arun()`, and `abuild()`.          |
+| **GEP-024** | The Graph Engine                            | **Active**        | Decoupled traversal into `GraphEngine`, `GraphObserver`, and events.          |
+| **GEP-025** | Signed ID Serialization                     | **Active**        | Implemented as an optional, opt-in HMAC-SHA256 signature layer.               |
+| **GEP-031** | High-Performance Vectorized Operations      | **Active**        | Progressive enhancement via optional `numpy` (`graphinate[perf]`).            |
+| **GEP-032** | GraphModel Compilation & Validation         | **Active**        | Implemented `GraphModel.compile()` and deferred validation.                   |
+| **GEP-033** | Migrate Documentation to Zensical           | **Active**        | Migrated documentation generation from properdocs to Zensical.                |
+| **GEP-034** | GraphQL Dynamic Field Naming Strategies     | **Active**        | Implemented `DynamicFieldNaming` (`explicit` vs `auto`) & `StrawberryConfig`. |
+| **GEP-015** | Refactored Graph Population Strategies      | **Superseded**    | Replaced by **GEP-024** (The Graph Engine).                                   |
+| **GEP-022** | 2D Visualization Mode                       | **Superseded**    | Replaced by **GEP-026** (Pluggable Visualization).                            |
+| **GEP-027** | Advanced Three.js Visualizations            | **Informational** | Exploratory design concepts (Spin-Off / Showcase Track).                      |
 
 ## Change Log
 
@@ -149,7 +149,8 @@ Evaluating the codebase and GEP trajectory through the **7 Pillars of the Counci
   GraphQL Schema Generation), and GEP-031 (High-Performance Vectorized Operations).
 * **2026-10-24:** Added GEP-033 (Migrate Documentation to Zensical) to Phase 3 roadmap.
 * **2026-10-25:** Completed and activated GEP-033 (Migrate Documentation to Zensical); updated Phase 3 and Priority Matrix.
-* **2026-10-29:** Added GEP-034 (GraphQL Dynamic Field Naming Strategies) to Phase 3 roadmap.
+* **2026-10-29:** Added, completed, and activated GEP-034 (GraphQL Dynamic Field Naming Strategies); updated Phase 3, Priority Matrix, and Archive.
+
 
 
 
