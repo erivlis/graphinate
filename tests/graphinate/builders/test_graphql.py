@@ -427,6 +427,30 @@ async def test_dynamic_field_naming__abuild_auto():
     assert "git_commits" not in schema_str
 
 
+@pytest.mark.parametrize(
+    ("raw_node_type", "expected_type_name"),
+    [
+        ("user", "UserNode"),
+        ("git_commit", "GitCommitNode"),
+        ("user_account", "UserAccountNode"),
+        ("data_doc_biz_model", "DataDocBizModelNode"),
+        ("user_node", "UserNode"),
+    ],
+)
+def test_dynamic_node_type__pascal_case_naming(raw_node_type, expected_type_name):
+    """Dynamic GraphQL node types are named in idiomatic PascalCase."""
+    m = model(f"PascalCase_{raw_node_type}")
 
+    @m.node(type_=raw_node_type)
+    def items():
+        yield "item_1"
 
+    builder = GraphQLBuilder(m)
+    schema = builder.build()
+    schema_str = str(schema)
 
+    assert f"type {expected_type_name} implements GraphNode" in schema_str
+    if "_" in raw_node_type:
+        legacy_name = f"{raw_node_type.capitalize()}Node"
+        if legacy_name != expected_type_name:
+            assert f"type {legacy_name}" not in schema_str
