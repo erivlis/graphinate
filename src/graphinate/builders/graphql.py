@@ -19,6 +19,7 @@ from strawberry.schema.config import StrawberryConfig
 from strawberry.tools import create_type
 from strawberry.types import Info
 from strawberry.types.base import StrawberryType
+from strawberry.utils.str_converters import capitalize_first, to_camel_case
 
 from .. import color, converters
 from ..converters import (
@@ -404,8 +405,9 @@ class GraphQLBuilder(NetworkxBuilder):
         class_name_manager = VariableNameManager()
         graphql_types: dict[str, type[GraphQLBuilder.GraphNode]] = {}
         for node_type in node_types:
-            class_name = class_name_manager.make_valid(node_type.capitalize())
-            type_name = f"{class_name}{'' if node_type.lower().endswith('node') else 'Node'}"
+            pascal_name = capitalize_first(to_camel_case(node_type.replace('-', '_')))
+            class_name = class_name_manager.make_valid(pascal_name)
+            type_name = f"{class_name}{'' if class_name.lower().endswith('node') else 'Node'}"
             fields = [
                 strawberry.field(name='neighbors', resolver=self._make_neighbors_resolver(node_type)),
                 strawberry.field(name='edges', resolver=self._make_edges_resolver()),
@@ -422,7 +424,7 @@ class GraphQLBuilder(NetworkxBuilder):
             graphql_types[node_type] = self._create_node_type(
                 name=type_name,
                 fields=fields,
-                description=f"Represents a {node_type.capitalize()} Graph Node",
+                description=f"Represents a {class_name} Graph Node",
             )
 
         self._cached_graphql_types = graphql_types
