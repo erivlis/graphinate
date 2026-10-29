@@ -7,22 +7,25 @@ status: active
 
 # GEP-034: GraphQL Dynamic Field and Type Naming Strategies
 
-| Field        | Value                                                   |
-|:-------------|:--------------------------------------------------------|
-| **GEP**      | 34                                                      |
-| **Title**    | GraphQL Dynamic Field and Type Naming Strategies        |
-| **Author**   | Eran Rivlis                                             |
-| **Delegate** | The Council                                             |
-| **Status**   | Active                                                  |
-| **Type**     | Standards Track                                         |
-| **Created**  | 2026-10-29                                              |
-| **Updated**  | 2026-10-29                                              |
+| Field        | Value                                            |
+|:-------------|:-------------------------------------------------|
+| **GEP**      | 34                                               |
+| **Title**    | GraphQL Dynamic Field and Type Naming Strategies |
+| **Author**   | Eran Rivlis                                      |
+| **Delegate** | The Council                                      |
+| **Status**   | Active                                           |
+| **Type**     | Standards Track                                  |
+| **Created**  | 2026-10-29                                       |
+| **Updated**  | 2026-10-29                                       |
 
 ## Abstract
 
-This proposal specifies the introduction of configurable dynamic field naming strategies and idiomatic type naming in `GraphQLBuilder`.
-In `SchemaMode.DYNAMIC`, `GraphQLBuilder` generates pluralized root query fields and GraphQL object types corresponding to each node type
-defined in a `GraphModel`. Previously, dynamic query fields were constructed with explicit field names (`strawberry.field(name=...)`),
+This proposal specifies the introduction of configurable dynamic field naming strategies and idiomatic type naming in
+`GraphQLBuilder`.
+In `SchemaMode.DYNAMIC`, `GraphQLBuilder` generates pluralized root query fields and GraphQL object types corresponding
+to each node type
+defined in a `GraphModel`. Previously, dynamic query fields were constructed with explicit field names
+(`strawberry.field(name=...)`),
 which Strawberry interprets as an explicit user override, thereby bypassing Strawberry's automatic camel-casing
 (`StrawberryConfig.auto_camel_case`). Consequently, dynamic fields were exposed in `snake_case` (e.g., `user_accounts`,
 `git_commits`) even while built-in fields and arguments adopt standard GraphQL `camelCase`. This GEP
@@ -31,16 +34,19 @@ introduces a `dynamic_field_naming` configuration option supporting `explicit` (
 
 Additionally, this proposal standardizes dynamically generated GraphQL node types (`GraphQLBuilder._graphql_types`) to
 idiomatic `PascalCase`. Previously, type names were constructed using Python's `str.capitalize()`, retaining internal
-underscores (e.g., `Git_commitNode`, `User_accountNode`). This proposal standardizes dynamic node types to idiomatic `PascalCase`
+underscores (e.g., `Git_commitNode`, `User_accountNode`). This proposal standardizes dynamic node types to idiomatic
+`PascalCase`
 (e.g., `GitCommitNode`, `UserAccountNode`), aligning fully with official GraphQL schema design specifications.
 
 ## Motivation
 
-GraphQL conventions and specifications (including Apollo, Relay, and the GraphQL Foundation style guidelines) universally
+GraphQL conventions and specifications (including Apollo, Relay, and the GraphQL Foundation style guidelines)
+universally
 standardize on `camelCase` for fields and arguments.
 
 In Graphinate, `GraphQLBuilder` translates a `GraphModel` into an executable Strawberry schema. Throughout the built-in
 types, fields and arguments adhere to standard camel-casing:
+
 - Root query arguments: `node_id` becomes `nodeId`, `edge_id` becomes `edgeId`.
 - Attributes on `Graph`: `node_type_counts` becomes `nodeTypeCounts`, `average_degree` becomes `averageDegree`.
 - Attributes on `GraphNode`: `node_id` becomes `nodeId`.
@@ -58,8 +64,10 @@ for node_type, graphql_type in self._graphql_types.items():
     )
 ```
 
-Because `name=field_name` is explicitly passed to `strawberry.field()`, Strawberry assigns `StrawberryField.graphql_name = field_name`.
-During Strawberry schema compilation, the schema converter respects explicit `graphql_name` definitions as immutable user overrides,
+Because `name=field_name` is explicitly passed to `strawberry.field()`, Strawberry assigns
+`StrawberryField.graphql_name = field_name`.
+During Strawberry schema compilation, the schema converter respects explicit `graphql_name` definitions as immutable
+user overrides,
 completely bypassing `StrawberryConfig.auto_camel_case`.
 
 ### Problems Caused by Current Behavior
@@ -76,21 +84,27 @@ completely bypassing `StrawberryConfig.auto_camel_case`.
    }
    ```
 2. **Client Tooling Friction**:
-   Modern GraphQL client libraries, frontend generators (such as GraphQL Code Generator, Relay Compiler, and Apollo iOS/Kotlin),
-   and linting tools (such as `graphql-eslint`) expect uniform `camelCase` identifiers. Mixed casing forces frontend developers
+   Modern GraphQL client libraries, frontend generators (such as GraphQL Code Generator, Relay Compiler, and Apollo
+   iOS/Kotlin),
+   and linting tools (such as `graphql-eslint`) expect uniform `camelCase` identifiers. Mixed casing forces frontend
+   developers
    to write irregular client queries and disallows automated lint rules.
 3. **Inability to Opt In to Strawberry Auto-Casing**:
-   Users who desire idiomatic camelCase dynamic fields currently have no configuration hook or strategy to enable it without
+   Users who desire idiomatic camelCase dynamic fields currently have no configuration hook or strategy to enable it
+   without
    monkeypatching `GraphQLBuilder._graphql_query`.
 4. **Non-Idiomatic GraphQL Type Names (`Git_commitNode`)**:
-   In `GraphQLBuilder._graphql_types`, dynamic node GraphQL type names were generated via Python's built-in `str.capitalize()`:
+   In `GraphQLBuilder._graphql_types`, dynamic node GraphQL type names were generated via Python's built-in
+   `str.capitalize()`:
    ```python
    class_name = class_name_manager.make_valid(node_type.capitalize())
    type_name = f"{class_name}{'' if node_type.lower().endswith('node') else 'Node'}"
    ```
-   Because `str.capitalize()` only modifies the initial character, compound and snake_case node types retained internal underscores:
+   Because `str.capitalize()` only modifies the initial character, compound and snake_case node types retained internal
+   underscores:
    `"git_commit"` became `Git_commitNode`, and `"user_account"` became `User_accountNode`.
-   The official GraphQL specification prescribes `PascalCase` for all Object types, Interfaces, and Unions. Retaining raw underscores
+   The official GraphQL specification prescribes `PascalCase` for all Object types, Interfaces, and Unions. Retaining
+   raw underscores
    in GraphQL type names violates schema design standards and creates awkward, non-idiomatic types in typed client SDKs.
 
 ## Rationale
@@ -102,15 +116,18 @@ This proposal is designed in direct alignment with the **Council Framework (GEP-
   are stuck in `snake_case`. A consistent schema is easier to reason about, query, and consume.
 * **Consistency (Russell)**:
   Harmonizes `GraphQLBuilder` with the Strawberry ecosystem and GraphQL conventions. Both fields and types should adhere
-  to standard GraphQL casing (`camelCase` for fields, `PascalCase` for types like `GraphNode`, `GraphEdge`, and dynamic node types).
+  to standard GraphQL casing (`camelCase` for fields, `PascalCase` for types like `GraphNode`, `GraphEdge`, and dynamic
+  node types).
 * **Symmetry (Noether)**:
   Static fields (`nodeTypeCounts`) and dynamic fields (`userAccounts`) should be governed by symmetric naming rules
   rather than being treated as disparate architectural regimes.
 * **Simplicity (Ockham)**:
-  Unconditionally standardizing dynamic node type names to `PascalCase` fixes a formatting anomaly directly without adding
+  Unconditionally standardizing dynamic node type names to `PascalCase` fixes a formatting anomaly directly without
+  adding
   superfluous configuration parameters, since GraphQL object types universally require `PascalCase`.
 * **Safety (The Golem)**:
-  Maintaining backward compatibility is paramount for field queries. Existing client queries in production systems may already query
+  Maintaining backward compatibility is paramount for field queries. Existing client queries in production systems may
+  already query
   `user_accounts`. By defaulting to `DynamicFieldNaming.EXPLICIT` (or `"explicit"`), existing queries remain completely
   unbroken. Users explicitly opt into `auto` mode when they are ready.
 
@@ -122,6 +139,7 @@ A new enumeration will be added to `graphinate.builders.graphql` (and exported f
 
 ```python
 from enum import Enum
+
 
 class DynamicFieldNaming(str, Enum):
     """Naming strategy for dynamically generated GraphQL query fields."""
@@ -140,18 +158,20 @@ class DynamicFieldNaming(str, Enum):
 
 ```python
 def __init__(
-    self,
-    model: GraphModel,
-    graph_type: GraphType = GraphType.Graph,
-    mode: SchemaMode = SchemaMode.DYNAMIC,
-    dynamic_field_naming: DynamicFieldNaming = DynamicFieldNaming.EXPLICIT,
-    node_value_graphql_type_supplier: Callable[[str], type | None] | None = None,
+        self,
+        model: GraphModel,
+        graph_type: GraphType = GraphType.Graph,
+        mode: SchemaMode = SchemaMode.DYNAMIC,
+        dynamic_field_naming: DynamicFieldNaming = DynamicFieldNaming.EXPLICIT,
+        node_value_graphql_type_supplier: Callable[[str], type | None] | None = None,
 ):
     ...
     self.dynamic_field_naming = DynamicFieldNaming(dynamic_field_naming)
 ```
 
-Consistent with other builder configuration parameters (such as `mode: SchemaMode`), the parameter strongly types `DynamicFieldNaming`. Because `DynamicFieldNaming` inherits from `StrEnum`, passing string values `"explicit"` or `"auto"` at runtime is seamlessly coerced.
+Consistent with other builder configuration parameters (such as `mode: SchemaMode`), the parameter strongly types
+`DynamicFieldNaming`. Because `DynamicFieldNaming` inherits from `StrEnum`, passing string values `"explicit"` or
+`"auto"` at runtime is seamlessly coerced.
 
 ### 3. Dynamic Field Construction
 
@@ -173,7 +193,8 @@ if self.mode == SchemaMode.DYNAMIC:
 
 ### 4. `StrawberryConfig` Pass-Through in `schema()`
 
-`GraphQLBuilder.schema()` will be enhanced to accept an optional `config: strawberry.schema.config.StrawberryConfig` instance:
+`GraphQLBuilder.schema()` will be enhanced to accept an optional `config: strawberry.schema.config.StrawberryConfig`
+instance:
 
 ```python
 def schema(self, config: strawberry.schema.config.StrawberryConfig | None = None) -> strawberry.Schema:
@@ -192,11 +213,14 @@ def schema(self, config: strawberry.schema.config.StrawberryConfig | None = None
     )
 ```
 
-When `config` is omitted, Strawberry defaults to `auto_camel_case=True`. When a custom config is supplied (such as `StrawberryConfig(auto_camel_case=False)`), Strawberry honors the user's setting across all auto-named fields.
+When `config` is omitted, Strawberry defaults to `auto_camel_case=True`. When a custom config is supplied (such as
+`StrawberryConfig(auto_camel_case=False)`), Strawberry honors the user's setting across all auto-named fields.
 
 ### 5. Idiomatic `PascalCase` Dynamic Node Type Names
 
-In `GraphQLBuilder._graphql_types`, dynamic node GraphQL type names are normalized and converted into idiomatic `PascalCase` using Strawberry's native string conversion utilities (`to_camel_case` and `capitalize_first` from `strawberry.utils.str_converters`):
+In `GraphQLBuilder._graphql_types`, dynamic node GraphQL type names are normalized and converted into idiomatic
+`PascalCase` using Strawberry's native string conversion utilities (`to_camel_case` and `capitalize_first` from
+`strawberry.utils.str_converters`):
 
 ```python
 from strawberry.utils.str_converters import capitalize_first, to_camel_case
@@ -209,25 +233,37 @@ for node_type in node_types:
 ```
 
 Key characteristics:
-1. **Separator Normalization**: Hyphens and underscores are converted to camelCase before capitalizing the initial character, producing clean `PascalCase`.
-2. **Suffix Deduplication**: Checking `class_name.lower().endswith('node')` ensures node types already ending in `_node` or `Node` (e.g., `user_node`) result in `UserNode` rather than duplicating the suffix (e.g., `UserNodeNode`).
-3. **Decoupled Resolver Lookups**: Internal resolvers and mappings retrieve types from `self._graphql_types` using the raw `node_type` string key (e.g., `self._graphql_types.get(node_type)`). Modifying `type_name` only alters the GraphQL schema type identifier and does not affect internal node model lookups or edge traversal.
+
+1. **Separator Normalization**: Hyphens and underscores are converted to camelCase before capitalizing the initial
+   character, producing clean `PascalCase`.
+2. **Suffix Deduplication**: Checking `class_name.lower().endswith('node')` ensures node types already ending in `_node`
+   or `Node` (e.g., `user_node`) result in `UserNode` rather than duplicating the suffix (e.g., `UserNodeNode`).
+3. **Decoupled Resolver Lookups**: Internal resolvers and mappings retrieve types from `self._graphql_types` using the
+   raw `node_type` string key (e.g., `self._graphql_types.get(node_type)`). Modifying `type_name` only alters the
+   GraphQL schema type identifier and does not affect internal node model lookups or edge traversal.
 
 ## Backwards Compatibility
 
-* **Field Queries (Zero Breaking Changes)**: The default naming strategy for fields remains `DynamicFieldNaming.EXPLICIT`. Existing
-  applications, tests, and client queries continue to receive `snake_case` dynamic query field names unless explicitly opted into `auto`.
-* **Dynamic Node Type Names**: Single-word node types (`user` -> `UserNode`, `city` -> `CityNode`) remain completely unchanged.
-  Multi-word node types (such as `git_commit` -> `GitCommitNode`, previously `Git_commitNode`) are standardized to `PascalCase`.
-  GraphQL queries using inline type fragments specifically targeting the type (e.g., `... on Git_commitNode`) will need to query
+* **Field Queries (Zero Breaking Changes)**: The default naming strategy for fields remains
+  `DynamicFieldNaming.EXPLICIT`. Existing
+  applications, tests, and client queries continue to receive `snake_case` dynamic query field names unless explicitly
+  opted into `auto`.
+* **Dynamic Node Type Names**: Single-word node types (`user` -> `UserNode`, `city` -> `CityNode`) remain completely
+  unchanged.
+  Multi-word node types (such as `git_commit` -> `GitCommitNode`, previously `Git_commitNode`) are standardized to
+  `PascalCase`.
+  GraphQL queries using inline type fragments specifically targeting the type (e.g., `... on Git_commitNode`) will need
+  to query
   `... on GitCommitNode`. This change directly aligns Graphinate with the GraphQL specification for Object type naming.
 * **API Stability**: All constructor signatures and builder interfaces remain backwards compatible.
 
 ## How to Teach This / Documentation Plan
 
-* **Documentation Guide Update**: Update `docs/advanced/graphql.md` to document the `dynamic_field_naming` option with an
+* **Documentation Guide Update**: Update `docs/advanced/graphql.md` to document the `dynamic_field_naming` option with
+  an
   explicit code sample comparing `SchemaMode.DYNAMIC` output under `explicit` vs `auto`.
-* **Client Best Practices Note**: Add a callout box in documentation recommending `DynamicFieldNaming.AUTO` when integrating
+* **Client Best Practices Note**: Add a callout box in documentation recommending `DynamicFieldNaming.AUTO` when
+  integrating
   with React Relay, Apollo Client, or TypeScript GraphQL code generators.
 * **Docstrings**: Provide Google-style docstrings with examples on `DynamicFieldNaming` and `GraphQLBuilder.__init__`.
 
@@ -242,9 +278,11 @@ import strawberry
 from strawberry.schema.config import StrawberryConfig
 from strawberry.utils.str_converters import capitalize_first, to_camel_case
 
+
 class DynamicFieldNaming(StrEnum):
     EXPLICIT = "explicit"
     AUTO = "auto"
+
 
 # In _graphql_types():
 pascal_name = capitalize_first(to_camel_case(node_type.replace('-', '_')))
@@ -260,15 +298,13 @@ query_fields.append(strawberry.field(**field_params))
 
 ### Dynamic Node Type Transformation Matrix
 
-| Raw `node_type` | Previous Generated Type | New `PascalCase` Type |
-| :--- | :--- | :--- |
-| `"user"` | `UserNode` | `UserNode` |
-| `"git_commit"` | `Git_commitNode` | `GitCommitNode` |
-| `"user_account"` | `User_accountNode` | `UserAccountNode` |
+| Raw `node_type`        | Previous Generated Type  | New `PascalCase` Type |
+|:-----------------------|:-------------------------|:----------------------|
+| `"user"`               | `UserNode`               | `UserNode`            |
+| `"git_commit"`         | `Git_commitNode`         | `GitCommitNode`       |
+| `"user_account"`       | `User_accountNode`       | `UserAccountNode`     |
 | `"data_doc_biz_model"` | `Data_doc_biz_modelNode` | `DataDocBizModelNode` |
-| `"user_node"` | `User_node` | `UserNode` |
-| `"UserNode"` | `UserNode` | `UserNode` |
-| `"user-account"` | `User_accountNode` | `UserAccountNode` |
+| `"user_node"`          | `User_node`              | `UserNode`            |
 
 ### Test Scenarios
 
@@ -279,7 +315,8 @@ query_fields.append(strawberry.field(**field_params))
 3. **Auto Mode + Explicit Strawberry Config (`auto_camel_case=False`)**:
    A node type `git_commit` yields root field `git_commits` in schema and type `GitCommitNode`.
 4. **Constructor Default Guarantee**:
-   Instantiating `GraphQLBuilder(model)` without `dynamic_field_naming` produces identical schema to `dynamic_field_naming="explicit"`.
+   Instantiating `GraphQLBuilder(model)` without `dynamic_field_naming` produces identical schema to
+   `dynamic_field_naming="explicit"`.
 
 ## Rejected Ideas
 
@@ -290,25 +327,33 @@ query_fields.append(strawberry.field(**field_params))
   Rejected as premature generalization. Strawberry's native `StrawberryConfig.auto_camel_case` and name converters
   already provide standard, thoroughly tested identifier transformations.
 * **Boolean Flag (`auto_camel_case: bool`) on `GraphQLBuilder`**:
-  Rejected because Strawberry itself already owns the `auto_camel_case` setting in `StrawberryConfig`. Having a duplicate
+  Rejected because Strawberry itself already owns the `auto_camel_case` setting in `StrawberryConfig`. Having a
+  duplicate
   boolean on Graphinate's builder causes confusion over whether it controls Graphinate's naming strategy or overrides
   Strawberry's configuration. An enum (`DynamicFieldNaming`) accurately conveys that it governs how Graphinate registers
   fields with Strawberry.
 * **Configurable Type Naming Option (e.g. `DynamicTypeNaming` or flag)**:
   Rejected. Unlike query fields where some API architectures intentionally employ `snake_case` fields, GraphQL
   specifications and community best practices universally prescribe `PascalCase` for Object types without exception.
-  Retaining underscores in type names (`Git_commitNode`) was an unintended side-effect of `str.capitalize()`, not a designed
-  feature. Adding a configuration flag for type names would introduce unnecessary cognitive load and perpetuate non-standard schemas.
+  Retaining underscores in type names (`Git_commitNode`) was an unintended side-effect of `str.capitalize()`, not a
+  designed
+  feature. Adding a configuration flag for type names would introduce unnecessary cognitive load and perpetuate
+  non-standard schemas.
 
 ## Open Questions
 
 - [ ] Should `DynamicFieldNaming.AUTO` become the default in a future major version (e.g. Graphinate 1.0 or 2.0)?
-- [ ] Should `dynamic_field_naming` also affect field names in custom node types if dynamic attributes are introduced in the future?
+- [ ] Should `dynamic_field_naming` also affect field names in custom node types if dynamic attributes are introduced in
+  the future?
 
 ## Change Log
 
 * **2026-10-29:**
-  * Initial draft created proposing `DynamicFieldNaming` (`explicit` vs `auto`) and StrawberryConfig integration in `GraphQLBuilder`.
-  * Implemented and activated: Added `DynamicFieldNaming` enum, `dynamic_field_naming` parameter in `GraphQLBuilder`, `StrawberryConfig` pass-through in `schema()`, `abuild()`, and `build()`, comprehensive tests, and user documentation.
-  * Addendum (Under Review): Standardized dynamic GraphQL Object type naming to idiomatic `PascalCase` (e.g. `GitCommitNode`, `UserAccountNode`) using Strawberry string converters with suffix deduplication.
+    * Initial draft created proposing `DynamicFieldNaming` (`explicit` vs `auto`) and StrawberryConfig integration in
+      `GraphQLBuilder`.
+    * Implemented and activated: Added `DynamicFieldNaming` enum, `dynamic_field_naming` parameter in `GraphQLBuilder`,
+      `StrawberryConfig` pass-through in `schema()`, `abuild()`, and `build()`, comprehensive tests, and user
+      documentation.
+    * Standardized dynamic GraphQL Object type naming to idiomatic `PascalCase` (e.g. `GitCommitNode`,
+      `UserAccountNode`) using Strawberry string converters with suffix deduplication, accompanied by unit tests.
 
