@@ -430,11 +430,13 @@ async def test_dynamic_field_naming__abuild_auto():
 @pytest.mark.parametrize(
     ("raw_node_type", "expected_type_name"),
     [
-        ("user", "UserNode"),
         ("git_commit", "GitCommitNode"),
+        ("user", "UserNode"),
         ("user_account", "UserAccountNode"),
-        ("data_doc_biz_model", "DataDocBizModelNode"),
         ("user_node", "UserNode"),
+        ("user_Node", "UserNode"),
+        ("user_account_node", "UserAccountNode"),
+
     ],
 )
 def test_dynamic_node_type__pascal_case_naming(raw_node_type, expected_type_name):
