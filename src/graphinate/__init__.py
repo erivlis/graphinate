@@ -1,13 +1,14 @@
 from . import builders, engine, renderers
 from .builders import abuild, build
 from .engine import EdgeEvent, GraphEngine, GraphObserver, NodeEvent
-from .enums import CompositionStrategy, GraphType, Multiplicity, SchemaMode
+from .enums import CompositionStrategy, DynamicFieldNaming, GraphType, Multiplicity, SchemaMode
 from .modeling import GraphModel, model
 from .renderers import graphql, matplotlib, mermaid
 from .typing import ParentId
 
 __all__ = (
     'CompositionStrategy',
+    'DynamicFieldNaming',
     'EdgeEvent',
     'GraphEngine',
     'GraphModel',
@@ -27,7 +28,3 @@ __all__ = (
     'model',
     'renderers',
 )
-
-
-
-

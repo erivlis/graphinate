@@ -19,6 +19,7 @@ from strawberry.schema.config import StrawberryConfig
 from strawberry.tools import create_type
 from strawberry.types import Info
 from strawberry.types.base import StrawberryType
+from strawberry.utils.str_converters import capitalize_first, to_camel_case
 
 from .. import color, converters
 from ..converters import (
@@ -29,7 +30,7 @@ from ..converters import (
     encode_node_id,
     node_label_converter,
 )
-from ..enums import GraphType, SchemaMode
+from ..enums import DynamicFieldNaming, GraphType, SchemaMode
 from ..modeling import GraphModel
 from ..tools import VariableNameManager
 from .networkx import NetworkxBuilder
@@ -203,9 +204,17 @@ class GraphQLBuilder(NetworkxBuilder):
         model: GraphModel,
         graph_type: GraphType = GraphType.Graph,
         mode: SchemaMode = SchemaMode.DYNAMIC,
+        dynamic_field_naming: DynamicFieldNaming = DynamicFieldNaming.EXPLICIT,
     ):
         super().__init__(model, graph_type)
         self.mode: SchemaMode = mode
+        try:
+            self.dynamic_field_naming = DynamicFieldNaming(dynamic_field_naming)
+        except ValueError:
+            raise ValueError(
+                f"Invalid dynamic_field_naming: '{dynamic_field_naming}'. "
+                f"Expected one of: {list(DynamicFieldNaming)}."
+            ) from None
         self._node_value_graphql_type_supplier: Callable[[str], StrawberryType | None] | None = None
         self._cached_graphql_types: dict[str, type[GraphQLBuilder.GraphNode]] | None = None
 
@@ -313,10 +322,10 @@ class GraphQLBuilder(NetworkxBuilder):
         builder = self
 
         def node_neighbors(
-            root: GraphQLBuilder.GraphNode,
-            info: Info,
-            type: 'GraphQLBuilder.GraphNodeType | None' = None,
-            children: bool = False,
+                root: GraphQLBuilder.GraphNode,
+                info: Info,
+                type: 'GraphQLBuilder.GraphNodeType | None' = None,
+                children: bool = False,
         ) -> list['GraphQLBuilder.GraphNode']:
             graph = builder._resolve_graph(info)
             node = decode_node_id(root.id)
@@ -354,9 +363,9 @@ class GraphQLBuilder(NetworkxBuilder):
 
     @staticmethod
     def _create_node_type(
-        name: str,
-        fields: list[Any],
-        description: str,
+            name: str,
+            fields: list[Any],
+            description: str,
     ) -> type['GraphQLBuilder.GraphNode']:
         namespace: dict[str, Any] = {}
         annotations: dict[str, Any] = {}
@@ -396,16 +405,17 @@ class GraphQLBuilder(NetworkxBuilder):
         class_name_manager = VariableNameManager()
         graphql_types: dict[str, type[GraphQLBuilder.GraphNode]] = {}
         for node_type in node_types:
-            class_name = class_name_manager.make_valid(node_type.capitalize())
-            type_name = f"{class_name}{'' if node_type.lower().endswith('node') else 'Node'}"
+            pascal_name = capitalize_first(to_camel_case(node_type.replace('-', '_')))
+            class_name = class_name_manager.make_valid(pascal_name)
+            type_name = f"{class_name}{'' if class_name.lower().endswith('node') else 'Node'}"
             fields = [
                 strawberry.field(name='neighbors', resolver=self._make_neighbors_resolver(node_type)),
                 strawberry.field(name='edges', resolver=self._make_edges_resolver()),
             ]
 
             if (
-                self._node_value_graphql_type_supplier is not None
-                and (value_graphql_type := self._node_value_graphql_type_supplier(node_type)) is not None
+                    self._node_value_graphql_type_supplier is not None
+                    and (value_graphql_type := self._node_value_graphql_type_supplier(node_type)) is not None
             ):
                 value_field = strawberry.field(name='value', default=None)
                 value_field.type = list[value_graphql_type] | None
@@ -414,7 +424,7 @@ class GraphQLBuilder(NetworkxBuilder):
             graphql_types[node_type] = self._create_node_type(
                 name=type_name,
                 fields=fields,
-                description=f"Represents a {node_type.capitalize()} Graph Node",
+                description=f"Represents a {class_name} Graph Node",
             )
 
         self._cached_graphql_types = graphql_types
@@ -429,15 +439,15 @@ class GraphQLBuilder(NetworkxBuilder):
             return GraphQLBuilder.Graph(nx_graph=builder._resolve_graph(info))
 
         def graph_nodes_resolver(
-            graphql_type: type[GraphQLBuilder.GraphNode] | None = None,
-            node_type: str | None = None,
-            resolver_name: str = 'nodes',
+                graphql_type: type[GraphQLBuilder.GraphNode] | None = None,
+                node_type: str | None = None,
+                resolver_name: str = 'nodes',
         ):
             return_annotation = list[graphql_type] if graphql_type is not None else list[GraphQLBuilder.GraphNode]
 
             def graph_nodes(
-                info: Info,
-                node_id: strawberry.ID | None = strawberry.UNSET,
+                    info: Info,
+                    node_id: strawberry.ID | None = strawberry.UNSET,
             ) -> return_annotation:
                 decoded_node_id = node_id and decode_node_id(node_id)
                 graph = builder._resolve_graph(info)
@@ -467,8 +477,8 @@ class GraphQLBuilder(NetworkxBuilder):
             return graph_nodes
 
         def graph_edges(
-            info: Info,
-            edge_id: strawberry.ID | None = strawberry.UNSET,
+                info: Info,
+                edge_id: strawberry.ID | None = strawberry.UNSET,
         ) -> list[GraphQLBuilder.GraphEdge]:
             decoded_edge_id = edge_id and decode_edge_id(edge_id)
             graph = builder._resolve_graph(info)
@@ -481,8 +491,8 @@ class GraphQLBuilder(NetworkxBuilder):
             return list(edges)
 
         def graph_measure(
-            info: Info,
-            measure: GraphQLBuilder.GraphMeasure,
+                info: Info,
+                measure: GraphQLBuilder.GraphMeasure,
         ) -> GraphQLBuilder.Measure:
             graph = builder._resolve_graph(info)
             if isinstance(measure.value, str):
@@ -507,12 +517,12 @@ class GraphQLBuilder(NetworkxBuilder):
             field_name_manager = VariableNameManager()
             for node_type, graphql_type in self._graphql_types.items():
                 field_name = field_name_manager.make_valid(inflection.plural(node_type))
-                query_fields.append(
-                    strawberry.field(
-                        name=field_name,
-                        resolver=graph_nodes_resolver(graphql_type, node_type, resolver_name=field_name),
-                    )
-                )
+                resolver = graph_nodes_resolver(graphql_type, node_type, resolver_name=field_name)
+                field_params: dict[str, Any] = {'resolver': resolver}
+                if self.dynamic_field_naming == DynamicFieldNaming.EXPLICIT:
+                    field_params['name'] = field_name
+
+                query_fields.append(strawberry.field(**field_params))
 
         return create_type(name='Query', fields=query_fields)
 
@@ -529,8 +539,25 @@ class GraphQLBuilder(NetworkxBuilder):
 
         return Mutation
 
-    def schema(self) -> strawberry.Schema:
+    def schema(self, config: StrawberryConfig | None = None) -> strawberry.Schema:
         unique_types = list({id(t): t for t in self._graphql_types.values()}.values())
+        inf_number_scalar = strawberry.scalar(
+            name='InfNumber',
+            description='Integer, Decimal or Float including Infinity and -Infinity',
+            serialize=converters.infnum_to_value,
+            parse_value=converters.value_to_infnum,
+        )
+        if config is None:
+            schema_config = StrawberryConfig(
+                scalar_map={GraphQLBuilder.InfNumber: inf_number_scalar}
+            )
+        else:
+            schema_config = config
+            if schema_config.scalar_map is None:
+                schema_config.scalar_map = {}
+            if GraphQLBuilder.InfNumber not in schema_config.scalar_map:
+                schema_config.scalar_map[GraphQLBuilder.InfNumber] = inf_number_scalar
+
         return strawberry.Schema(
             query=self._graphql_query(),
             mutation=self._graphql_mutation(),
@@ -540,26 +567,21 @@ class GraphQLBuilder(NetworkxBuilder):
                 lambda: QueryDepthLimiter(max_depth=10),
                 lambda: ValidationCache(maxsize=100),
             ],
-            config=StrawberryConfig(
-                scalar_map={
-                    GraphQLBuilder.InfNumber: strawberry.scalar(
-                        name='InfNumber',
-                        description='Integer, Decimal or Float including Infinity and -Infinity',
-                        serialize=converters.infnum_to_value,
-                        parse_value=converters.value_to_infnum,
-                    )
-                }
-            ),
+            config=schema_config,
         )
 
-    def build(self,
-              node_value_graphql_type_supplier: Callable[[str], StrawberryType | None] | None = None,
-              **kwargs: Any) -> strawberry.Schema:
-        """
+    def build(
+            self,
+            node_value_graphql_type_supplier: Callable[[str], StrawberryType | None] | None = None,
+            config: StrawberryConfig | None = None,
+            **kwargs: Any,
+    ) -> strawberry.Schema | None:
+        """Build a Strawberry GraphQL Schema.
 
         Args:
-            node_value_graphql_type_supplier: Callable[[str], StrawberryType]]
-            **kwargs:
+            node_value_graphql_type_supplier: Callable[[str], StrawberryType]
+            config: Optional StrawberryConfig instance
+            **kwargs: Additional build arguments
 
         Returns:
             Strawberry GraphQL Schema
@@ -569,18 +591,27 @@ class GraphQLBuilder(NetworkxBuilder):
 
         self._node_value_graphql_type_supplier = node_value_graphql_type_supplier
 
-        return self.schema()
+        return self.schema(config=config)
 
     async def abuild(
-        self,
-        node_value_graphql_type_supplier: Callable[[str], StrawberryType | None] | None = None,
-        **kwargs: Any,
-    ) -> strawberry.Schema:
-        """Asynchronously build a Strawberry GraphQL Schema."""
+            self,
+            node_value_graphql_type_supplier: Callable[[str], StrawberryType | None] | None = None,
+            config: StrawberryConfig | None = None,
+            **kwargs: Any,
+    ) -> strawberry.Schema | None:
+        """Asynchronously build a Strawberry GraphQL Schema.
+
+        Args:
+            node_value_graphql_type_supplier: Callable[[str], StrawberryType]
+            config: Optional StrawberryConfig instance
+            **kwargs: Additional build arguments
+
+        Returns:
+            Strawberry GraphQL Schema
+        """
         self._cached_graphql_types = None
         await super().abuild(**kwargs)
 
         self._node_value_graphql_type_supplier = node_value_graphql_type_supplier
 
-        return self.schema()
-
+        return self.schema(config=config)

@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum, StrEnum, auto
 from typing import Self
 
 import networkx as nx
@@ -67,3 +67,8 @@ class SchemaMode(Enum):
     STATIC = auto()
 
 
+class DynamicFieldNaming(StrEnum):
+    """Naming strategy for dynamically generated GraphQL query fields."""
+
+    AUTO = "auto"
+    EXPLICIT = "explicit"
