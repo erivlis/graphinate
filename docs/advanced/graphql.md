@@ -56,6 +56,44 @@ schema = builder.build()
 result = schema.execute_sync('{ nodes { type label neighbors { label } } }')
 ```
 
+## Dynamic Field Naming Strategies (`DynamicFieldNaming`)
+
+When using `SchemaMode.DYNAMIC`, you can control how root query fields for dynamic node types are named using the `dynamic_field_naming` option on `GraphQLBuilder`:
+
+- **`DynamicFieldNaming.EXPLICIT` (default)**: Preserves explicit `snake_case` field names (for example, `git_commits`, `user_accounts`). This guarantees full backward compatibility for existing client queries.
+- **`DynamicFieldNaming.AUTO`**: Delegates field naming to Strawberry's configuration. By default (`auto_camel_case=True`), field names are automatically converted to standard GraphQL `camelCase` (such as `gitCommits`, `userAccounts`).
+
+```python
+from graphinate import DynamicFieldNaming, model
+from graphinate.builders import GraphQLBuilder
+
+m = model("VCS")
+
+
+@m.node(type_="git_commit")
+def commits():
+    yield "c1"
+
+
+# Idiomatic GraphQL camelCase root query fields
+builder = GraphQLBuilder(m, dynamic_field_naming=DynamicFieldNaming.AUTO)
+schema = builder.build()
+
+result = schema.execute_sync("{ gitCommits { label } }")
+```
+
+### Custom Strawberry Configuration
+
+You can pass a custom `strawberry.schema.config.StrawberryConfig` to `builder.build(config=...)` or `builder.schema(config=...)` to customize casing, schema directives, or scalar mappings:
+
+```python
+from strawberry.schema.config import StrawberryConfig
+
+# Disable auto-camel-casing explicitly across the entire schema
+config = StrawberryConfig(auto_camel_case=False)
+schema = builder.build(config=config)
+```
+
 ## Context-Injected Graph Execution
 
 By default, resolvers query the internal NetworkX graph built by `GraphQLBuilder`. You can also pass a custom `nx.Graph`
@@ -72,3 +110,4 @@ result = schema.execute_sync(
     context_value={'graph': custom_graph},
 )
 ```
+
