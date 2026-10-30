@@ -1,3 +1,9 @@
+## v0.18.1 (2026-10-30)
+
+### Fix
+
+- Change default dynamic field naming from EXPLICIT to AUTO
+
 ## v0.18.0 (2026-10-30)
 
 ### Feat

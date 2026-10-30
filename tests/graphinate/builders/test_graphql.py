@@ -1,7 +1,7 @@
 import pytest
 
 import graphinate.builders
-from graphinate import converters, model
+from graphinate import DynamicFieldNaming, converters, model
 from graphinate.builders import GraphQLBuilder
 
 
@@ -320,20 +320,26 @@ def test_graphql_builder_static_mode_and_context_injection():
     }
 
 
-def test_dynamic_field_naming__explicit_default():
-    """Default mode preserves current behavior (snake_case dynamic query fields)."""
-    m = model("DynamicNamingDefault")
+def test_dynamic_field_naming__auto_default():
+    """Default Auto mode with default StrawberryConfig (auto_camel_case=True) yields camelCase."""
+    m = model("DynamicNamingAuto")
 
     @m.node(type_="git_commit")
     def commits():
         yield "c1"
 
+    # Test with enum
     builder = GraphQLBuilder(m)
     schema = builder.build()
     schema_str = str(schema)
 
-    assert "git_commits" in schema_str
-    assert "gitCommits" not in schema_str
+    assert "gitCommits" in schema_str
+    assert "git_commits" not in schema_str
+
+    # Test with string "auto" (StrEnum coercion)
+    builder_str = GraphQLBuilder(m, dynamic_field_naming="auto")
+    schema_str_res = builder_str.build()
+    assert "gitCommits" in str(schema_str_res)
 
 
 def test_dynamic_field_naming__explicit_parameter():
@@ -356,7 +362,6 @@ def test_dynamic_field_naming__explicit_parameter():
 
 def test_dynamic_field_naming__auto():
     """Auto mode with default StrawberryConfig (auto_camel_case=True) yields camelCase."""
-    from graphinate import DynamicFieldNaming
 
     m = model("DynamicNamingAuto")
 
