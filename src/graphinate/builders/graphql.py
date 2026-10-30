@@ -204,7 +204,7 @@ class GraphQLBuilder(NetworkxBuilder):
         model: GraphModel,
         graph_type: GraphType = GraphType.Graph,
         mode: SchemaMode = SchemaMode.DYNAMIC,
-        dynamic_field_naming: DynamicFieldNaming = DynamicFieldNaming.EXPLICIT,
+        dynamic_field_naming: DynamicFieldNaming = DynamicFieldNaming.AUTO,
     ):
         super().__init__(model, graph_type)
         self.mode: SchemaMode = mode
